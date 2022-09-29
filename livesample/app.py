@@ -1,28 +1,32 @@
 import requests
 import os
 from flask import Flask, request, redirect
-import csv
 import json
 import random
+import pandas as pd
 
 app = Flask(__name__)
 config = {"host": "host", "port": "port"}
 
 
-@app.route("/")
+@app.route("/now")
 def home():
-    # redirect version
-    # return redirect(all_urls[0], code=302)
     malicious_url = get_malicious_url()
     html = f"<html><head>Are you sure?</head><body><p>Have fun!</p><a href={malicious_url}>{malicious_url}</a></body></html>"
     return html
 
 
-@app.route("/fnet")
-def home():
+@app.route("/")
+def cache_home():
     malicious_url = get_malicious_url_from_file()
     html = f"<html><head>Are you sure?</head><body><p>Have fun!</p><a href={malicious_url}>{malicious_url}</a></body></html>"
     return html
+
+
+@app.route("/reset")
+def reset_db():
+    write_file_malicious_url()
+    return redirect(url_for(""))
 
 
 def get_all_malicious_url() -> list:
@@ -31,10 +35,7 @@ def get_all_malicious_url() -> list:
     record = {}
     all_url = []
     for i in content:
-        if i.startswith("#") or i == "":
-            pass
-        else:
-            print(i.split('","'))
+        if not i.startswith("#") and not i == "":
             datas = i.split('","')
             id, dateadded, url, url_status, threat, tags, urlhaus_link, reporter = datas
             record[id.replace('"', "")] = {
@@ -53,15 +54,20 @@ def write_file_malicious_url() -> None:
         fd.write(r.text)
 
 
-def read_from_file_malicious_url() -> dict:
-    with open("malicious_urls.csv", "r") as fd:
-        reader = csv.reader(fd)
-        dict_from_csv = {rows[0]: rows[1] for rows in reader}
-    return dict_from_csv
+def read_from_file_malicious_url() -> str:
+    dict_from_csv = pd.read_csv(
+        "malicious_urls.csv",
+        header=None,
+        index_col=0,
+        skip_blank_lines=True,
+        comment="#",
+    )
+    return dict_from_csv[2].sample().iloc[0]
 
 
 def get_malicious_url_from_file() -> str:
     malur = read_from_file_malicious_url()
+    return str(malur)
 
 
 def get_malicious_url() -> str:
@@ -71,5 +77,4 @@ def get_malicious_url() -> str:
 
 
 if __name__ == "__main__":
-    write_file_malicious_url()
     app.run(host="0.0.0.0", port=os.getenv("PORT"), debug=True)
