@@ -1,0 +1,11 @@
+version: '3'
+services: 
+    webpage:
+        build: ./webpage/
+        volumes: 
+            - ./webpage/:/usr/src/app/
+        ports: 
+            - 5000:5000
+        environment: 
+            PORT: 5000
+            FLASK_DEBUG: 1
