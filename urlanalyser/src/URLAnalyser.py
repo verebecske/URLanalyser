@@ -3,7 +3,7 @@ import random
 import requests
 
 
-class SafeURLApi:
+class URLAnalyser:
     logger: Logger
 
     def __init__(self, config: dict, logger: Logger):
@@ -26,7 +26,7 @@ class SafeURLApi:
 
 
 if __name__ == "__main__":
-    safeurl = SafeURLApi({}, None)
+    safeurl = URLAnalyser({}, None)
     # url = "https://urlhaus-api.abuse.ch/"
     url = "http://113.88.209.132:42715/i"
     ans = safeurl.send_request_to_urlhause(url)

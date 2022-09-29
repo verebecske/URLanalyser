@@ -1,12 +1,12 @@
 from flask import Flask, jsonify, request
-from src.SafeURLApi import SafeURLApi
+from src.URLAnalyser import URLAnalyser
 
 
 class FlaskAppWrapper(object):
     def __init__(self):
         self.app = Flask(__name__)
         self.add_all_endpoints()
-        self.safeURLapi = SafeURLApi({}, None)
+        self.URLAnalyser = URLAnalyser({}, None)
 
     def run(self):
         self.app.run(debug=True)
@@ -31,7 +31,7 @@ class FlaskAppWrapper(object):
                 "Error": "Unexpected error.",
             }
         else:
-            result = self.safeURLapi.is_malware(url)
+            result = self.URLAnalyser.is_malware(url)
             data = {
                 "message": f"Is {url} a malware? {result}",
                 "status": 200,

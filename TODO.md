@@ -1,5 +1,3 @@
 - [ ] gitlab visszaszerzése
-- [ ] kiírás megírása
-- [ ] diplomaportálos dolog
 - [ ] rethink kipróbálása
 - [ ]
