@@ -1,3 +1,4 @@
 - [ ] gitlab visszaszerzése
 - [ ] rethink kipróbálása
-- [ ]
+- [ ] docker beállítása
+- [ ] 
