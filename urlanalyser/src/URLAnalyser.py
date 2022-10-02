@@ -1,12 +1,12 @@
-from loguru import logger
+from logging import Logger
 import random
 import requests
 
 
 class URLAnalyser:
-    logger: logger
+    logger: Logger
 
-    def __init__(self, config: dict, logger: logger):
+    def __init__(self, config: dict, logger: Logger):
         self.logger = logger
         self.logger.info("Start URLAnalyser")
 
