@@ -1,12 +1,12 @@
-from logging import Logger
+import logging
 import random
 import requests
-
+import re
 
 class URLAnalyser:
-    logger: Logger
+    logger: logging.Logger
 
-    def __init__(self, config: dict, logger: Logger):
+    def __init__(self, config: dict, logger: logging.Logger):
         self.logger = logger
         self.logger.info("Start URLAnalyser")
 
@@ -27,10 +27,15 @@ class URLAnalyser:
         else:
             return "error"
 
+    def valid_url(self, url: str) -> bool:
+        pattern = r"(http(s)?://)?([a-z0-9-]+\.)+[a-z0-9]+$"
+        res = re.match(pattern, url)
+        return res != None
 
 if __name__ == "__main__":
+    logger = logging.getLogger()
     safeurl = URLAnalyser({}, logger=logger)
-    # url = "https://urlhaus-api.abuse.ch/"
-    url = "http://113.88.209.132:42715/i"
+    url = "https://urlhaus-api.abuse.ch/"
+    # url = "http://113.88.209.132:42715/i"
     ans = safeurl.dummy_is_malware(url)
-    print(ans)
+
