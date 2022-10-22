@@ -1,0 +1,9 @@
+[MASTER]
+init-hook='import sys; import os; sys.path.append(os.getcwd())'
+disable=
+    C0114, # missing-module-docstring
+    C0115, # missing-class-docstring
+    C0116, # missing-function-docstring
+
+
+

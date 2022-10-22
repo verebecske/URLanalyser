@@ -1,8 +1,8 @@
-from src.url_analyser import URLAnalyser
-from src.flask.app_wrapper import FlaskAppWrapper
-from src.api_connector import APIConnector
 from logging import Logger, getLogger, DEBUG
 from configparser import ConfigParser
+from src.url_analyser import URLAnalyser
+from src.flask.wrapper import FlaskAppWrapper
+from src.api_connector import APIConnector
 
 
 class ManagerRob:

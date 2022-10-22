@@ -13,5 +13,10 @@ clean:
 
 lint:
 	black .
+	pylint --fail-under=7 *.py
+	autoflake --check --quiet -r -v .
 
-.PHONY: run clean setup test lint
+curl:
+	curl 'http://127.0.0.1:5000/check?url=napszemuveg.be'
+
+.PHONY: run clean setup test lint curl

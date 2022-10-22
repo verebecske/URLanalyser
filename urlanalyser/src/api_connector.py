@@ -1,5 +1,4 @@
 from logging import Logger
-import random
 import requests
 
 

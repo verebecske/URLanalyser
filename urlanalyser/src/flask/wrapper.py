@@ -1,9 +1,9 @@
 from flask import Flask, jsonify, request
-from src.url_analyser import URLAnalyser
 from logging import Logger
+from src.url_analyser import URLAnalyser
 
 
-class FlaskAppWrapper(object):
+class FlaskAppWrapper:
     logger: Logger
     analyser: URLAnalyser
     debug: bool
@@ -14,6 +14,8 @@ class FlaskAppWrapper(object):
         self.debug = bool(config["debug"])
         self.app = Flask(__name__)
         self.add_all_endpoints()
+
+    def run(self) -> None:
         self.app.run(debug=self.debug)
 
     def add_all_endpoints(self):
