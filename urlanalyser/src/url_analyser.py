@@ -1,13 +1,15 @@
 from logging import Logger
 import random
 import re
+from src.api_connector import APIConnector
 
 
 class URLAnalyser:
     logger: Logger
     debug: bool = True
+    connector: APIConnector
 
-    def __init__(self, config: dict, logger: Logger):
+    def __init__(self, config: dict, connector: APIConnector, logger: Logger):
         self.logger = logger
         self.logger.info("Start URLAnalyser")
 

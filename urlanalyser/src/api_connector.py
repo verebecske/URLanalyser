@@ -3,7 +3,7 @@ import random
 import requests
 
 
-class Asker:
+class APIConnector:
     logger: Logger
 
     def __init__(self, config: dict, logger: Logger):
@@ -26,4 +26,3 @@ class Asker:
 
     def get_geoip(self, url: str) -> str:
         pass
-
