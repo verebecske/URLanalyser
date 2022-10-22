@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request
 from src.URLAnalyser import URLAnalyser
-from logging import Logger, getLogger
+from logging import Logger
 
 
 class FlaskAppWrapper(object):
@@ -42,9 +42,3 @@ class FlaskAppWrapper(object):
                 "result": result,
             }
         return jsonify(data)
-
-
-if __name__ == "__main__":
-    logger = getLogger()
-    flaskwrapper = FlaskAppWrapper(logger=logger)
-    flaskwrapper.run()

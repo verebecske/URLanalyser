@@ -3,6 +3,7 @@ import random
 import requests
 import re
 
+
 class URLAnalyser:
     logger: logging.Logger
 
@@ -33,11 +34,3 @@ class URLAnalyser:
         pattern = r"(http(s)?://)?([a-z0-9-]+\.)+[a-z0-9]+(/.*)?$"
         res = re.match(pattern, url)
         return res != None
-
-if __name__ == "__main__":
-    logger = logging.getLogger()
-    safeurl = URLAnalyser({}, logger=logger)
-    url = "https://urlhaus-api.abuse.ch/"
-    # url = "http://113.88.209.132:42715/i"
-    ans = safeurl.dummy_is_malware(url)
-
