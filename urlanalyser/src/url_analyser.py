@@ -5,6 +5,7 @@ import re
 
 class URLAnalyser:
     logger: Logger
+    debug: bool = True
 
     def __init__(self, config: dict, logger: Logger):
         self.logger = logger
@@ -12,10 +13,12 @@ class URLAnalyser:
 
     def is_malware(self, url: str) -> bool:
         self.logger.info("Start")
-        return self.is_malware(url) == "ok"
+        if self.debug:
+            return self.dummy_is_malware(url)
+        else:
+            ValueError("not implemeneted. Yet!")
 
     def dummy_is_malware(self, url: str) -> bool:
-        self.logger.info("Start")
         return random.randint(0, 100) < 70
 
     def valid_url(self, url: str) -> bool:

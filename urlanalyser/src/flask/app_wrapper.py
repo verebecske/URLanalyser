@@ -1,17 +1,20 @@
 from flask import Flask, jsonify, request
-from src.URLAnalyser import URLAnalyser
+from src.url_analyser import URLAnalyser
 from logging import Logger
 
 
 class FlaskAppWrapper(object):
     logger: Logger
     analyser: URLAnalyser
+    debug: bool
 
     def __init__(self, config: dict, analyser: URLAnalyser, logger: Logger):
         self.logger = logger
+        self.analyser = analyser
+        self.debug = bool(config["debug"])
         self.app = Flask(__name__)
         self.add_all_endpoints()
-        self.app.run(debug=bool(config["debug"]))
+        self.app.run(debug=self.debug)
 
     def add_all_endpoints(self):
         self.app.add_url_rule("/", "index", self.index)

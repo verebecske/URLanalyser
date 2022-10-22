@@ -23,3 +23,7 @@ class Asker:
             return r.json()["query_status"]
         else:
             return "error"
+
+    def get_geoip(self, url: str) -> str:
+        pass
+
