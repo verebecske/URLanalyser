@@ -1,13 +1,12 @@
-import logging
+from logging import Logger
 import random
-import requests
 import re
 
 
 class URLAnalyser:
-    logger: logging.Logger
+    logger: Logger
 
-    def __init__(self, config: dict, logger: logging.Logger):
+    def __init__(self, config: dict, logger: Logger):
         self.logger = logger
         self.logger.info("Start URLAnalyser")
 
@@ -18,17 +17,6 @@ class URLAnalyser:
     def dummy_is_malware(self, url: str) -> bool:
         self.logger.info("Start")
         return random.randint(0, 100) < 70
-
-    def send_request_to_urlhause(self, url: str) -> str:
-        if not self.valid_url(url):
-            return "not valid url"
-        data = {"url": url}
-        r = requests.post(url="https://urlhaus-api.abuse.ch/v1/url/", data=data)
-        if r.status_code == 200:
-            print(r.json())
-            return r.json()["query_status"]
-        else:
-            return "error"
 
     def valid_url(self, url: str) -> bool:
         pattern = r"(http(s)?://)?([a-z0-9-]+\.)+[a-z0-9]+(/.*)?$"

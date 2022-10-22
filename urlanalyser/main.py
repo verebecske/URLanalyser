@@ -1,16 +1,36 @@
 import src.URLAnalyser as URLAnalyser
 from flask import Flask, jsonify, request
 from logging import Logger, getLogger
+from configparser import ConfigParser
 
 
-def start_flask(logger: Logger):
-    flaskwrapper = FlaskAppWrapper(logger=logger)
-    flaskwrapper.run()
+class ManagerRob:
+    logger: Logger
+
+    def __init__(self):
+        self.logger = getLogger()
+        set_logger()
+        configs = get_config()
+
+    def start_flask(self):
+        flaskwrapper = FlaskAppWrapper(logger=self.logger)
+        flaskwrapper.run()
+
+    def start_analyser(self):
+        safeurl = URLAnalyser(config=self.config["analyser"], logger=self.logger)
+
+    def set_logger(self) -> None:
+        pass
+
+    def get_config(self) -> ConfigParser:
+        config = ConfigParser()
+        config.read("secrets/config.ini")
+
+    def start(self) -> None:
+        self.start_analyser()
+        self.start_flask()
 
 
 if __name__ == "__main__":
-    logger = logging.getLogger()
-    safeurl = URLAnalyser({}, logger=logger)
-    url = "https://urlhaus-api.abuse.ch/"
-    # url = "http://113.88.209.132:42715/i"
-    ans = safeurl.dummy_is_malware(url)
+    rob = ManagerRob()
+    rob.start()

@@ -133,3 +133,4 @@ dmypy.json
 
 # Thesis
 doc/private
+secrets

@@ -5,15 +5,13 @@ from logging import Logger
 
 class FlaskAppWrapper(object):
     logger: Logger
+    analyser: URLAnalyser
 
-    def __init__(self, logger):
+    def __init__(self, config: dict, analyser: URLAnalyser, logger: Logger):
         self.logger = logger
         self.app = Flask(__name__)
         self.add_all_endpoints()
-        self.URLAnalyser = URLAnalyser({}, logger=logger)
-
-    def run(self):
-        self.app.run(debug=True)
+        self.app.run(debug=bool(config["debug"]))
 
     def add_all_endpoints(self):
         self.app.add_url_rule("/", "index", self.index)
@@ -35,7 +33,7 @@ class FlaskAppWrapper(object):
                 "Error": "Unexpected error.",
             }
         else:
-            result = self.URLAnalyser.is_malware(url)
+            result = self.analyser.is_malware(url)
             data = {
                 "message": f"Is {url} a malware? {result}",
                 "status": 200,
