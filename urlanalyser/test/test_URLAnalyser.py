@@ -46,7 +46,16 @@ class TestClass(unittest.TestCase):
                 "url": "http://www.sub5_sub6.domain.com",
                 "excepted": False,
             },
+             "test_10": {
+                "url": "https://www.example.com/open=1234",
+                "excepted": True,
+            },
+            "test_11": {
+                "url": "https://www.example.com/?open=1234&id=Fi!&?*23",
+                "excepted": True,
+            },
         }
+
 
         for test_case, value in test_dict.items():
             res = self.analyser.valid_url(value["url"])

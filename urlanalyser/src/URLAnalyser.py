@@ -19,6 +19,8 @@ class URLAnalyser:
         return random.randint(0, 100) < 70
 
     def send_request_to_urlhause(self, url: str) -> str:
+        if not self.valid_url(url):
+            return "not valid url"
         data = {"url": url}
         r = requests.post(url="https://urlhaus-api.abuse.ch/v1/url/", data=data)
         if r.status_code == 200:
@@ -28,7 +30,7 @@ class URLAnalyser:
             return "error"
 
     def valid_url(self, url: str) -> bool:
-        pattern = r"(http(s)?://)?([a-z0-9-]+\.)+[a-z0-9]+$"
+        pattern = r"(http(s)?://)?([a-z0-9-]+\.)+[a-z0-9]+(/.*)?$"
         res = re.match(pattern, url)
         return res != None
 
