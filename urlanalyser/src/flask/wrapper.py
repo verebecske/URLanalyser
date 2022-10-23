@@ -7,16 +7,20 @@ class FlaskAppWrapper:
     logger: Logger
     analyser: URLAnalyser
     debug: bool
+    config: dict
 
     def __init__(self, config: dict, analyser: URLAnalyser, logger: Logger):
         self.logger = logger
         self.analyser = analyser
         self.debug = bool(config["debug"])
+        self.config = config
         self.app = Flask(__name__)
         self.add_all_endpoints()
 
     def run(self) -> None:
-        self.app.run(debug=self.debug)
+        host = self.config["host"]
+        port = self.config["port"]
+        self.app.run(debug=self.debug, host=host, port=port)
 
     def add_all_endpoints(self):
         self.app.add_url_rule("/", "index", self.index)

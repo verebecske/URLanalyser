@@ -19,13 +19,13 @@ class URLAnalyser:
 
     def __init__(self, config: dict, connector: APIConnector, logger: Logger):
         self.logger = logger
+        self.debug = bool(config["debug"])
 
     @logs
     def is_malware(self, url: str) -> bool:
         if self.debug:
             return self.dummy_is_malware(url)
-        else:
-            ValueError("not implemeneted. Yet!")
+        raise ValueError("not yet :(")
 
     def dummy_is_malware(self, url: str) -> bool:
         return random.randint(0, 100) < 70
