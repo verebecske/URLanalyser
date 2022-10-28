@@ -1,7 +1,14 @@
-FROM python:alpine3.7
-COPY . .
-WORKDIR .
+FROM python:3.9-alpine
+
+WORKDIR /app
+COPY requirements.txt requirements.txt
+EXPOSE 5000
+
+
+RUN pip install --upgrade cython
+RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
-EXPOSE 5001
-ENTRYPOINT [ "python" ]
-CMD [ "app.py" ]
+
+COPY . .
+CMD [ "python", "app.py"]
+
