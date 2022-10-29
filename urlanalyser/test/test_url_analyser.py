@@ -1,12 +1,14 @@
 import unittest
 from unittest.mock import MagicMock
-from src.URLAnalyser import URLAnalyser
+from src.url_analyser import URLAnalyser
+
 
 class TestClass(unittest.TestCase):
     def setUp(self):
         logger = MagicMock()
         config = {}
-        self.analyser = URLAnalyser(config=config, logger=logger)
+        connector = MagicMock()
+        self.analyser = URLAnalyser(config=config, connector=connector, logger=logger)
 
     def test_valid_url(self):
         test_dict = {
@@ -46,7 +48,7 @@ class TestClass(unittest.TestCase):
                 "url": "http://www.sub5_sub6.domain.com",
                 "excepted": False,
             },
-             "test_10": {
+            "test_10": {
                 "url": "https://www.example.com/open=1234",
                 "excepted": True,
             },
@@ -56,11 +58,10 @@ class TestClass(unittest.TestCase):
             },
         }
 
-
         for test_case, value in test_dict.items():
             res = self.analyser.valid_url(value["url"])
             self.assertEqual(res, value["excepted"], msg=f"Error in {test_case}")
 
-        
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

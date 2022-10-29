@@ -1,19 +1,26 @@
 from flask import Flask, jsonify, request
-from src.URLAnalyser import URLAnalyser
-from logging import Logger, getLogger
+from logging import Logger
+from src.url_analyser import URLAnalyser
 
 
-class FlaskAppWrapper(object):
+class FlaskAppWrapper:
     logger: Logger
+    analyser: URLAnalyser
+    debug: bool
+    config: dict
 
-    def __init__(self, logger):
+    def __init__(self, config: dict, analyser: URLAnalyser, logger: Logger):
         self.logger = logger
+        self.analyser = analyser
+        self.debug = bool(config["debug"])
+        self.config = config
         self.app = Flask(__name__)
         self.add_all_endpoints()
-        self.URLAnalyser = URLAnalyser({}, logger=logger)
 
-    def run(self):
-        self.app.run(debug=True)
+    def run(self) -> None:
+        host = self.config["host"]
+        port = self.config["port"]
+        self.app.run(debug=self.debug, host=host, port=port)
 
     def add_all_endpoints(self):
         self.app.add_url_rule("/", "index", self.index)
@@ -35,16 +42,10 @@ class FlaskAppWrapper(object):
                 "Error": "Unexpected error.",
             }
         else:
-            result = self.URLAnalyser.is_malware(url)
+            result = self.analyser.is_malware(url)
             data = {
                 "message": f"Is {url} a malware? {result}",
                 "status": 200,
                 "result": result,
             }
         return jsonify(data)
-
-
-if __name__ == "__main__":
-    logger = getLogger()
-    flaskwrapper = FlaskAppWrapper(logger=logger)
-    flaskwrapper.run()

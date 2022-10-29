@@ -1,16 +1,19 @@
 import requests
 import os
-from flask import Flask, request, render_template, route
+from flask import Flask, request, render_template
 
 app = Flask(__name__)
+host = "urlanalyser-urlanalyser-1"
+port = os.getenv("URLANALYSER_PORT")
 
 def ask_urlanalyserapi(url: str) -> str:
-    r = requests.get(f"{host}:{port}/check?url={url}")
-    if r.status_code == 200:
+    r = requests.get(f"http://{host}:{port}/check?url={url}")
+    if r.status_code == 200 and r.json()["status"] == 200:
         if r.json()["result"]:
             return "malware"
         return "not malware"
     return "unknown"
+
 
 
 @app.route("/", methods=["GET", "POST"])
