@@ -1,7 +1,7 @@
 version: '3.9'
 services: 
     webpage:
-        build:
+        build: 
             context: ./webs/webpage/
             dockerfile: Dockerfile
         volumes: 
@@ -12,15 +12,17 @@ services:
             PORT: 5000
             URLANALYSER_PORT: 5000
             FLASK_DEBUG: 1
-    #livesample:
-    #    build: ./webs/livesample/
-    #    volumes: 
-    #        - ./livesample/:/usr/src/app/
-    #    ports: 
-    #        - 9110:5000
-    #    environment: 
-    #        PORT: 5000
-    #        FLASK_DEBUG: 1
+    livesample:
+        build: 
+            context: ./webs/livesample/
+            dockerfile: Dockerfile
+        volumes: 
+            - ./livesample/:/usr/src/app/
+        ports: 
+            - 9110:5000
+        environment: 
+            PORT: 5000
+            FLASK_DEBUG: 1
     urlanalyser:
         build:
             context: ./urlanalyser/

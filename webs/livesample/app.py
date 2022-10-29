@@ -6,8 +6,6 @@ import random
 import pandas as pd
 
 app = Flask(__name__)
-config = {"host": "host", "port": "port"}
-
 
 @app.route("/now")
 def home():
