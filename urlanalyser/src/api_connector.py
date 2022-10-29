@@ -1,6 +1,9 @@
 from logging import Logger
 import requests
 
+import re
+import json
+from urllib2 import urlopen
 
 class APIConnector:
     logger: Logger
@@ -24,4 +27,7 @@ class APIConnector:
             return "error"
 
     def get_geoip(self, url: str) -> str:
-        pass
+        ip = '8.8.4.4'
+        response = urlopen('http://ipwho.is/'+ip)
+        ipwhois = json.load(response)
+
