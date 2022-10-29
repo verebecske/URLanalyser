@@ -6,7 +6,7 @@ from src.url_analyser import URLAnalyser
 class TestClass(unittest.TestCase):
     def setUp(self):
         logger = MagicMock()
-        config = {}
+        config = {"debug": True}
         connector = MagicMock()
         self.analyser = URLAnalyser(config=config, connector=connector, logger=logger)
 
