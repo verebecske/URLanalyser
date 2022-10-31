@@ -17,7 +17,7 @@ class ManagerRob:
     def start_flask(self, analyser) -> None:
         config = self.config["flask"]
         flaskwrapper = FlaskAppWrapper(
-            config=config, analyser=analyser, logger=self.logger
+            config=config, logger=self.logger, analyser=analyser
         )
         flaskwrapper.run()
 
@@ -28,7 +28,7 @@ class ManagerRob:
 
     def get_analyser(self, connector: APIConnector) -> URLAnalyser:
         config = self.config["analyser"]
-        analyser = URLAnalyser(config=config, connector=connector, logger=self.logger)
+        analyser = URLAnalyser(config=config, logger=self.logger, connector=connector)
         return analyser
 
     def set_logger(self) -> None:

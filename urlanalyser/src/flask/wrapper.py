@@ -9,7 +9,7 @@ class FlaskAppWrapper:
     debug: bool
     config: dict
 
-    def __init__(self, config: dict, analyser: URLAnalyser, logger: Logger):
+    def __init__(self, config: dict, logger: Logger, analyser: URLAnalyser):
         self.logger = logger
         self.analyser = analyser
         self.debug = bool(config["debug"])
