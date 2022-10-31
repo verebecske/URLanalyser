@@ -3,7 +3,6 @@ from configparser import ConfigParser
 from src.url_analyser import URLAnalyser
 from src.flask.wrapper import FlaskAppWrapper
 from src.api_connector import APIConnector
-from src.malaut import Malaut
 
 
 class ManagerRob:
@@ -18,7 +17,7 @@ class ManagerRob:
     def start_flask(self, analyser) -> None:
         config = self.config["flask"]
         flaskwrapper = FlaskAppWrapper(
-            config=config, analyser=analyser, logger=self.logger
+            config=config, logger=self.logger, analyser=analyser
         )
         flaskwrapper.run()
 
@@ -29,7 +28,7 @@ class ManagerRob:
 
     def get_analyser(self, connector: APIConnector) -> URLAnalyser:
         config = self.config["analyser"]
-        analyser = URLAnalyser(config=config, connector=connector, logger=self.logger)
+        analyser = URLAnalyser(config=config, logger=self.logger, connector=connector)
         return analyser
 
     def set_logger(self) -> None:
@@ -45,12 +44,7 @@ class ManagerRob:
         analyser = self.get_analyser(connector)
         self.start_flask(analyser)
 
-    def test_malaut(self) -> None:
-        malaut = Malaut()
-        malaut.start()
-
 
 if __name__ == "__main__":
     rob = ManagerRob()
-    # rob.start()
-    rob.test_malaut()
+    rob.start()

@@ -1,10 +1,11 @@
 import requests
 import os
 from selenium import webdriver
+from logging import Logger
 
 
 class Malaut:
-    def __init__(self, config: dict = {}):
+    def __init__(self, config: dict, logger: Logger):
         self.config = config
 
     def get_webpage(self, file):
@@ -19,6 +20,3 @@ class Malaut:
         malaut = Malaut()
         file = "test.html"
         # malaut.get_webpage(file)
-        
-
-
