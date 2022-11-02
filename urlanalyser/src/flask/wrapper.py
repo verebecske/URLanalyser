@@ -30,6 +30,7 @@ class FlaskAppWrapper:
         self.app.add_url_rule("/", "index", self.index)
         self.app.add_url_rule("/check", "check", self.check)
         self.app.add_url_rule("/test", "test_screenshot", self.test_screenshot)
+        self.app.add_url_rule("/image", "test_send_image", self.test_send_image)
 
     def index(self):
         data = {
@@ -40,20 +41,21 @@ class FlaskAppWrapper:
 
     def check(self):
         url = request.args.get("url", default="", type=str)
+        sets = request.args.get("sets", default="111", type=str)
+        status = 200
         if url == "":
+            status = 400
             data = {
                 "message": "Bad request!",
-                "status": 400,
                 "Error": "Unexpected error.",
             }
         else:
-            result = self.analyser.is_malware(url)
+            result = self.analyser.collect_infos(url, sets)
             data = {
-                "message": f"Is {url} a malware? {result}",
-                "status": 200,
+                "url": url,
                 "result": result,
             }
-        return jsonify(data)
+        return jsonify(data), status
 
     def test_screenshot(self):
         self.create_screenshot("https://www.thetimenow.com/")
@@ -67,16 +69,16 @@ class FlaskAppWrapper:
         # --window-size=411,2000
         return path
 
+    def test_send_image(self, url: str) -> str:
+        self.create_screenshot("https://www.thetimenow.com/")
+        with open(path, "rb") as image_file:
+            encoded_string = base64.b64encode(image_file.read())
+            return {"image": encoded_string, "data": jsonify(return_list)}
+
     def test_splinter(self, url: str) -> str:
         browser = Browser("chrome", headless=True)
         browser.visit("https://www.thetimenow.com/")
-        print("HEY")
         screenshot_path = browser.screenshot(
             "./src/flask/static/screenshot.png", full=True
         )
         return path
-
-    def test_send_image(self):
-        with open("yourfile.ext", "rb") as image_file:
-            encoded_string = base64.b64encode(image_file.read())
-            return {"image": encoded_string, "data": jsonify(return_list)}

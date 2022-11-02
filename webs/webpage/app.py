@@ -6,13 +6,19 @@ app = Flask(__name__)
 host = "urlanalyser-urlanalyser-1"
 port = os.getenv("URLANALYSER_PORT")
 
+def encode_settings(settings: dict) -> str:
+    res = [int(settings["urlhaus"]), int(settings["virustotal"]), int(settings["geoip"])]
+    return "".join([str(i) for i in res])
+
 def ask_urlanalyserapi(url: str, settings: dict) -> dict:
-    r = requests.get(f"http://{host}:{port}/check?url={url}")
-    if r.status_code == 200 and r.json()["status"] == 200:
-        return r.json() # ["result"]
-    return {"result": "unknown"}
+    est = encode_settings(settings)
+    r = requests.get(f"http://{host}:{port}/check?url={url}&sets={est}")
+    if r.status_code == 200:
+        return r.json()["result"]
+    return {"result": est}
 
-
+def get_screenshot(url: str) -> str:
+    return "static/meta.jpg"
 
 @app.route("/", methods=["GET", "POST"])
 def home():
@@ -31,9 +37,15 @@ def home():
             "screenshot": screenshot
         }
         result = ask_urlanalyserapi(url, settings)
-        return render_template("return.html", name=name, url=url, result=result, checkedlist=checkedlist)
+        if screenshot:
+            path = get_screenshot(url)
+        return render_template("return.html", name=name, url=url, result=result, checkedlist=checkedlist, path=path)
     else:
         return render_template("home.html")
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('404.html'), 404
 
 
 if __name__ == "__main__":

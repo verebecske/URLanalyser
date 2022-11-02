@@ -9,6 +9,7 @@ from src.ancestor import Ancestor
 class APIConnector(Ancestor):
     logger: Logger
     config: dict
+    debug: bool = True
 
     def logs(func):
         def wrapper(self, *args, **kwargs):
@@ -22,6 +23,7 @@ class APIConnector(Ancestor):
     def __init__(self, config: dict, logger: Logger):
         self.logger = logger
         self.config = config
+        self.debug = config["debug"]
 
     @logs
     def send_request_to_virustotal(self, url: str) -> str:
