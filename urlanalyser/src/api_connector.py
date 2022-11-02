@@ -41,7 +41,7 @@ class APIConnector(Ancestor):
         data = {"url": url}
         response = requests.post(url="https://urlhaus-api.abuse.ch/v1/url/", data=data)
         if response.status_code == 200:
-            return response.json()["query_status"]
+            return response.json()
         else:
             return "error"
 

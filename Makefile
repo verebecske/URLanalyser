@@ -1,6 +1,6 @@
 run:
 	sudo docker-compose build
-	sudo docker-compose up -d   
+	sudo docker-compose up
 	sudo docker ps -a
 docker:
 	systemctl start docker.service 

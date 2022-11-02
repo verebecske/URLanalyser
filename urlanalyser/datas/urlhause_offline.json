@@ -1,0 +1,20 @@
+{
+    "query_status": "ok",
+    "id": "2395459",
+    "urlhaus_reference": "https://urlhaus.abuse.ch/url/2395459/",
+    "url": "http://27.38.29.51:53105/mozi.m",
+    "url_status": "offline",
+    "host": "27.38.29.51",
+    "date_added": "2022-11-01 22:57:34 UTC",
+    "last_online": None,
+    "threat": "malware_download",
+    "blacklists": {
+        "spamhaus_dbl": "not listed",
+        "surbl": "not listed"
+    },
+    "reporter": "tammeto",
+    "larted": "false",
+    "takedown_time_seconds": None,
+    "tags": None,
+    "payloads": None
+}

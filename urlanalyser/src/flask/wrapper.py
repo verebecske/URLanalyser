@@ -1,6 +1,8 @@
-from flask import Flask, jsonify, request
+import os
+from flask import Flask, jsonify, request, render_template
 from logging import Logger
 from src.url_analyser import URLAnalyser
+from src.malaut import Malaut
 
 
 class FlaskAppWrapper:
@@ -25,10 +27,11 @@ class FlaskAppWrapper:
     def add_all_endpoints(self):
         self.app.add_url_rule("/", "index", self.index)
         self.app.add_url_rule("/check", "check", self.check)
+        self.app.add_url_rule("/screenshot", "screenshot", self.screenshot)
 
     def index(self):
         data = {
-            "message": f"Hey",
+            "message": f"Hey ti",
             "status": 200,
         }
         return jsonify(data)
@@ -49,3 +52,13 @@ class FlaskAppWrapper:
                 "result": result,
             }
         return jsonify(data)
+
+    def screenshot(self):
+        os.system("chromium-browser --no-sandbox --headless --disable-gpu --screenshot='./src/flask/static/screenshot.png' https://www.napszemuveg.be")
+        return render_template("image.html")
+
+    def send_image(self):
+        with open("yourfile.ext", "rb") as image_file:
+            encoded_string = base64.b64encode(image_file.read())
+            return {"image": encoded_string, "data": jsonify(return_list)}
+

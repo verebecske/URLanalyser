@@ -20,7 +20,7 @@ class ManTestMain(ManagerRob):
 
     def test_urlhause(self) -> None:
         connector = self.get_connector()
-        ans = connector.send_request_to_urlhause("http://www.napszemuveg.be")
+        ans = connector.send_request_to_urlhause("www.example.com")
         self.logger.error(ans)
 
 
