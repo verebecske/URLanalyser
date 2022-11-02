@@ -37,7 +37,7 @@ class APIConnector(Ancestor):
             return "error"
 
     @logs
-    def send_request_to_urlhause(self, url: str) -> str:
+    def send_request_to_urlhaus(self, url: str) -> str:
         data = {"url": url}
         response = requests.post(url="https://urlhaus-api.abuse.ch/v1/url/", data=data)
         if response.status_code == 200:

@@ -38,6 +38,18 @@
       .form-inner {
       padding: 40px;
       }
+      fieldset {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      margin-bottom: 10px;
+      border: none;
+      border-radius: 20px;
+      }
+      fieldset legend {
+      margin-top: 15;
+      font-weight: 450;
+      }
       .form-inner input,
       .form-inner textarea {
       display: block;
@@ -81,6 +93,25 @@
         <input name="url" type="text" placeholder="URL">
         <button type="submit">Submit</button>
       </div>
+      <fieldset>
+        <legend>Settings</legend>
+        <div>
+          <input type="checkbox" name="urlhaus" id="urlhaus" checked="checked">
+          <label for="urlhaus">Send to URLHaus</label>
+        </div>
+        <div>
+          <input type="checkbox" name="virustotal" id="virustotal" checked="checked">
+          <label for="virustotal">Send to virustotal</label>
+        </div>
+        <div>
+          <input type="checkbox" name="geoip" id="geoip" checked="checked">
+          <label for="screenshot">Get location</label>
+        </div>
+        <div>
+          <input type="checkbox" name="screenshot" id="screenshot" checked="checked">
+          <label for="screenshot">Create screenshot</label>
+        </div>
+      </fieldset>
     </form>
   </body>
 </html>

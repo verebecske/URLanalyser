@@ -28,9 +28,9 @@ class APIConnector(Ancestor):
         return "error"
 
     @logs
-    def send_request_to_urlhause(self, url: str) -> str:
+    def send_request_to_urlhaus(self, url: str) -> str:
         if random.randint(0, 100) < 70:
-            with open("datas/urlhause_ans.json", "r") as file:
+            with open("datas/urlhaus_ans.json", "r") as file:
                 return json.load(file)["query_status"]
         return "error"
 

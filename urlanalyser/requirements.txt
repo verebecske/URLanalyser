@@ -1,5 +1,6 @@
 flask
 requests
 selenium
+splinter
 # pylint
 # black

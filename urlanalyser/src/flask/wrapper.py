@@ -1,8 +1,10 @@
 import os
+import datetime
 from flask import Flask, jsonify, request, render_template
 from logging import Logger
 from src.url_analyser import URLAnalyser
 from src.malaut import Malaut
+from splinter import Browser
 
 
 class FlaskAppWrapper:
@@ -27,11 +29,11 @@ class FlaskAppWrapper:
     def add_all_endpoints(self):
         self.app.add_url_rule("/", "index", self.index)
         self.app.add_url_rule("/check", "check", self.check)
-        self.app.add_url_rule("/screenshot", "screenshot", self.screenshot)
+        self.app.add_url_rule("/test", "test_screenshot", self.test_screenshot)
 
     def index(self):
         data = {
-            "message": f"Hey ti",
+            "message": f"Hallo Welt",
             "status": 200,
         }
         return jsonify(data)
@@ -53,12 +55,28 @@ class FlaskAppWrapper:
             }
         return jsonify(data)
 
-    def screenshot(self):
-        os.system("chromium-browser --no-sandbox --headless --disable-gpu --screenshot='./src/flask/static/screenshot.png' https://www.napszemuveg.be")
-        return render_template("image.html")
+    def test_screenshot(self):
+        self.create_screenshot("https://www.thetimenow.com/")
+        return render_template("image.html", date=datetime.datetime.now())
 
-    def send_image(self):
+    def create_screenshot(self, url: str) -> str:
+        path = "./src/flask/static/screenshot.png"
+        os.system(
+            f"chromium-browser --no-sandbox --headless --screenshot='{path}' {url}"
+        )
+        # --window-size=411,2000
+        return path
+
+    def test_splinter(self, url: str) -> str:
+        browser = Browser("chrome", headless=True)
+        browser.visit("https://www.thetimenow.com/")
+        print("HEY")
+        screenshot_path = browser.screenshot(
+            "./src/flask/static/screenshot.png", full=True
+        )
+        return path
+
+    def test_send_image(self):
         with open("yourfile.ext", "rb") as image_file:
             encoded_string = base64.b64encode(image_file.read())
             return {"image": encoded_string, "data": jsonify(return_list)}
-

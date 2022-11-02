@@ -9,6 +9,8 @@ RUN apk upgrade --no-cache --available \
     && apk add --no-cache \
       chromium 
 
+RUN apk add dbus
+
 ENV CHROME_BIN=/usr/bin/chromium-browser \
     CHROME_PATH=/usr/lib/chromium/
 
