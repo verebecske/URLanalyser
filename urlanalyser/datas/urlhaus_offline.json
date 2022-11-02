@@ -6,7 +6,7 @@
     "url_status": "offline",
     "host": "27.38.29.51",
     "date_added": "2022-11-01 22:57:34 UTC",
-    "last_online": None,
+    "last_online": null,
     "threat": "malware_download",
     "blacklists": {
         "spamhaus_dbl": "not listed",
@@ -14,7 +14,7 @@
     },
     "reporter": "tammeto",
     "larted": "false",
-    "takedown_time_seconds": None,
-    "tags": None,
-    "payloads": None
+    "takedown_time_seconds": null,
+    "tags": null,
+    "payloads": null
 }

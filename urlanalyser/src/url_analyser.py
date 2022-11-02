@@ -1,13 +1,14 @@
 from logging import Logger
 import random
 import re
+import json
 from src.api_connector import APIConnector
 from src.ancestor import Ancestor
 
 
 class URLAnalyser(Ancestor):
     logger: Logger
-    debug: bool = True
+    debug: bool
     connector: APIConnector
 
     def logs(func):
@@ -21,7 +22,9 @@ class URLAnalyser(Ancestor):
 
     def __init__(self, config: dict, logger: Logger, connector: APIConnector):
         self.logger = logger
-        self.debug = bool(config["debug"])
+        self.debug = config.getboolean("debug")
+        self.connector = connector
+        logger.error(f"msg: {self.debug}")
 
     @logs
     def is_malware(self, url: str) -> bool:
@@ -53,14 +56,19 @@ class URLAnalyser(Ancestor):
             return result
         return {"error": "error"}
 
+    @logs
     def dummy_collect_infos(self, url: str, sets: str) -> dict:
         if self.valid_url(url):
             result = {}
             if sets[0] == "1":
-                result["urlhaus"] = "UH"
+                result["urlhaus"] = self.open_dummy_file("urlhaus_online.json")
             if sets[1] == "1":
-                result["virustotal"] = "VT"
+                result["virustotal"] = self.open_dummy_file("virustotal_ans.json")
             if sets[2] == "1":
-                result["geoip"] = "GI"
+                result["geoip"] = self.open_dummy_file("geoip_valid.json")
             return result
         return {"error": "error"}
+
+    def open_dummy_file(self, filename: str)-> dict:
+        with open(f"datas/{filename}", "r") as file:
+            return json.load(file)

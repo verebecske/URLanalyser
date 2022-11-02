@@ -76,7 +76,23 @@
 <body>
     <div class="form-inner">
         <h1>Welcome, {{name}}</h1>
-        URL <i>{{url}}</i> is <b>{{result}} </b>
+        URL: {{url}}
+        <table>
+            <thead>
+              <tr>
+                <th>Key</th>
+                <th>Result</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for key, value in result.items() %}
+             <tr>
+                 <td> {{ key }} </td>
+                 <td> {{ value }} </td>
+             </tr>
+            {% endfor %}
+            </tbody>
+          </table>
         <br>
         Checked: {{checkedlist[0]}}, {{checkedlist[1]}}, {{checkedlist[2]}}, {{checkedlist[3]}}
         <br>

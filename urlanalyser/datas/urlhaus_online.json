@@ -6,7 +6,7 @@
     "url_status": "online",
     "host": "115.56.209.44",
     "date_added": "2022-11-01 22:35:08 UTC",
-    "last_online": None,
+    "last_online": null,
     "threat": "malware_download",
     "blacklists": {
         "spamhaus_dbl": "not listed",
@@ -14,7 +14,7 @@
     },
     "reporter": "geenensp",
     "larted": "true",
-    "takedown_time_seconds": None,
+    "takedown_time_seconds": null,
     "tags": [
         "32-bit",
         "elf",
@@ -24,7 +24,7 @@
     "payloads": [
         {
             "firstseen": "2022-11-01",
-            "filename": None,
+            "filename": null,
             "file_type": "elf",
             "response_size": "135784",
             "response_md5": "59ce0baba11893f90527fc951ac69912",
@@ -36,7 +36,7 @@
                 "percent": "68.25",
                 "link": "https://www.virustotal.com/gui/file/4293c1d8574dc87c58360d6bac3daa182f64f7785c9d41da5e0741d2b1817fc7/detection/f-4293c1d"
             },
-            "imphash": None,
+            "imphash": null,
             "ssdeep": "3072:phNlHuBafLeBtfCzpta8xlBIOdVo3/4sxLJ10xioP:p3lOYoaja8xzx/0wsxzSi2",
             "tlsh": "E5D3128BEF36DC1ECF001EB226DA5B9E9C6D756B41CBF0A4B9C1818F13A01C97D52215"
         }

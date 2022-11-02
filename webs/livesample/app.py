@@ -48,13 +48,13 @@ def get_all_malicious_url() -> list:
 
 def write_file_malicious_url() -> None:
     r = requests.get(url="https://urlhaus.abuse.ch/downloads/csv_online/")
-    with open("malicious_urls.csv", "w") as fd:
+    with open("urlhaus_database/malicious_urls.csv", "w") as fd:
         fd.write(r.text)
 
 
 def read_from_file_malicious_url() -> str:
     dict_from_csv = pd.read_csv(
-        "malicious_urls.csv",
+        "urlhaus_database/malicious_urls.csv",
         header=None,
         index_col=0,
         skip_blank_lines=True,
