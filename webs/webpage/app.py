@@ -37,6 +37,7 @@ def home():
             "screenshot": screenshot
         }
         result = ask_urlanalyserapi(url, settings)
+        path = ""
         if screenshot:
             path = get_screenshot(url)
         return render_template("return.html", name=name, url=url, result=result, checkedlist=checkedlist, path=path)
