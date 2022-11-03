@@ -3,16 +3,24 @@ from configparser import ConfigParser
 from src.url_analyser import URLAnalyser
 from src.flask.wrapper import FlaskAppWrapper
 from src.api_connector import APIConnector
+from mocks.api_connector import APIConnector as MockConnector
+from mocks.url_analyser import URLAnalyser as MockAnalyser
 
 
 class ManagerRob:
     logger: Logger
     config: ConfigParser
+    debug: bool
 
     def __init__(self):
         self.logger = getLogger()
         self.set_logger()
         self.get_config()
+
+    def get_config(self) -> None:
+        self.config = ConfigParser()
+        self.config.read("secrets/config.ini")
+        self.debug = self.config["all"].getboolean("debug")
 
     def start_flask(self, analyser) -> None:
         config = self.config["flask"]
@@ -35,13 +43,17 @@ class ManagerRob:
         self.logger.setLevel(DEBUG)
         self.logger.error("Start")
 
-    def get_config(self) -> None:
-        self.config = ConfigParser()
-        self.config.read("secrets/config.ini")
-
     def start(self) -> None:
-        connector = self.get_connector()
-        analyser = self.get_analyser(connector)
+        if self.debug:
+            connector = MockConnector(
+                config=self.config["connector"], logger=self.logger
+            )
+            analyser = MockAnalyser(
+                config=self.config["analyser"], logger=self.logger, connector=connector
+            )
+        else:
+            connector = self.get_connector()
+            analyser = self.get_analyser(connector)
         self.start_flask(analyser)
 
 

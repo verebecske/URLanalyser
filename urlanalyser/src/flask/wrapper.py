@@ -57,6 +57,9 @@ class FlaskAppWrapper:
             }
         return jsonify(data), status
 
+    def get_info(self):
+        pass
+
     def test_screenshot(self):
         self.create_screenshot("https://www.thetimenow.com/")
         return render_template("image.html", date=datetime.datetime.now())
