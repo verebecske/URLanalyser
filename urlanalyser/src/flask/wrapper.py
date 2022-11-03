@@ -61,7 +61,8 @@ class FlaskAppWrapper:
         pass
 
     def test_screenshot(self):
-        self.create_screenshot("https://www.thetimenow.com/")
+        url = "https://www.thetimenow.com/"
+        self.create_screenshot(url)
         return render_template("image.html", date=datetime.datetime.now())
 
     def create_screenshot(self, url: str) -> str:
@@ -72,8 +73,10 @@ class FlaskAppWrapper:
         # --window-size=411,2000
         return path
 
-    def test_send_image(self, url: str) -> str:
-        self.create_screenshot("https://www.thetimenow.com/")
+    def test_send_image(self) -> str:
+        url = request.args.get("url", default="", type=str)
+        url = "https://www.thetimenow.com/"
+        self.create_screenshot(url)
         with open(path, "rb") as image_file:
             encoded_string = base64.b64encode(image_file.read())
             return {"image": encoded_string, "data": jsonify(return_list)}
@@ -85,3 +88,13 @@ class FlaskAppWrapper:
             "./src/flask/static/screenshot.png", full=True
         )
         return path
+
+    def test_index():
+        url = "https://www.thetimenow.com/"
+        path = self.create_screenshot(url)
+        return html('<img src="path/to/your_img.jpg" alt="your image">')
+
+    def test_image_index():
+        image_file = open(file, "rb")
+        encoded_string = base64.b64encode(image_file.read())
+        return encoded_string
