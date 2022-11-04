@@ -25,7 +25,7 @@ def ask_urlanalyserapi(url: str, settings: dict) -> dict:
 
 
 def get_screenshot(url: str) -> str:
-    r = requests.get(f"http://{host}:{port}/image")
+    r = requests.get(f"http://{host}:{port}/image?url={url}")
     path = "./static/screenshot.png"
     with open(path, "wb") as image_file:
         image_file.write(r.content)

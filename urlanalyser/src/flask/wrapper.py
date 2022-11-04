@@ -76,7 +76,8 @@ class FlaskAppWrapper:
         return filename
 
     def test_send_image(self):
-        url = "https://www.thetimenow.com/"
+        # url = "https://www.thetimenow.com/"
+        url = request.args.get("url", default="", type=str)
         path = self.create_screenshot(url)
         # path = "reigen.png"
         try:
