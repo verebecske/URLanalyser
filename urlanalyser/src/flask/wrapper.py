@@ -67,44 +67,21 @@ class FlaskAppWrapper:
         return render_template("image.html", date=datetime.datetime.now())
 
     def create_screenshot(self, url: str) -> str:
-        path = "./src/flask/static/screenshot.png"
+        filename = "screenshot.png"
+        path = "./src/flask/static/" + filename
         os.system(
             f"chromium-browser --no-sandbox --headless --screenshot='{path}' {url}"
         )
         # --window-size=411,2000
-        return path
+        return filename
 
     def test_send_image(self):
         url = "https://www.thetimenow.com/"
-        # path = self.create_screenshot(url)
-        path = "/src/flask/static/reigen.png"
+        path = self.create_screenshot(url)
+        # path = "reigen.png"
         try:
-            return send_from_directory("/src/flask/static/", "reigen.png", as_attachment=True)
+            return send_from_directory(
+                "/src/flask/static/", path, as_attachment=True
+            )
         except Exception as e:
             return str(e)
-
-    def _test_send_image(self) -> str:
-        url = request.args.get("url", default="", type=str)
-        url = "https://www.thetimenow.com/"
-        path = self.create_screenshot(url)
-        with open(path, "rb") as image_file:
-            encoded_string = base64.b64encode(image_file.read())
-            return {"image": encoded_string}
-
-    def test_splinter(self, url: str) -> str:
-        browser = Browser("chrome", headless=True)
-        browser.visit("https://www.thetimenow.com/")
-        screenshot_path = browser.screenshot(
-            "./src/flask/static/screenshot.png", full=True
-        )
-        return path
-
-    def _test_send_image(self):
-        url = "https://www.thetimenow.com/"
-        path = self.create_screenshot(url)
-        return render_template(f'<img src="{path}" alt="your image">')
-
-    def test_image_index():
-        image_file = open(file, "rb")
-        encoded_string = base64.b64encode(image_file.read())
-        return encoded_string
