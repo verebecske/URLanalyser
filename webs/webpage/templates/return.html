@@ -76,6 +76,12 @@
       color: #fff;
     }
 
+  div .midImg{
+    margin: auto;  
+    height: 150px;
+    width: 150px;
+    display: grid;
+  }  
     button:hover {
       background: #5f9900;
     }
@@ -90,7 +96,11 @@
 
 <body>
   <div class="form-inner">
+    {% if name != "" %}
     <h1>Welcome, {{name}}</h1>
+    {% else %}
+    <h1>Welcome!</h1>
+    {% endif %}
     URL: {{url}}
     <table>
       <tbody>
@@ -102,16 +112,10 @@
         {% endfor %}
       </tbody>
     </table>
-    <br>
-    Checked: {{checkedlist[0]}}, {{checkedlist[1]}}, {{checkedlist[2]}}, {{checkedlist[3]}}
-    <br>
-    {% if path != "" %}
-    <div>
-      <img src="{{ url_for('static', filename='meta.jpg') }}" alt="screenshot" style="width:60%">
-    </div>
+    {% if filename != "" %}
+      <img src="{{ url_for('static', filename='screenshot.png') }}" alt="screenshot" class="midImg">
     {% endif %}
-
-    <a href="{{ url_for('home') }}">Home</a>
+      <a href="{{ url_for('home') }}"><button>Home</button></a>
   </div>
 
 </body>

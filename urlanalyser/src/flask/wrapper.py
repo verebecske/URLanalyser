@@ -1,7 +1,8 @@
 import os
 import datetime
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, send_from_directory
 from logging import Logger
+import base64
 from src.url_analyser import URLAnalyser
 from src.malaut import Malaut
 from splinter import Browser
@@ -73,13 +74,22 @@ class FlaskAppWrapper:
         # --window-size=411,2000
         return path
 
-    def test_send_image(self) -> str:
+    def test_send_image(self):
+        url = "https://www.thetimenow.com/"
+        # path = self.create_screenshot(url)
+        path = "/src/flask/static/reigen.png"
+        try:
+            return send_from_directory("/src/flask/static/", "reigen.png", as_attachment=True)
+        except Exception as e:
+            return str(e)
+
+    def _test_send_image(self) -> str:
         url = request.args.get("url", default="", type=str)
         url = "https://www.thetimenow.com/"
-        self.create_screenshot(url)
+        path = self.create_screenshot(url)
         with open(path, "rb") as image_file:
             encoded_string = base64.b64encode(image_file.read())
-            return {"image": encoded_string, "data": jsonify(return_list)}
+            return {"image": encoded_string}
 
     def test_splinter(self, url: str) -> str:
         browser = Browser("chrome", headless=True)
@@ -89,10 +99,10 @@ class FlaskAppWrapper:
         )
         return path
 
-    def test_index():
+    def _test_send_image(self):
         url = "https://www.thetimenow.com/"
         path = self.create_screenshot(url)
-        return html('<img src="path/to/your_img.jpg" alt="your image">')
+        return render_template(f'<img src="{path}" alt="your image">')
 
     def test_image_index():
         image_file = open(file, "rb")

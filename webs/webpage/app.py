@@ -15,10 +15,14 @@ def ask_urlanalyserapi(url: str, settings: dict) -> dict:
     r = requests.get(f"http://{host}:{port}/check?url={url}&sets={est}")
     if r.status_code == 200:
         return r.json()["result"]
-    return {"result": est}
+    return {"result": ""}
 
 def get_screenshot(url: str) -> str:
-    return "static/meta.jpg"
+    r = requests.get(f"http://{host}:{port}/image")
+    path = "./static/screenshot.png"
+    with open(path, "wb") as image_file:
+        image_file.write(r.content)
+    return "screenshot.png"
 
 @app.route("/", methods=["GET", "POST"])
 def home():
@@ -37,16 +41,26 @@ def home():
             "screenshot": screenshot
         }
         result = ask_urlanalyserapi(url, settings)
-        path = ""
+        filename = ""
         if screenshot:
-            path = get_screenshot(url)
-        return render_template("return.html", name=name, url=url, result=result, checkedlist=checkedlist, path=path)
+            filename = get_screenshot(url)
+        return render_template("return.html", name=name, url=url, result=result, filename=filename)
     else:
         return render_template("home.html")
 
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('404.html'), 404
+
+
+@app.route("/test", methods=["GET"])
+def get_image():
+    r = requests.get(f"http://{host}:{port}/image")
+    path = "./static/screenshot.png"
+    with open(path, "wb") as image_file:
+        image_file.write(r.content)
+    return render_template("image.html", path="screenshot.png")
+
 
 
 if __name__ == "__main__":
