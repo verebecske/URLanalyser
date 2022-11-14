@@ -2,6 +2,7 @@ from logging import Logger, getLogger
 import types
 import functools
 
+
 class LoggerMeta(type):
     logger: Logger
 
@@ -9,10 +10,11 @@ class LoggerMeta(type):
     def _decorator(fun, logger):
         @functools.wraps(fun)
         def wrapper(*args, **kwargs):
-            logger.error(f"Start {fun.__name__}, {args}, {kwargs}")
+            logger.debug(f"Start {fun.__name__} - {args} - {kwargs}")
             res = fun(*args, **kwargs)
-            logger.error(f"Stop {fun.__name__}, {args}, {kwargs}")
+            logger.debug(f"Stop {fun.__name__} - {args} - {kwargs}")
             return res
+
         return wrapper
 
     def __new__(self, name, bases, attrs):
@@ -25,7 +27,6 @@ class LoggerMeta(type):
 
     def get_logger():
         logger = getLogger()
-        logger.error("msg")
         return logger
 
 
@@ -36,8 +37,8 @@ class Ancestor(metaclass=LoggerMeta):
     def working(self):
         print("Hey")
 
-    def working2(self):
-        print("ti")
+    def working2(self, msg):
+        print(f"ti: {msg}")
 
     def __init__(self, config: dict):
         self.config = config
@@ -47,9 +48,3 @@ class Child(Ancestor):
     def working(self):
         print("Hey ti")
 
-
-config = {}
-anc = Ancestor(config)
-ch = Child(config)
-ch.working()
-anc.working()

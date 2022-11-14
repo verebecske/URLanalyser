@@ -30,8 +30,7 @@ class FlaskAppWrapper:
     def add_all_endpoints(self):
         self.app.add_url_rule("/", "index", self.index)
         self.app.add_url_rule("/check", "check", self.check)
-        self.app.add_url_rule("/test", "test_screenshot", self.test_screenshot)
-        self.app.add_url_rule("/image", "test_send_image", self.test_send_image)
+        self.app.add_url_rule("/image", "get_screenshot", self.get_screenshot)
 
     def index(self):
         data = {
@@ -61,11 +60,6 @@ class FlaskAppWrapper:
     def get_info(self):
         pass
 
-    def test_screenshot(self):
-        url = "https://www.thetimenow.com/"
-        self.create_screenshot(url)
-        return render_template("image.html", date=datetime.datetime.now())
-
     def create_screenshot(self, url: str) -> str:
         filename = "screenshot.png"
         path = "./src/flask/static/" + filename
@@ -75,14 +69,15 @@ class FlaskAppWrapper:
         # --window-size=411,2000
         return filename
 
-    def test_send_image(self):
+    def get_screenshot(self):
         # url = "https://www.thetimenow.com/"
         url = request.args.get("url", default="", type=str)
-        path = self.create_screenshot(url)
-        # path = "reigen.png"
-        try:
-            return send_from_directory(
-                "/src/flask/static/", path, as_attachment=True
-            )
-        except Exception as e:
-            return str(e)
+        if self.analyser.valid_url(url):
+            path = self.create_screenshot(url)
+            # path = "reigen.png"
+            try:
+                return send_from_directory("/src/flask/static/", path, as_attachment=True)
+            except Exception as e:
+                return str(e)
+        else:
+            return jsonify({"error": "Not valid url"}), 404
