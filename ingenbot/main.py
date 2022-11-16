@@ -1,6 +1,6 @@
 import logging
-from src.discord import DBot
 from configparser import ConfigParser
+from src.discord import DBot
 
 
 def get_logger():
@@ -26,5 +26,4 @@ def get_config():
 
 
 if __name__ == "__main__":
-
     start_discord()

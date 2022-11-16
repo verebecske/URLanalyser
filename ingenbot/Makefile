@@ -1,7 +1,5 @@
-build:
-	sudo docker build . -t ingenbot
-
 run:
+	sudo docker build . -t ingenbot
 	sudo docker run --rm -it ingenbot
 
 lint:
