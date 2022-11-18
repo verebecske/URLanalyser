@@ -72,12 +72,12 @@ class FlaskAppWrapper:
     def get_screenshot(self):
         # url = "https://www.thetimenow.com/"
         url = request.args.get("url", default="", type=str)
-        if self.analyser.valid_url(url):
-            path = self.create_screenshot(url)
-            # path = "reigen.png"
-            try:
-                return send_from_directory("/src/flask/static/", path, as_attachment=True)
-            except Exception as e:
-                return str(e)
-        else:
-            return jsonify({"error": "Not valid url"}), 404
+        # if self.analyser.valid_url(url):
+        path = self.create_screenshot(url)
+        # path = "reigen.png"
+        try:
+            return send_from_directory("/src/flask/static/", path, as_attachment=True)
+        except Exception as e:
+            return str(e)
+        # else:
+        #     return jsonify({"error": "Not valid url"}), 404

@@ -10,10 +10,12 @@ RUN apk upgrade --no-cache --available \
       chromium 
 
 RUN apk add dbus
+RUN export DBUS_SYSTEM_BUS_ADDRESS=unix:path=/host/run/dbus/system_bus_socket
 
 ENV CHROME_BIN=/usr/bin/chromium-browser \
     CHROME_PATH=/usr/lib/chromium/
 
 COPY . .
+
 CMD [ "python", "main.py"]
 
