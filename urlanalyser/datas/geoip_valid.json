@@ -1,0 +1,38 @@
+{
+    "borders": "CA,MX",
+    "calling_code": "1",
+    "capital": "Washington D.C.",
+    "city": "Ashburn",
+    "connection": {
+        "asn": 2635,
+        "domain": "tumblr.com",
+        "isp": "Automattic, Inc",
+        "org": "TUMBLR, INC."
+    },
+    "continent": "North America",
+    "continent_code": "NA",
+    "country": "United States",
+    "country_code": "US",
+    "flag": {
+        "emoji": "🇺🇸",
+        "emoji_unicode": "U+1F1FA U+1F1F8",
+        "img": "https://cdn.ipwhois.io/flags/us.svg"
+    },
+    "ip": "66.6.44.4",
+    "is_eu": false,
+    "latitude": 39.0437567,
+    "longitude": -77.4874416,
+    "postal": "20147",
+    "region": "Virginia",
+    "region_code": "VA",
+    "success": true,
+    "timezone": {
+        "abbr": "EDT",
+        "current_time": "2022-11-02T17:41:25-04:00",
+        "id": "America/New_York",
+        "is_dst": true,
+        "offset": -14400,
+        "utc": "-04:00"
+    },
+    "type": "IPv4"
+}

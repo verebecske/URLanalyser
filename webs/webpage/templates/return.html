@@ -1,16 +1,122 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>URLAnalyser</title>
-    </head>
+
+<head>
+  <title>URLAnalyser</title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      min-height: 100vh;
+      padding: 0;
+      margin: 0;
+      font-family: Roboto, Arial, sans-serif;
+      font-size: 14px;
+      color: #666;
+    }
+
+    input,
+    textarea {
+      outline: none;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      /* background: #ffffff; */
+    }
+
+    h1 {
+      margin-top: 0;
+      font-weight: 500;
+    }
+
+    div {
+      position: relative;
+      width: 80%;
+      border-radius: 30px;
+      background: rgba(130, 161, 19, 0.671);
+    }
+
+    .form-inner {
+      padding: 40px;
+    }
+
+    .form-inner h3,
+    .form-inner textarea {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      margin-bottom: 10px;
+      border: none;
+      border-radius: 20px;
+      background: #e4e8d0;
+    }
+
+    .form-inner textarea {
+      resize: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 20px;
+      border-radius: 20px;
+      border: none;
+      border-bottom: 4px solid #3e4f24;
+      background: #5a7233;
+      font-size: 16px;
+      font-weight: 400;
+      color: #fff;
+    }
+
+  div .midImg{
+    margin: auto;  
+    height: 450px;
+    width: 600px;
+    display: grid;
+  }  
+    button:hover {
+      background: #5f9900;
+    }
+
+    @media (min-width: 568px) {
+      div {
+        width: 40%;
+      }
+    }
+  </style>
+</head>
 
 <body>
-    <div>
-        <h3>Welcome, {{name}}</h3>
-        URL <i>{{url}}</i> is <b>{{result}} </b>
-        <br>
-        <a href="{{ url_for('home') }}">Home</a>
-    </div>
+  <div class="form-inner">
+    {% if name != "" %}
+    <h1>Welcome, {{name}}</h1>
+    {% else %}
+    <h1>Welcome!</h1>
+    {% endif %}
+    URL: {{url}}
+    <table>
+      <tbody>
+        {% for key, value in result.items() %}
+        <tr>
+          <td> <b>{{ key }} </b> </td>
+          <td> {{ value }} </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if filename != "" %}
+      <img src="{{ url_for('static', filename='screenshot.png') }}" alt="screenshot" class="midImg">
+    {% endif %}
+      <a href="{{ url_for('home') }}"><button>Home</button></a>
+  </div>
 
 </body>
 

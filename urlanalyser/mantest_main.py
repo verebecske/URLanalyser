@@ -18,12 +18,12 @@ class ManTestMain(ManagerRob):
         ans = analyser.is_malware("test")
         self.logger.error(ans)
 
-    def test_urlhause(self) -> None:
+    def test_urlhaus(self) -> None:
         connector = self.get_connector()
-        ans = connector.send_request_to_urlhause("http://www.napszemuveg.be")
+        ans = connector.send_request_to_urlhaus("www.example.com")
         self.logger.error(ans)
 
 
 if __name__ == "__main__":
     rob = ManTestMain()
-    rob.test_urlhause()
+    rob.test_urlhaus()

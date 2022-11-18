@@ -8,7 +8,7 @@ Mai világunkban az interneten számos módon oszthatnak meg velünk különböz
 A hallgató feladata egy olyan rendszer megtervezése és implementálása ami alkalmas arra hogy könnyen integerálható legyen más megoldásokba széles körben, és a fő feladata annak ellenőrzése hogy egy URL nem mutat-e káros tartalomra, illetve további vizsgálatok elvégzésre képes. Ehhez hozzon létre egy backend-et ami ezt ellenőrizi továbbá képes további információkat összegyűjteni és visszaadni az URL-ről, például ha egy aktív weboldalról van szó:
 - a domain származási országa
 - mióta aktív az oldal
-- ismert-e más hasonlóan működő rendszerek által, mint a virustotal vagy az urlhause
+- ismert-e más hasonlóan működő rendszerek által, mint a virustotal vagy az urlhaus
 - az oldal előnézete
 
 ### További követelmények
@@ -29,7 +29,7 @@ In today's world, there are many ways in which URLs can be shared on the interne
 The student will be responsible for designing and implementing a system that can be easily integrated with other solutions on a large scale, and the main task is to check that a URL does not point to harmful content and to perform further tests. To do this, create a backend that checks this and is able to collect and return additional information about the URL, for example if it is an active website:
 - the country of origin of the domain
 - how long the site has been active
-- whether it is known by other similar systems such as virustotal or urlhause
+- whether it is known by other similar systems such as virustotal or urlhaus
 - the preview of the page
 
 ### Additional requirements
