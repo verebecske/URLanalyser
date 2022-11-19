@@ -3,9 +3,9 @@ import os
 from flask import Flask, request, redirect
 import json
 import random
-import pandas as pd
 
 app = Flask(__name__)
+
 
 @app.route("/now")
 def home():
@@ -53,19 +53,28 @@ def write_file_malicious_url() -> None:
 
 
 def read_from_file_malicious_url() -> str:
-    dict_from_csv = pd.read_csv(
-        "urlhaus_database/malicious_urls.csv",
-        header=None,
-        index_col=0,
-        skip_blank_lines=True,
-        comment="#",
-    )
-    return dict_from_csv[2].sample().iloc[0]
+    path = "urlhaus_database/csv.csv"
+    record = {}
+    all_url = []
+    with open(path) as file:
+        for line in file:
+            if not line.startswith("#") and not line == "":
+                datas = line.split('","')
+                id,dateadded,url,url_status,last_online,threat,tags,urlhaus_link,reporter = datas
+                record[id.replace('"', "")] = {
+                    "id": id.replace('"', ""),
+                    "url": url,
+                    "threat": threat,
+                    "tags": tags,
+                }
+                all_url.append(url)
+    return all_url
 
 
 def get_malicious_url_from_file() -> str:
-    malur = read_from_file_malicious_url()
-    return str(malur)
+    all_url = read_from_file_malicious_url()
+    rand = random.randint(0, len(all_url))
+    return all_url[rand]
 
 
 def get_malicious_url() -> str:
