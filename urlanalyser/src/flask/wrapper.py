@@ -1,5 +1,6 @@
 import os
 import datetime
+import requests
 from flask import Flask, jsonify, request, render_template, send_from_directory
 from logging import Logger
 import base64
@@ -31,6 +32,7 @@ class FlaskAppWrapper:
         self.app.add_url_rule("/", "index", self.index)
         self.app.add_url_rule("/check", "check", self.check)
         self.app.add_url_rule("/image", "get_screenshot", self.get_screenshot)
+        self.app.add_url_rule("/get_repath", "get_repath", self.get_repath)
 
     def index(self):
         data = {
@@ -81,3 +83,16 @@ class FlaskAppWrapper:
             return str(e)
         # else:
         #     return jsonify({"error": "Not valid url"}), 404
+
+    def get_repath(self):
+        path_list = []
+        url = request.args.get("url", default="", type=str)
+        is_next = True
+        while is_next:
+            resp = requests.get(url)
+            if is_next:
+                is_next = False
+                print(resp.history)
+                data = {"status_code": resp.status_code, "redirect": resp.is_redirect, "history": str(resp.history)}
+                path_list.append(data)
+        return jsonify({"path": path_list})
