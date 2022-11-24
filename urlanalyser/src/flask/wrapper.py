@@ -2,21 +2,19 @@ import os
 import datetime
 import requests
 from flask import Flask, jsonify, request, render_template, send_from_directory
-from logging import Logger
 import base64
 from src.url_analyser import URLAnalyser
 from src.malaut import Malaut
+from src.ancestor import Ancestor
 from splinter import Browser
 
 
-class FlaskAppWrapper:
-    logger: Logger
+class FlaskAppWrapper(Ancestor):
     analyser: URLAnalyser
     debug: bool
     config: dict
 
-    def __init__(self, config: dict, logger: Logger, analyser: URLAnalyser):
-        self.logger = logger
+    def __init__(self, config: dict, analyser: URLAnalyser):
         self.analyser = analyser
         self.debug = bool(config["debug"])
         self.config = config
@@ -62,37 +60,15 @@ class FlaskAppWrapper:
     def get_info(self):
         pass
 
-    def create_screenshot(self, url: str) -> str:
-        filename = "screenshot.png"
-        path = "./src/flask/static/" + filename
-        os.system(
-            f"chromium-browser --no-sandbox --headless --screenshot='{path}' {url}"
-        )
-        # --window-size=411,2000
-        return filename
-
     def get_screenshot(self):
-        # url = "https://www.thetimenow.com/"
         url = request.args.get("url", default="", type=str)
-        # if self.analyser.valid_url(url):
-        path = self.create_screenshot(url)
-        # path = "reigen.png"
+        path = self.analyser.create_screenshot(url)
         try:
             return send_from_directory("/src/flask/static/", path, as_attachment=True)
         except Exception as e:
-            return str(e)
-        # else:
-        #     return jsonify({"error": "Not valid url"}), 404
+            return jsonify({"error": str(e)}), 404
 
     def get_repath(self):
-        path_list = []
         url = request.args.get("url", default="", type=str)
-        is_next = True
-        while is_next:
-            resp = requests.get(url)
-            if is_next:
-                is_next = False
-                print(resp.history)
-                data = {"status_code": resp.status_code, "redirect": resp.is_redirect, "history": str(resp.history)}
-                path_list.append(data)
+        path_list = self.analyser.get_repath(url)
         return jsonify({"path": path_list})

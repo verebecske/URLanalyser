@@ -1,4 +1,3 @@
-import json
 from src.url_analyser import URLAnalyser as Analyser
 
 
