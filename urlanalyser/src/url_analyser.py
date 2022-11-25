@@ -1,4 +1,3 @@
-from logging import Logger
 import random
 import re
 import json
@@ -35,43 +34,45 @@ class URLAnalyser(Ancestor):
             return result
         return {"error": "error"}
 
+    def create_valid_url(self, url: str) -> str:
+        if not valid_url(url):
+            raise ValueError("not valid url")
+        if not url.startswith("http"):
+            url = "http://" + url
+        return url
+
     def create_screenshot(self, url: str) -> str:
         filename = "screenshot.png"
         path = "./src/flask/static/" + filename
+        url = self.create_valid_url(url)
+        resp = requests.get(url)
         os.system(
-            f"chromium-browser --no-sandbox --headless --screenshot='{path}' {url}"
+            f"chromium-browser --no-sandbox --headless --screenshot='{path}' {resp.url}"
         )
         # --window-size=411,2000
         return filename
 
     def get_repath(self, url):
         path_list = []
-        if not url.startswith("http"):
-            url = "http://" + url
-        is_next = True
-        while is_next:
-            resp = requests.get(url)
-            if is_next:
-                is_next = False
-                print(resp.history)
-                data = {
-                    "status_code": resp.status_code,
-                    "url": resp.url,
-                    "cookies": str(resp.cookies),
-                    "redirect": resp.is_redirect,
-                    "headers": str(resp.headers),
-                    "history": [],
+        url = self.create_valid_url(url)
+        resp = requests.get(url)
+        data = {
+            "status_code": resp.status_code,
+            "url": resp.url,
+            "cookies": str(resp.cookies),
+            "redirect": resp.is_redirect,
+            "headers": str(resp.headers),
+            "history": [],
+        }
+        for h in resp.history:
+            data["history"].append(
+                {
+                    "status_code": h.status_code,
+                    "url": h.url,
+                    "cookies": str(h.cookies),
+                    "redirect": h.is_redirect,
+                    "headers": str(h.headers),
                 }
-                for h in resp.history:
-                    data["history"].append(
-                        {
-                            "status_code": h.status_code,
-                            "url": h.url,
-                            "cookies": str(h.cookies),
-                            "redirect": h.is_redirect,
-                            "headers": str(h.headers),
-                        }
-                    )
-
-                path_list.append(data)
+            )
+        path_list.append(data)
         return path_list

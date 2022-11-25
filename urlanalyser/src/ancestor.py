@@ -34,8 +34,4 @@ class LoggerMeta(type):
 
 
 class Ancestor(metaclass=LoggerMeta):
-    config: dict
-    debug: bool = True
-
-    def __init__(self, config: dict):
-        self.config = config
+    pass
