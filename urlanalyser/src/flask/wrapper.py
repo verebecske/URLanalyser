@@ -15,6 +15,7 @@ class FlaskAppWrapper(Ancestor):
     config: dict
 
     def __init__(self, config: dict, analyser: URLAnalyser):
+        super().__init__()
         self.analyser = analyser
         self.debug = bool(config["debug"])
         self.config = config
@@ -31,6 +32,14 @@ class FlaskAppWrapper(Ancestor):
         self.app.add_url_rule("/check", "check", self.check)
         self.app.add_url_rule("/image", "get_screenshot", self.get_screenshot)
         self.app.add_url_rule("/get_repath", "get_repath", self.get_repath)
+        self.app.add_url_rule("/test_post", "test_post", self.test_post, methods=["GET", "POST"])
+
+    def test_post(self):
+        if request.method == "POST":
+            hello = request.json
+            return jsonify({"request": "POST", "hello": hello["hello"]})
+        else:
+            return jsonify({"request": "GET"})
 
     def index(self):
         data = {

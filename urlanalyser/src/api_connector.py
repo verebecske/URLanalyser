@@ -9,6 +9,7 @@ class APIConnector(Ancestor):
     config: dict
 
     def __init__(self, config: dict):
+        super().__init__()
         self.config = config
 
     def send_request_to_virustotal(self, url: str) -> dict:
