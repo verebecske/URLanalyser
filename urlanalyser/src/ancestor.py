@@ -1,20 +1,37 @@
-from logging import Logger
+import logging
+import functools
 
 
-class Ancestor:
-    logger: Logger
-    config: dict
-    debug: bool = True
+class LoggerMeta(type):
+    logger: logging.Logger
 
-    def logs(func):
-        def wrapper(self, *args, **kwargs):
-            self.logger.error(f"Start {func.__name__}")
-            ret = func(self, *args, **kwargs)
-            self.logger.error(f"Stop {func.__name__}")
-            return ret
+    @staticmethod
+    def _decorator(fun, logger):
+        @functools.wraps(fun)
+        def wrapper(*args, **kwargs):
+            logger.debug(f"Start {fun.__name__} - {args} - {kwargs}")
+            res = fun(*args, **kwargs)
+            logger.debug(f"Stop {fun.__name__} - {args} - {kwargs}")
+            return res
 
         return wrapper
 
-    def __init__(self, config: dict, logger: Logger):
-        self.logger = logger
-        self.debug = bool(config["debug"])
+    def __new__(self, name, bases, attrs):
+        logger = self.get_logger()
+        for key in attrs.keys():
+            if callable(attrs[key]):
+                fun = attrs[key]
+                attrs[key] = LoggerMeta._decorator(fun, logger)
+        return super().__new__(self, name, bases, attrs)
+
+    def get_logger():
+        logging.basicConfig(
+            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+            level=logging.INFO,
+        )
+        logger = logging.getLogger(__name__)
+        return logger
+
+
+class Ancestor(metaclass=LoggerMeta):
+    pass

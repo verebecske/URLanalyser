@@ -1,4 +1,3 @@
-from logging import Logger
 import requests
 import socket
 import re
@@ -7,23 +6,11 @@ from src.ancestor import Ancestor
 
 
 class APIConnector(Ancestor):
-    logger: Logger
     config: dict
 
-    def logs(func):
-        def wrapper(self, *args, **kwargs):
-            self.logger.error(f"Start {func.__name__}")
-            ret = func(self, *args, **kwargs)
-            self.logger.error(f"Stop {func.__name__}")
-            return ret
-
-        return wrapper
-
-    def __init__(self, config: dict, logger: Logger):
-        self.logger = logger
+    def __init__(self, config: dict):
         self.config = config
 
-    @logs
     def send_request_to_virustotal(self, url: str) -> dict:
         url_id = base64.urlsafe_b64encode(url.encode()).decode().strip("=")
         api_key = self.config["virustotal_api_key"]
@@ -36,7 +23,6 @@ class APIConnector(Ancestor):
         else:
             return {"error": response.text}
 
-    @logs
     def send_request_to_urlhaus(self, url: str) -> dict:
         data = {"url": url}
         response = requests.post(url="https://urlhaus-api.abuse.ch/v1/url/", data=data)
@@ -58,7 +44,6 @@ class APIConnector(Ancestor):
         ip_addr = socket.gethostbyname(domain)
         return ip_addr
 
-    @logs
     def get_geoip(self, url: str) -> dict:
         ip_addr = self.get_ip(url)
         response = requests.get(f"http://ipwho.is/{ip_addr}")

@@ -1,20 +1,17 @@
-from logging import Logger, getLogger, DEBUG
 from configparser import ConfigParser
 from src.url_analyser import URLAnalyser
 from src.flask.wrapper import FlaskAppWrapper
 from src.api_connector import APIConnector
+from src.ancestor import Ancestor
 from mocks.api_connector import APIConnector as MockConnector
 from mocks.url_analyser import URLAnalyser as MockAnalyser
 
 
-class ManagerRob:
-    logger: Logger
+class ManagerRob(Ancestor):
     config: ConfigParser
     debug: bool
 
     def __init__(self):
-        self.logger = getLogger()
-        self.set_logger()
         self.get_config()
 
     def get_config(self) -> None:
@@ -24,36 +21,16 @@ class ManagerRob:
 
     def start_flask(self, analyser) -> None:
         config = self.config["flask"]
-        flaskwrapper = FlaskAppWrapper(
-            config=config, logger=self.logger, analyser=analyser
-        )
+        flaskwrapper = FlaskAppWrapper(config=config, analyser=analyser)
         flaskwrapper.run()
-
-    def get_connector(self) -> APIConnector:
-        config = self.config["connector"]
-        connector = APIConnector(config=config, logger=self.logger)
-        return connector
-
-    def get_analyser(self, connector: APIConnector) -> URLAnalyser:
-        config = self.config["analyser"]
-        analyser = URLAnalyser(config=config, logger=self.logger, connector=connector)
-        return analyser
-
-    def set_logger(self) -> None:
-        self.logger.setLevel(DEBUG)
-        self.logger.error("Start")
 
     def start(self) -> None:
         if self.debug:
-            connector = MockConnector(
-                config=self.config["connector"], logger=self.logger
-            )
-            analyser = MockAnalyser(
-                config=self.config["analyser"], logger=self.logger, connector=connector
-            )
+            connector = MockConnector(config=self.config["connector"])
+            analyser = MockAnalyser(config=self.config["analyser"], connector=connector)
         else:
-            connector = self.get_connector()
-            analyser = self.get_analyser(connector)
+            connector = Connector(config=self.config["connector"])
+            analyser = Analyser(config=self.config["analyser"], connector=connector)
         self.start_flask(analyser)
 
 
