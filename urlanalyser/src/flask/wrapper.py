@@ -29,17 +29,34 @@ class FlaskAppWrapper(Ancestor):
 
     def add_all_endpoints(self):
         self.app.add_url_rule("/", "index", self.index)
-        self.app.add_url_rule("/check", "check", self.check)
-        self.app.add_url_rule("/image", "get_screenshot", self.get_screenshot)
-        self.app.add_url_rule("/get_repath", "get_repath", self.get_repath)
-        self.app.add_url_rule("/test_post", "test_post", self.test_post, methods=["GET", "POST"])
+        self.app.add_url_rule("/check", "check", self.check, methods=["GET", "POST"])
+        self.app.add_url_rule(
+            "/image", "get_screenshot", self.get_screenshot, methods=["GET"]
+        )
+        self.app.add_url_rule(
+            "/get_repath", "get_repath", self.get_repath, methods=["GET"]
+        )
+        self.app.add_url_rule(
+            "/get_infos", "get_infos", self.get_infos, methods=["POST"]
+        )
 
-    def test_post(self):
+    def get_infos(self):
         if request.method == "POST":
-            hello = request.json
-            return jsonify({"request": "POST", "hello": hello["hello"]})
-        else:
-            return jsonify({"request": "GET"})
+            datas = dict(request.get_json())
+            status = 200
+            if datas["url"] == "":
+                status = 400
+                data = {
+                    "message": "Bad request!",
+                    "Error": "Unexpected error.",
+                }
+            else:
+                result = self.analyser.collect_infos(url, sets)
+                data = {
+                    "url": url,
+                    "result": result,
+                }
+            return jsonify(data), status
 
     def index(self):
         data = {
@@ -65,9 +82,6 @@ class FlaskAppWrapper(Ancestor):
                 "result": result,
             }
         return jsonify(data), status
-
-    def get_info(self):
-        pass
 
     def get_screenshot(self):
         url = request.args.get("url", default="", type=str)
