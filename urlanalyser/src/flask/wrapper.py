@@ -1,12 +1,7 @@
-import os
-import datetime
-import requests
-from flask import Flask, jsonify, request, render_template, send_from_directory
-import base64
+from flask import Flask, jsonify, request, send_from_directory
 from src.url_analyser import URLAnalyser
 from src.malaut import Malaut
 from src.ancestor import Ancestor
-from splinter import Browser
 
 
 class FlaskAppWrapper(Ancestor):

@@ -1,9 +1,4 @@
-import random
 import re
-import json
-import os
-import datetime
-import requests
 from src.api_connector import APIConnector
 from src.ancestor import Ancestor
 from src.malaut import Malaut

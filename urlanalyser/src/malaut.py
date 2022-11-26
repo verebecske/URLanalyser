@@ -1,7 +1,6 @@
 import requests
 import os
 from selenium import webdriver
-from logging import Logger
 from src.ancestor import Ancestor
 
 
