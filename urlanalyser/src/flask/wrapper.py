@@ -46,7 +46,7 @@ class FlaskAppWrapper(Ancestor):
                     "Error": "Unexpected error.",
                 }
             else:
-                result = self.analyser.collect_infos(url, sets)
+                result = self.analyser.collect_infos(datas["url"], datas)
                 data = {
                     "url": url,
                     "result": result,
@@ -71,7 +71,14 @@ class FlaskAppWrapper(Ancestor):
                 "Error": "Unexpected error.",
             }
         else:
-            result = self.analyser.collect_infos(url, sets)
+            datas = {}
+            if sets[0] == "1":
+                datas["urlhaus"] = True
+            if sets[1] == "1":
+                datas["virustotal"] = True
+            if sets[2] == "1":
+                datas["geoip"] = True
+            result = self.analyser.collect_infos(url, datas)
             data = {
                 "url": url,
                 "result": result,

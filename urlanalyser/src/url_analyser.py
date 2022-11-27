@@ -20,17 +20,23 @@ class URLAnalyser(Ancestor):
         res = re.match(pattern, url)
         return res != None
 
-    def collect_infos(self, url: str, sets: str) -> dict:
-        if self.valid_url(url):
+    def collect_infos(self, url: str, datas: dict) -> dict:
+        try:
             result = {}
-            if sets[0] == "1":
-                result["urlhaus"] = self.connector.send_request_to_urlhaus(url)
-            if sets[1] == "1":
-                result["virustotal"] = self.connector.send_request_to_virustotal(url)
-            if sets[2] == "1":
-                result["geoip"] = self.connector.get_geoip(url)
-            return result
-        return {"error": "error"}
+            if self.valid_url(url):
+                if "urlhaus" in datas.keys() and datas["urlhaus"] == True:
+                    result["urlhaus"] = self.connector.send_request_to_urlhaus(url)
+                if "virustotal" in datas.keys() and datas["virustotal"] == True:
+                    result["virustotal"] = self.connector.send_request_to_virustotal(
+                        url
+                    )
+                if "geoip" in datas.keys() and datas["geoip"] == True:
+                    result["geoip"] = self.connector.get_geoip(url)
+                if "history" in datas.keys() and datas["history"] == True:
+                    result["history"] = self.malaut.get_repath(url)
+                return result
+        except Exception as e:
+            return {"error": str(e)}
 
     def create_valid_url(self, url: str) -> str:
         if not valid_url(url):
