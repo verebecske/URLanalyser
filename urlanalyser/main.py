@@ -36,9 +36,9 @@ class ManagerRob(Ancestor):
                 config=self.config["analyser"], connector=connector, malaut=malaut
             )
         else:
-            connector = Connector(config=self.config["connector"])
+            connector = APIConnector(config=self.config["connector"])
             malaut = Malaut(config=self.config["malaut"])
-            analyser = Analyser(
+            analyser = URLAnalyser(
                 config=self.config["analyser"], connector=connector, malaut=malaut
             )
         self.start_flask(analyser)
