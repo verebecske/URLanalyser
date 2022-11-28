@@ -2,16 +2,16 @@ from discord.ext import tasks, commands
 import discord
 from logging import Logger
 from src.soul import Soul, MaliciousContentError
+from src.ancestor import Ancestor
 import time
 
 
-class DBot:
+class DBot(Ancestor):
     mytoken: str
-    logger: Logger
     intents: discord.Intents
 
-    def __init__(self, config: dict, logger: Logger) -> None:
-        self.logger = logger
+    def __init__(self, config: dict) -> None:
+        super().__init__()
         self.mytoken = config["token"]
 
     def set_intents(self) -> None:
@@ -93,13 +93,12 @@ class DiscordClient(commands.Bot, Soul):
 
     def _set_log_channel(self):
         for channel in self.get_all_channels():
-            if channel.name == "log-ingenbot":
+            if channel.guild == "IngenServer" and channel.name == "log-ingenbot":
                 break
         self.log_channel = channel
-    
+
     async def _send_file(self, path, channel):
         path = "./images/screenshot.png"
         with open(path, "rb") as fh:
             f = discord.File(fh, filename=path)
         await channel.send(file=f)
-

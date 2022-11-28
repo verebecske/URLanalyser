@@ -20,7 +20,7 @@ class APIConnector(Ancestor):
             f"https://www.virustotal.com/api/v3/urls/{url_id}", headers=headers
         )
         if response.status_code == 200:
-            return response.json()["attributes"]["last_analysis_stats"]
+            return response.json()["data"]["attributes"]["last_analysis_stats"]
         else:
             return {"error": response.text}
 
@@ -53,3 +53,13 @@ class APIConnector(Ancestor):
             return ipwhois["country"]
         else:
             return {"error": response.text}
+
+    def create_screenshot(self, url: str) -> str:
+        filename = "screenshot.png"
+        path = "./src/flask/static/" + filename
+        url = self.create_valid_url(url)
+        resp = requests.get(url)
+        os.system(
+            f"chromium-browser --no-sandbox --headless --screenshot='{path}' {resp.url}"
+        )
+        # --window-size=41

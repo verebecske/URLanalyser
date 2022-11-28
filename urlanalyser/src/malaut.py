@@ -9,20 +9,20 @@ class Malaut(Ancestor):
         super().__init__()
         self.config = config
 
-    def create_screenshot(self, url: str) -> str:
-        filename = "screenshot.png"
-        path = "./src/flask/static/" + filename
-        url = self.create_valid_url(url)
+    def create_screenshot(self, url: str, path: str) -> None:
         resp = requests.get(url)
-        os.system(
-            f"chromium-browser --no-sandbox --headless --screenshot='{path}' {resp.url}"
-        )
-        # --window-size=411,2000
-        return filename
+        try:
+            os.system(
+                f"chromium-browser --no-sandbox --headless --screenshot='{path}' {resp.url}"
+            )
+            # --window-size=411,2000
+            return
+        except Exception as e:
+            self.logger.error(str(e))
+            raise e
 
     def get_repath(self, url):
         path_list = []
-        url = self.create_valid_url(url)
         resp = requests.get(url)
         data = {
             "status_code": resp.status_code,

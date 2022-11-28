@@ -55,8 +55,13 @@ class Soul(ABC):
         return is_malicious
 
     def inspect_url(self, url: str) -> bool:
+        host = "urlanalyser-urlanalyser-1"
+        port = 5000
         mock_list = ["reallykaros.io", "virus.hu", "virus.com"]
-        return url in mock_list
+        A = url in mock_list
+        r = requests.get(f"http://{host}:{port}/check?url={url}")
+        B = r.json()["result"]
+        return A or B
 
     async def read_direct_message(self, message) -> str:
         req: str = message["content"]
@@ -77,7 +82,13 @@ class Soul(ABC):
 
     async def send_to_analyser(self, urls: list, channel) -> str:
         for url in urls:
-            settings = {"urlhaus": True, "virustotal": True, "geoip": True}
+            settings = {
+                "url": url,
+                "urlhaus": True,
+                "virustotal": True,
+                "geoip": True,
+                "history": True,
+            }
             answer = self.ask_urlanalyser_api(url, settings)
             print("ANS:", answer)
             await self._send_answer(str(answer), channel)
@@ -85,19 +96,10 @@ class Soul(ABC):
             await self._send_file(image, channel)
         return ""
 
-    def encode_settings(self, settings: dict) -> str:
-        res = [
-            int(settings["urlhaus"]),
-            int(settings["virustotal"]),
-            int(settings["geoip"]),
-        ]
-        return "".join([str(i) for i in res])
-
     def ask_urlanalyser_api(self, url: str, settings: dict) -> dict:
         host = "urlanalyser-urlanalyser-1"
         port = 5000
-        est = self.encode_settings(settings)
-        r = requests.get(f"http://{host}:{port}/check?url={url}&sets={est}")
+        r = requests.post(f"http://{host}:{port}/get_infos", json=settings)
         if r.status_code == 200:
             return r.json()["result"]
         return {"result": ""}

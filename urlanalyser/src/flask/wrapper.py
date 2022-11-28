@@ -36,10 +36,12 @@ class FlaskAppWrapper(Ancestor):
         )
 
     def get_infos(self):
-        if request.method == "POST":
-            datas = dict(request.get_json())
+        self.logger.error("HEY")
+        try:
+            self.logger.error(request.json)
+            datas = request.json
             status = 200
-            if datas["url"] == "":
+            if "url" not in datas or datas["url"] == "":
                 status = 400
                 data = {
                     "message": "Bad request!",
@@ -48,10 +50,13 @@ class FlaskAppWrapper(Ancestor):
             else:
                 result = self.analyser.collect_infos(datas["url"], datas)
                 data = {
-                    "url": url,
+                    "url": datas["url"],
                     "result": result,
                 }
             return jsonify(data), status
+        except Exception as e:
+            self.logger.error(e)
+            return jsonify({"error": e}), 400
 
     def index(self):
         data = {
@@ -61,29 +66,14 @@ class FlaskAppWrapper(Ancestor):
         return jsonify(data)
 
     def check(self):
-        url = request.args.get("url", default="", type=str)
-        sets = request.args.get("sets", default="111", type=str)
-        status = 200
-        if url == "":
-            status = 400
-            data = {
-                "message": "Bad request!",
-                "Error": "Unexpected error.",
-            }
-        else:
-            datas = {}
-            if sets[0] == "1":
-                datas["urlhaus"] = True
-            if sets[1] == "1":
-                datas["virustotal"] = True
-            if sets[2] == "1":
-                datas["geoip"] = True
-            result = self.analyser.collect_infos(url, datas)
-            data = {
-                "url": url,
-                "result": result,
-            }
-        return jsonify(data), status
+        try:
+            url = request.args.get("url", default="", type=str)
+            result = self.analyser.is_malware(url)
+            data = {"result": result}
+            return jsonify(data), 200
+        except Exception as e:
+            self.logger.error(e)
+            return jsonify({"error": "Somethings went wrong..."}), 400
 
     def get_screenshot(self):
         url = request.args.get("url", default="", type=str)

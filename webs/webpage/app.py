@@ -16,9 +16,9 @@ def encode_settings(settings: dict) -> str:
     return "".join([str(i) for i in res])
 
 
-def ask_urlanalyserapi(url: str, settings: dict) -> dict:
-    est = encode_settings(settings)
-    r = requests.get(f"http://{host}:{port}/check?url={url}&sets={est}")
+def ask_urlanalyserapi(datas: dict) -> dict:
+    # est = encode_settings(settings)
+    r = requests.post(f"http://{host}:{port}/get_infos", json=datas)
     if r.status_code == 200:
         return r.json()["result"]
     return {"result": ""}
@@ -37,18 +37,20 @@ def home():
     if request.method == "POST":
         name = request.form["name"]
         url = request.form["url"]
-        urlhaus = request.form.get("urlhaus") != None
-        virustotal = request.form.get("virustotal") != None
-        geoip = request.form.get("geoip") != None
-        screenshot = request.form.get("screenshot") != None
-        checkedlist = [urlhaus, virustotal, geoip, screenshot]
-        settings = {
+        urlhaus = request.form.get("urlhaus", False)
+        virustotal = request.form.get("virustotal", False)
+        geoip = request.form.get("geoip", False)
+        screenshot = request.form.get("screenshot", False)
+        history = request.form.get("history", False)
+        data = {
+            "url": url,
             "urlhaus": urlhaus,
             "virustotal": virustotal,
             "geoip": geoip,
             "screenshot": screenshot,
+            "history": history,
         }
-        result = ask_urlanalyserapi(url, settings)
+        result = ask_urlanalyserapi(data)
         filename = ""
         if screenshot:
             filename = get_screenshot(url)

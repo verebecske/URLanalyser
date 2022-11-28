@@ -6,9 +6,8 @@ from src.api_connector import APIConnector as Connector
 class APIConnector(Connector):
     def send_request_to_virustotal(self, url: str) -> str:
         if random.randint(0, 100) < 70:
-            return self.open_file("virustotal_ans.json")["attributes"][
-                "last_analysis_stats"
-            ]
+            virustotal_ans = self.open_file("virustotal_ans.json")
+            return virustotal_ans["data"]["attributes"]["last_analysis_stats"]
         return "error"
 
     def send_request_to_urlhaus(self, url: str) -> str:
