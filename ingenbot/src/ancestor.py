@@ -1,9 +1,18 @@
-from logging import Logger, getLogger
+import logging
 import functools
 
 
+def get_logger():
+    logging.basicConfig(
+        format="-> %(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        level=logging.INFO,
+    )
+    logger = logging.getLogger(__name__)
+    return logger
+
+
 class LoggerMeta(type):
-    logger: Logger
+    logger: logging.Logger
 
     @staticmethod
     def _decorator(fun, logger):
@@ -17,26 +26,16 @@ class LoggerMeta(type):
         return wrapper
 
     def __new__(self, name, bases, attrs):
-        logger = self.get_logger()
+        logger = get_logger()
         for key in attrs.keys():
             if callable(attrs[key]):
                 fun = attrs[key]
                 attrs[key] = LoggerMeta._decorator(fun, logger)
         return super().__new__(self, name, bases, attrs)
 
-    def get_logger():
-        logging.basicConfig(
-            format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-            level=logging.INFO,
-        )
-        logger = logging.getLogger(__name__)
-        logger = getLogger()
-        return logger
-
 
 class Ancestor(metaclass=LoggerMeta):
-    config: dict
-    debug: bool = True
+    logger: logging.Logger
 
-    def __init__(self, config: dict):
-        self.config = config
+    def __init__(self):
+        self.logger = get_logger()

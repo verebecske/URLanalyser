@@ -3,16 +3,20 @@ from src.url_analyser import URLAnalyser
 from src.flask.wrapper import FlaskAppWrapper
 from src.api_connector import APIConnector
 from src.ancestor import Ancestor
+from src.malaut import Malaut
 from mocks.api_connector import APIConnector as MockConnector
 from mocks.url_analyser import URLAnalyser as MockAnalyser
+from mocks.malaut import Malaut as MockMalaut
 
 
 class ManagerRob(Ancestor):
     config: ConfigParser
-    debug: bool
+    debug: bool = True
 
     def __init__(self):
+        super().__init__()
         self.get_config()
+        self.logger.info("Start URLAnalyser application")
 
     def get_config(self) -> None:
         self.config = ConfigParser()
@@ -27,10 +31,16 @@ class ManagerRob(Ancestor):
     def start(self) -> None:
         if self.debug:
             connector = MockConnector(config=self.config["connector"])
-            analyser = MockAnalyser(config=self.config["analyser"], connector=connector)
+            malaut = MockMalaut(config=self.config["malaut"])
+            analyser = MockAnalyser(
+                config=self.config["analyser"], connector=connector, malaut=malaut
+            )
         else:
-            connector = Connector(config=self.config["connector"])
-            analyser = Analyser(config=self.config["analyser"], connector=connector)
+            connector = APIConnector(config=self.config["connector"])
+            malaut = Malaut(config=self.config["malaut"])
+            analyser = URLAnalyser(
+                config=self.config["analyser"], connector=connector, malaut=malaut
+            )
         self.start_flask(analyser)
 
 
