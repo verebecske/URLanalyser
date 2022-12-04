@@ -92,9 +92,9 @@ class Soul(ABC):
             answer = self.ask_urlanalyser_api(url, settings)
             print("ANS:", answer)
             await self._send_answer(str(answer), channel)
-            image = self.get_screenshot(url)
-            await self._send_file(image, channel)
-        return ""
+            # image = self.get_screenshot(url)
+            # await self._send_file(image, channel)
+        return str(answer)
 
     def ask_urlanalyser_api(self, url: str, settings: dict) -> dict:
         host = "urlanalyser-urlanalyser-1"

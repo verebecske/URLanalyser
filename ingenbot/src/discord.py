@@ -1,9 +1,8 @@
 from discord.ext import tasks, commands
 import discord
-from logging import Logger
+import time
 from src.soul import Soul, MaliciousContentError
 from src.ancestor import Ancestor
-import time
 
 
 class DBot(Ancestor):
