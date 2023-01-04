@@ -1,10 +1,14 @@
 from configparser import ConfigParser
 from src.url_analyser import URLAnalyser
 from src.flask.wrapper import FlaskAppWrapper
-from src.api_connector import APIConnector
+from src.connectors.ipwho_api import IPWhoAPI
+from src.connectors.urlhause_api import URLHausAPI
+from src.connectors.virustotal_api import VirusTotalAPI
 from src.ancestor import Ancestor
 from src.malaut import Malaut
-from mocks.api_connector import APIConnector as MockConnector
+from mocks.connectors.ipwho_api import IPWhoAPI as MockIPWhoAPI
+from mocks.connectors.urlhause_api import URLHausAPI as MockURLHausAPI
+from mocks.connectors.virustotal_api import VirusTotalAPI as MockVirusTotalAPI
 from mocks.url_analyser import URLAnalyser as MockAnalyser
 from mocks.malaut import Malaut as MockMalaut
 
@@ -36,7 +40,10 @@ class ManagerRob(Ancestor):
                 config=self.config["analyser"], connector=connector, malaut=malaut
             )
         else:
-            connector = APIConnector(config=self.config["connector"])
+            urlhause_api = URLHausAPI(config["urlhaus"])
+            virustotal_api = VirusTotalAPI(config["virustotal"])
+            ipwhois = IPWhoAPI(config)
+
             malaut = Malaut(config=self.config["malaut"])
             analyser = URLAnalyser(
                 config=self.config["analyser"], connector=connector, malaut=malaut

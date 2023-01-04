@@ -1,5 +1,7 @@
 import re
-from src.api_connector import APIConnector
+from src.connectors.ipwho_api import IPWhoAPI
+from src.connectors.urlhause_api import URLHausAPI
+from src.connectors.virustotal_api import VirusTotalAPI
 from src.ancestor import Ancestor
 from src.malaut import Malaut
 
@@ -7,9 +9,18 @@ from src.malaut import Malaut
 class URLAnalyser(Ancestor):
     connector: APIConnector
 
-    def __init__(self, config: dict, connector: APIConnector, malaut: Malaut):
+    def __init__(
+        self,
+        config: dict,
+        ipwho_api: IPWhoAPI,
+        urlhaus_api: URLHausAPI,
+        virustotal_api: VirusTotalAPI,
+        malaut: Malaut,
+    ):
         super().__init__()
-        self.connector = connector
+        self.ipwho_api = ipwho_api
+        self.urlhaus_api = urlhaus_api
+        self.virustotal_api = virustotal_api
         self.malaut = malaut
 
     def is_malware(self, url: str) -> bool:
@@ -47,52 +58,3 @@ class URLAnalyser(Ancestor):
         url = self.create_valid_url(url)
         self.malaut.create_screenshot(url, path)
         return filename
-
-    def read_from_file_malicious_url() -> str:
-        path = "urlhaus_database/csv.csv"
-        record = {}
-        all_url = []
-        with open(path) as file:
-            for line in file:
-                if not line.startswith("#") and not line == "":
-                    datas = line.split('","')
-                    (
-                        id,
-                        dateadded,
-                        url,
-                        url_status,
-                        last_online,
-                        threat,
-                        tags,
-                        urlhaus_link,
-                        reporter,
-                    ) = datas
-                    record[id.replace('"', "")] = {
-                        "id": id.replace('"', ""),
-                        "url": url,
-                        "threat": threat,
-                        "tags": tags,
-                    }
-                    all_url.append(url)
-        return all_url
-
-    def in_urlhaus_database(self, url: str) -> str:
-        path = "urlhaus_database/csv.csv"
-        with open(path) as file:
-            for line in file:
-                if not line.startswith("#") and not line == "":
-                    datas = line.split('","')
-                    (
-                        id,
-                        dateadded,
-                        mal_url,
-                        url_status,
-                        last_online,
-                        threat,
-                        tags,
-                        urlhaus_link,
-                        reporter,
-                    ) = datas
-                    if url in mal_url:
-                        return True
-        return False
