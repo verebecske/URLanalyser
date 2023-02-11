@@ -68,7 +68,7 @@ class FlaskAppWrapper(Ancestor):
     def check(self):
         try:
             url = request.args.get("url", default="", type=str)
-            result = self.analyser.is_malware(url)
+            result = self.analyser.valid_url(url)
             data = {"result": result}
             return jsonify(data), 200
         except Exception as e:

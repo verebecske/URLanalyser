@@ -1,14 +1,12 @@
 import re
 from src.connectors.ipwho_api import IPWhoAPI
-from src.connectors.urlhause_api import URLHausAPI
+from src.connectors.urlhaus_api import URLHausAPI
 from src.connectors.virustotal_api import VirusTotalAPI
 from src.ancestor import Ancestor
 from src.malaut import Malaut
 
 
 class URLAnalyser(Ancestor):
-    connector: APIConnector
-
     def __init__(
         self,
         config: dict,
@@ -24,7 +22,7 @@ class URLAnalyser(Ancestor):
         self.malaut = malaut
 
     def is_malware(self, url: str) -> bool:
-        return self.in_urlhaus_database(url)
+        return self.urlhuas_api.in_urlhaus_database(url)
 
     def valid_url(self, url: str) -> bool:
         pattern = r"(http(s)?://)?([a-z0-9-]+\.)+[a-z0-9]+(/.*)?$"
@@ -35,21 +33,21 @@ class URLAnalyser(Ancestor):
         result = {}
         if self.valid_url(url):
             if "urlhaus" in datas.keys() and not datas["urlhaus"] == False:
-                result["urlhaus"] = self.connector.send_request_to_urlhaus(url)
+                result["urlhaus"] = self.urlhaus_api.send_request(url)
             if "virustotal" in datas.keys() and not datas["virustotal"] == False:
-                result["virustotal"] = self.connector.send_request_to_virustotal(url)
+                result["virustotal"] = self.virustotal_api.send_request(url)
             if "geoip" in datas.keys() and not datas["geoip"] == False:
-                result["geoip"] = self.connector.get_geoip(url)
+                result["geoip"] = self.ipwho_api.send_request(url)
             if "history" in datas.keys() and not datas["history"] == False:
                 url = self.create_valid_url(url)
                 result["history"] = self.malaut.get_repath(url)
             return result
 
     def create_valid_url(self, url: str) -> str:
-        if not self.valid_url(url):
-            raise ValueError("not valid url")
         if not url.startswith("http"):
             url = "http://" + url
+        if not self.valid_url(url):
+            raise ValueError("not valid url")
         return url
 
     def create_screenshot(self, url: str) -> str:
