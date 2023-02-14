@@ -44,6 +44,12 @@ class TBot(Ancestor):
         screenshot_handler = CommandHandler("screenshot", self.screenshot_handler)
         application.add_handler(screenshot_handler)
 
+        index_handler = CommandHandler("index", self.index_handler)
+        application.add_handler(index_handler)
+
+        help_handler = CommandHandler("help", self.help_handler)
+        application.add_handler(help_handler)
+
         application.run_polling()
 
     async def start_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -73,14 +79,39 @@ class TBot(Ancestor):
             text=res
         )
 
+    async def index_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        r = requests.get(f"{self.urlanalyser_url}")
+        answer = "Something went wrong"
+        if r.status_code == 200:
+            answer = r.json()["message"]
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=answer
+        )
+
     async def screenshot_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
             text="I'm not a bot or am I...? Anyway just send me URL",
         )
 
+    async def help_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        help_message = "*Commands:*\n" \
+            + "/help - send this text\n" \
+            + "/start - answer a text\n" \
+            + "/index - test message to urlanalyser\n" \
+            + "/url [url] - inspect url\n" \
+            + "/screenshot [url] - create a screenshot about the webpage and send it back\n" \
+            + "\n_If you have any question ask:_\n" \
+            + "[my creater](https://t.me/trulr)"
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=help_message,
+            parse_mode='markdown',
+        )
+
     def filter_urls(self, message: str) -> list:
-        pattern = r"((http(s)?://)?([a-z0-9-]+\.)+[a-z0-9]+(/.*)?)"
+        pattern = r"((http(s)?://)?([a-zA-Z0-9-]+\.)+[a-zA-Z0-9]+(/.*)?)"
         urls = [t[0] for t in re.findall(pattern, message)]
         self.logger.info(f'URLs: {urls}')
         return urls
