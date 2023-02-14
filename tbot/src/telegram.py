@@ -37,7 +37,7 @@ class TBot(Ancestor):
 
         echo_handler = MessageHandler(filters.TEXT & (~filters.COMMAND), self.echo)
         application.add_handler(echo_handler)
-        
+
         url_handler = CommandHandler("url", self.url_handler)
         application.add_handler(url_handler)
 
@@ -59,64 +59,58 @@ class TBot(Ancestor):
         )
 
     async def echo(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        content =  update.message.text
+        content = update.message.text
         urls = self.filter_urls(content)
         replay = content
         if len(urls) > 0:
             replay = urls
-        await context.bot.send_message(
-                chat_id=update.effective_chat.id,
-                text=replay
-            )
+        await context.bot.send_message(chat_id=update.effective_chat.id, text=replay)
 
     async def url_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         urls = self.filter_urls(update.message.text)
         res = {}
         for url in urls:
             res[url] = self.inspect_url(url)
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text=res
-        )
+        await context.bot.send_message(chat_id=update.effective_chat.id, text=res)
 
     async def index_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         r = requests.get(f"{self.urlanalyser_url}")
         answer = "Something went wrong"
         if r.status_code == 200:
             answer = r.json()["message"]
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text=answer
-        )
+        await context.bot.send_message(chat_id=update.effective_chat.id, text=answer)
 
-    async def screenshot_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+    async def screenshot_handler(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ):
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
             text="I'm not a bot or am I...? Anyway just send me URL",
         )
 
     async def help_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        help_message = "*Commands:*\n" \
-            + "/help - send this text\n" \
-            + "/start - answer a text\n" \
-            + "/index - test message to urlanalyser\n" \
-            + "/url [url] - inspect url\n" \
-            + "/screenshot [url] - create a screenshot about the webpage and send it back\n" \
-            + "\n_If you have any question ask:_\n" \
+        help_message = (
+            "*Commands:*\n"
+            + "/help - send this text\n"
+            + "/start - answer a text\n"
+            + "/index - test message to urlanalyser\n"
+            + "/url [url] - inspect url\n"
+            + "/screenshot [url] - create a screenshot about the webpage and send it back\n"
+            + "\n_If you have any question ask:_\n"
             + "[my creater](https://t.me/trulr)"
+        )
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
             text=help_message,
-            parse_mode='markdown',
+            parse_mode="markdown",
         )
 
     def filter_urls(self, message: str) -> list:
         pattern = r"((http(s)?://)?([a-zA-Z0-9-]+\.)+[a-zA-Z0-9]+(/.*)?)"
         urls = [t[0] for t in re.findall(pattern, message)]
-        self.logger.info(f'URLs: {urls}')
+        self.logger.info(f"URLs: {urls}")
         return urls
 
     def inspect_url(self, url: str) -> bool:
         r = requests.get(f"{self.urlanalyser_url}/check?url={url}")
         return r.json()["result"]
-
