@@ -44,6 +44,9 @@ class TBot(Ancestor):
         screenshot_handler = CommandHandler("screenshot", self.screenshot_handler)
         application.add_handler(screenshot_handler)
 
+        sr_handler = CommandHandler("sr", self.screenshot_handler)
+        application.add_handler(sr_handler)
+
         index_handler = CommandHandler("index", self.index_handler)
         application.add_handler(index_handler)
 
@@ -83,10 +86,16 @@ class TBot(Ancestor):
     async def screenshot_handler(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ):
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text="I'm not a bot or am I...? Anyway just send me URL",
-        )
+        urls = self.filter_urls(update.message.text)
+        if len(urls) == 0:
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id, text="Missing the URL"
+            )
+        for url in urls:
+            r = requests.get(f"{self.urlanalyser_url}/image?url={url}")
+            await context.bot.send_photo(
+                chat_id=update.effective_chat.id, photo=r.content
+            )
 
     async def help_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         help_message = (
@@ -96,6 +105,7 @@ class TBot(Ancestor):
             + "/index - test message to urlanalyser\n"
             + "/url [url] - inspect url\n"
             + "/screenshot [url] - create a screenshot about the webpage and send it back\n"
+            + "/sr [url] - same as /screenshot use it, if you lazy\n"
             + "\n_If you have any question ask:_\n"
             + "[my creater](https://t.me/trulr)"
         )
