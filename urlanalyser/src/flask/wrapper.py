@@ -36,9 +36,8 @@ class FlaskAppWrapper(Ancestor):
         )
 
     def get_infos(self):
-        self.logger.error("HEY")
         try:
-            self.logger.error(request.json)
+            self.logger.info(request.json)
             datas = request.json
             status = 200
             if "url" not in datas or datas["url"] == "":
