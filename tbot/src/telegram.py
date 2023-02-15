@@ -47,6 +47,9 @@ class TBot(Ancestor):
         sr_handler = CommandHandler("sr", self.screenshot_handler)
         application.add_handler(sr_handler)
 
+        vt_handler = CommandHandler("vt", self.vt_handler)
+        application.add_handler(vt_handler)
+
         index_handler = CommandHandler("index", self.index_handler)
         application.add_handler(index_handler)
 
@@ -58,7 +61,7 @@ class TBot(Ancestor):
     async def start_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text="I'm not a bot or am I...? Anyway just send me URL",
+            text="I'm not a bot or am I...? Anyway just send me an URL",
         )
 
     async def echo(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -75,6 +78,22 @@ class TBot(Ancestor):
         for url in urls:
             res[url] = self.inspect_url(url)
         await context.bot.send_message(chat_id=update.effective_chat.id, text=res)
+
+    async def vt_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        urls = self.filter_urls(update.message.text)
+        settings = {
+                "urlhaus": False,
+                "virustotal": True,
+                "geoip": False,
+                "history": False,
+            }
+        for url in urls:
+            settings["url"] = url
+            answer = f"Something went wrong with: {url}"
+            r = requests.post(f"{self.urlanalyser_url}/get_infos", json=settings)
+            if r.status_code == 200:
+                answer = r.json()
+            await context.bot.send_message(chat_id=update.effective_chat.id, text=answer)                
 
     async def index_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         r = requests.get(f"{self.urlanalyser_url}")
@@ -106,6 +125,7 @@ class TBot(Ancestor):
             + "/url [url] - inspect url\n"
             + "/screenshot [url] - create a screenshot about the webpage and send it back\n"
             + "/sr [url] - same as /screenshot use it, if you lazy\n"
+            + "/vt [url] - send url to virustotal \n"
             + "\n_If you have any question ask:_\n"
             + "[my creater](https://t.me/trulr)"
         )
