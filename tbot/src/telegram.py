@@ -75,25 +75,37 @@ class TBot(Ancestor):
     async def url_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         urls = self.filter_urls(update.message.text)
         res = {}
+        if len(urls) == 0:
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id, text="Missing the URL"
+            )
         for url in urls:
-            res[url] = self.inspect_url(url)
-        await context.bot.send_message(chat_id=update.effective_chat.id, text=res)
+            result = self.inspect_url(url)
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id, text=result
+            )
 
     async def vt_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        urls = self.filter_urls(update.message.text)
         settings = {
-                "urlhaus": False,
-                "virustotal": True,
-                "geoip": False,
-                "history": False,
-            }
+            "urlhaus": False,
+            "virustotal": True,
+            "geoip": False,
+            "history": False,
+        }
+        urls = self.filter_urls(update.message.text)
+        if len(urls) == 0:
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id, text="Missing the URL"
+            )
         for url in urls:
             settings["url"] = url
             answer = f"Something went wrong with: {url}"
             r = requests.post(f"{self.urlanalyser_url}/get_infos", json=settings)
             if r.status_code == 200:
                 answer = r.json()
-            await context.bot.send_message(chat_id=update.effective_chat.id, text=answer)                
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id, text=answer
+            )
 
     async def index_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         r = requests.get(f"{self.urlanalyser_url}")
