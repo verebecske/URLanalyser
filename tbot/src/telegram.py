@@ -12,6 +12,7 @@ from telegram.ext import (
 )
 import re
 import requests
+import base64
 
 
 class MaliciousContentError(Exception):
@@ -123,6 +124,7 @@ class TBot(Ancestor):
                 chat_id=update.effective_chat.id, text="Missing the URL"
             )
         for url in urls:
+            url = self._encode_url(url)
             r = requests.get(f"{self.urlanalyser_url}/image?url={url}")
             await context.bot.send_photo(
                 chat_id=update.effective_chat.id, photo=r.content
@@ -154,5 +156,15 @@ class TBot(Ancestor):
         return urls
 
     def inspect_url(self, url: str) -> bool:
+        url = self._encode_url(url)
         r = requests.get(f"{self.urlanalyser_url}/check?url={url}")
-        return r.json()["result"]
+        if r.status_code == 200:
+            return r.json()["result"]
+        else:
+            return r.json()["error"]
+
+    def _encode_url(self, url: str):
+        return base64.urlsafe_b64encode(url.encode()).decode()
+
+    def _decode_url(self, url: str):
+        return base64.urlsafe_b64decode(url.encode()).decode()

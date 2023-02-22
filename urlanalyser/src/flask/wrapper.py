@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request, send_from_directory
+import base64
 from src.url_analyser import URLAnalyser
 from src.malaut import Malaut
 from src.ancestor import Ancestor
@@ -66,16 +67,16 @@ class FlaskAppWrapper(Ancestor):
 
     def check(self):
         try:
-            url = request.args.get("url", default="", type=str)
+            url = self._get_url_from_get_request()
             result = self.analyser.valid_url(url)
-            data = {"result": result}
+            data = {"result": result, "url": self._encode_url(url)}
             return jsonify(data), 200
         except Exception as e:
             self.logger.error(e)
             return jsonify({"error": "Somethings went wrong..."}), 400
 
     def get_screenshot(self):
-        url = request.args.get("url", default="", type=str)
+        url = self._get_url_from_get_request()
         path = self.analyser.create_screenshot(url)
         try:
             return send_from_directory("/src/flask/static/", path, as_attachment=True)
@@ -83,6 +84,16 @@ class FlaskAppWrapper(Ancestor):
             return jsonify({"error": str(e)}), 404
 
     def get_repath(self):
-        url = request.args.get("url", default="", type=str)
+        url = self._get_url_from_get_request()
         path_list = self.analyser.get_repath(url)
         return jsonify({"path": path_list})
+
+    def _get_url_from_get_request(self) -> str:
+        url = request.args.get("url", default=b"")
+        return self._decode_url(url)
+
+    def _encode_url(self, url: str):
+        return base64.urlsafe_b64encode(url.encode()).decode()
+
+    def _decode_url(self, url: str):
+        return base64.urlsafe_b64decode(url.encode()).decode()
