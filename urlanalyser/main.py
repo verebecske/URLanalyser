@@ -35,7 +35,6 @@ class ManagerRob(Ancestor):
     def start(self) -> None:
         config = self.config
         if self.debug:
-            connector = MockConnector(config=self.config["connector"])
             malaut = MockMalaut(config=self.config["malaut"])
             urlhaus_api = MockURLHausAPI(config["urlhaus"])
             virustotal_api = MockVirusTotalAPI(config["virustotal"])

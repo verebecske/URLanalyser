@@ -44,3 +44,6 @@ class Malaut(Ancestor):
             )
         path_list.append(data)
         return path_list
+
+    def collect(self, url):
+        pass
