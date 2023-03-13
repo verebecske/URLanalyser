@@ -1,6 +1,8 @@
 from src.ancestor import Ancestor
 import base64
 import requests
+import re
+
 
 class VirusTotalAPI(Ancestor):
     config: dict

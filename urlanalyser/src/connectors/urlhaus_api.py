@@ -1,5 +1,7 @@
 from src.ancestor import Ancestor
 import requests
+import re
+
 
 class URLHausAPI(Ancestor):
     config: dict
@@ -69,4 +71,3 @@ class URLHausAPI(Ancestor):
                     }
                     all_url.append(url)
         return all_url
-

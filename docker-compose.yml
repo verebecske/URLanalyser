@@ -34,12 +34,12 @@ services:
         environment: 
             PORT: 5000
             FLASK_DEBUG: 1
-#    ingenbot:
-#        build: 
-#            context: ./ingenbot/
-#            dockerfile: Dockerfile
-#        volumes: 
-#            - ./ingenbot/:/usr/src/
+    discordbot:
+        build: 
+            context: ./discordbot/
+            dockerfile: Dockerfile
+        volumes: 
+            - ./discordbot/:/usr/src/
     telegram-bot:
         build: 
             context: ./tbot/

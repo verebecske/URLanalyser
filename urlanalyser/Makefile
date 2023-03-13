@@ -12,8 +12,8 @@ clean:
 	find . -name .pytest_cache -type d -exec rm -rf {} \;
 
 lint:
-	black .
-	pylint --fail-under=7 *.py
-	autoflake --check --quiet -r -v .
+	python -m black .
+	python -m pylint --fail-under=7 *.py
+	python -m autoflake --check --quiet -r -v .
 
 .PHONY: run clean setup test lint

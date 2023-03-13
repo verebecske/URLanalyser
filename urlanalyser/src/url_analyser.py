@@ -37,7 +37,7 @@ class URLAnalyser(Ancestor):
             if "virustotal" in datas.keys() and not datas["virustotal"] == False:
                 result["virustotal"] = self.virustotal_api.send_request(url)
             if "geoip" in datas.keys() and not datas["geoip"] == False:
-                result["geoip"] = self.ipwho_api.send_request(url)
+                result["geoip"] = self.ipwho_api.get_geoip(url)
             if "history" in datas.keys() and not datas["history"] == False:
                 url = self.create_valid_url(url)
                 result["history"] = self.malaut.get_repath(url)

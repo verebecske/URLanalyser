@@ -38,13 +38,13 @@ class ManagerRob(Ancestor):
             malaut = MockMalaut(config=self.config["malaut"])
             urlhaus_api = MockURLHausAPI(config["urlhaus"])
             virustotal_api = MockVirusTotalAPI(config["virustotal"])
-            ipwhois = MockIPWhoAPI(config)
+            ipwho_api = MockIPWhoAPI(config)
             analyser = MockAnalyser(
-                config=self.config["analyser"], 
-                ipwho_api=ipwho_api, 
-                urlhaus_api=urlhaus_api, 
-                virustotal_api=virustotal_api, 
-                malaut=malaut
+                config=self.config["analyser"],
+                ipwho_api=ipwho_api,
+                urlhaus_api=urlhaus_api,
+                virustotal_api=virustotal_api,
+                malaut=malaut,
             )
         else:
             urlhaus_api = URLHausAPI(config["urlhaus"])
@@ -52,11 +52,11 @@ class ManagerRob(Ancestor):
             ipwho_api = IPWhoAPI(config)
             malaut = Malaut(config=self.config["malaut"])
             analyser = URLAnalyser(
-                config=self.config["analyser"], 
-                ipwho_api=ipwho_api, 
-                urlhaus_api=urlhaus_api, 
-                virustotal_api=virustotal_api, 
-                malaut=malaut
+                config=self.config["analyser"],
+                ipwho_api=ipwho_api,
+                urlhaus_api=urlhaus_api,
+                virustotal_api=virustotal_api,
+                malaut=malaut,
             )
         self.start_flask(analyser)
 
