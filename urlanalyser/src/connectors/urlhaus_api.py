@@ -1,5 +1,5 @@
 from src.ancestor import Ancestor
-
+import requests
 
 class URLHausAPI(Ancestor):
     config: dict

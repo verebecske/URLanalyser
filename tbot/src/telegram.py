@@ -45,20 +45,17 @@ class TBot(Ancestor):
         screenshot_handler = CommandHandler("screenshot", self.screenshot_handler)
         application.add_handler(screenshot_handler)
 
-        sr_handler = CommandHandler("sr", self.screenshot_handler)
-        application.add_handler(sr_handler)
+        virustotal_handler = CommandHandler("virustotal", self.virustotal_handler)
+        application.add_handler(virustotal_handler)
 
-        vt_handler = CommandHandler("vt", self.virustotal_handler)
-        application.add_handler(vt_handler)
+        urlhaus_handler = CommandHandler("urlhaus", self.urlhaus_handler)
+        application.add_handler(urlhaus_handler)
 
-        uh_handler = CommandHandler("uh", self.urlhaus_handler)
-        application.add_handler(uh_handler)
+        geoip_handler = CommandHandler("geoip", self.geoip_handler)
+        application.add_handler(geoip_handler)
 
-        gi_handler = CommandHandler("gi", self.geoip_handler)
-        application.add_handler(gi_handler)
-
-        hi_handler = CommandHandler("hi", self.history_handler)
-        application.add_handler(hi_handler)
+        history_handler = CommandHandler("history", self.history_handler)
+        application.add_handler(history_handler)
 
         index_handler = CommandHandler("index", self.index_handler)
         application.add_handler(index_handler)
@@ -71,7 +68,7 @@ class TBot(Ancestor):
     async def start_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text="I'm not a bot or am I...? Anyway just send me an URL",
+            text="Send me an URL",
         )
 
     async def echo(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -104,9 +101,10 @@ class TBot(Ancestor):
             "geoip": False,
             "history": False,
         }
+
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text=self.send_get_infos(pdate.message.text, settings),
+            text=self.send_get_infos(update.message.text, settings),
         )
 
     async def urlhaus_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -118,7 +116,7 @@ class TBot(Ancestor):
         }
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text=self.send_get_infos(pdate.message.text, settings),
+            text=self.send_get_infos(update.message.text, settings),
         )
 
     async def geoip_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -130,10 +128,10 @@ class TBot(Ancestor):
         }
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text=self.send_get_infos(pdate.message.text, settings),
+            text=self.send_get_infos(update.message.text, settings),
         )
 
-    async def geoip_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+    async def history_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         settings = {
             "urlhaus": False,
             "virustotal": False,
@@ -142,10 +140,10 @@ class TBot(Ancestor):
         }
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text=self.send_get_infos(pdate.message.text, settings),
+            text=self.send_get_infos(update.message.text, settings),
         )
 
-    async def send_get_infos(self, message: str, settings: dict) -> str:
+    def send_get_infos(self, message: str, settings: dict) -> str:
         urls = self.filter_urls(message)
         if len(urls) == 0:
             return "Missing URL"
@@ -181,18 +179,17 @@ class TBot(Ancestor):
 
     async def help_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         help_message = (
-            "*Commands:*\n"
+            "*Commands:*\n\n"
             + "/help - send this text\n"
             + "/start - answer a text\n"
             + "/index - test message to urlanalyser\n"
             + "/url [url] - inspect url\n"
             + "/screenshot [url] - create a screenshot about the webpage and send it back\n"
             + "/check [url] - just a quick test about the url \n"
-            + "/sr [url] - same as /screenshot use it, if you lazy\n"
-            + "/vt [url] - send url to virustotal \n"
-            + "/uh [url] - send url to urlhaus \n"
-            + "/gi [url] - send url to geoip \n"
-            + "/hi [url] - get url redirect path \n"
+            + "/virustotal [url] - send url to virustotal \n"
+            + "/urlhaus [url] - send url to urlhaus \n"
+            + "/geoip [url] - send url to geoip \n"
+            + "/history [url] - get url redirect path \n"
             + "\n_If you have any question ask:_\n"
             + "[my creater](https://t.me/trulr)"
         )
