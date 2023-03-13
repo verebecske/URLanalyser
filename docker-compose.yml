@@ -42,11 +42,11 @@ services:
             - ./discordbot/:/usr/src/
     telegram-bot:
         build: 
-            context: ./tbot/
+            context: ./telegrambot/
             dockerfile: Dockerfile
         logging:
             driver: "json-file"
         volumes: 
-            - ./tbot/:/usr/src/
+            - ./telegrambot/:/usr/src/
 
  
