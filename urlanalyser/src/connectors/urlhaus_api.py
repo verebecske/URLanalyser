@@ -14,12 +14,7 @@ class URLHausAPI(Ancestor):
         data = {"url": url}
         response = requests.post(url="https://urlhaus-api.abuse.ch/v1/url/", data=data)
         if response.status_code == 200:
-            query_status = response.json()["query_status"]
-            ans = {"query_status": query_status}
-            if query_status == "ok":
-                ans["threat"] = response.json()["threat"]
-                ans["url_status"] = response.json()["url_status"]
-            return ans
+            self.format_answer(response.json())
         else:
             return {"error": response.text}
 
@@ -71,3 +66,11 @@ class URLHausAPI(Ancestor):
                     }
                     all_url.append(url)
         return all_url
+
+    def format_answer(self, response: dict) -> dict:
+        query_status = response["query_status"]
+        ans = {"query_status": query_status}
+        if query_status == "ok":
+            ans["threat"] = response["threat"]
+            ans["url_status"] = response["url_status"]
+        return ans

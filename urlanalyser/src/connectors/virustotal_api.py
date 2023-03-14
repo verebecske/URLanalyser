@@ -19,6 +19,9 @@ class VirusTotalAPI(Ancestor):
             f"https://www.virustotal.com/api/v3/urls/{url_id}", headers=headers
         )
         if response.status_code == 200:
-            return response.json()["data"]["attributes"]["last_analysis_stats"]
+            return self.format_answer(response.json())
         else:
             return {"error": response.text}
+
+    def format_answer(self, response: dict) -> dict:
+        return response["data"]["attributes"]["last_analysis_stats"]

@@ -23,7 +23,9 @@ class IPWhoAPI(Ancestor):
         ip_addr = self.get_ip(url)
         response = requests.get(f"http://ipwho.is/{ip_addr}")
         if response.status_code == 200:
-            ipwhois = response.json()
-            return ipwhois["country"]
+            return self.format_answer(response.json())
         else:
             return {"error": response.text}
+
+    def format_answer(self, response: dict) -> dict:
+        return response["country"]
