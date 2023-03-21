@@ -68,12 +68,13 @@ class FlaskAppWrapper(Ancestor):
     def check(self):
         try:
             url = self._get_url_from_get_request()
-            result = self.analyser.valid_url(url)
+            result = self.analyser.check(url)
             data = {"result": result, "url": self._encode_url(url)}
             return jsonify(data), 200
         except Exception as e:
             self.logger.error(e)
-            return jsonify({"error": "Somethings went wrong..."}), 400
+            data = {"error": "Somethings went wrong...", "url": self._encode_url(url)}
+            return jsonify(data), 400
 
     def get_screenshot(self):
         url = self._get_url_from_get_request()

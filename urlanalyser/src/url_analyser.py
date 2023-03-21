@@ -42,6 +42,8 @@ class URLAnalyser(Ancestor):
                 url = self.create_valid_url(url)
                 result["history"] = self.malaut.get_repath(url)
             return result
+        else:
+            result = {"error": "not valid url"}
 
     def create_valid_url(self, url: str) -> str:
         if not url.startswith("http"):
@@ -56,3 +58,9 @@ class URLAnalyser(Ancestor):
         url = self.create_valid_url(url)
         self.malaut.create_screenshot(url, path)
         return filename
+
+    def check(self, url: str) -> str:
+        result = {}
+        if self.valid_url(url):
+            result["urlhaus"] = self.urlhaus_api.send_request(url)
+        return result

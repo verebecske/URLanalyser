@@ -68,7 +68,7 @@ class TBot(Ancestor):
     async def start_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text="Send me an URL",
+            text="Send me an URL, and use /help if you need some help",
         )
 
     async def echo(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -173,9 +173,14 @@ class TBot(Ancestor):
         for url in urls:
             url = self._encode_url(url)
             r = requests.get(f"{self.urlanalyser_url}/image?url={url}")
-            await context.bot.send_photo(
-                chat_id=update.effective_chat.id, photo=r.content
-            )
+            if r.status_code == 200:
+                await context.bot.send_photo(
+                    chat_id=update.effective_chat.id, photo=r.content
+                )
+            else:
+                await context.bot.send_message(
+                chat_id=update.effective_chat.id, text=f"Something went wrong with: {url}"
+            )          
 
     async def help_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         help_message = (
