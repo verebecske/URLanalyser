@@ -34,10 +34,18 @@ services:
         environment: 
             PORT: 5000
             FLASK_DEBUG: 1
-    discordbot:
+        logging:
+            driver: "json-file"
+            options:
+                tag: "urlanalyser"
+    discord-bot:
         build: 
             context: ./discordbot/
             dockerfile: Dockerfile
+        logging:
+            driver: "json-file"
+            options:
+                tag: "discord-bot"
         volumes: 
             - ./discordbot/:/usr/src/
     telegram-bot:
@@ -46,6 +54,8 @@ services:
             dockerfile: Dockerfile
         logging:
             driver: "json-file"
+            options:
+                tag: "telegram-bot"
         volumes: 
             - ./telegrambot/:/usr/src/
 
