@@ -34,10 +34,14 @@ services:
         environment: 
             PORT: 5000
             FLASK_DEBUG: 1
+        links:
+            - redis
         logging:
             driver: "json-file"
             options:
                 tag: "urlanalyser"
+        networks:
+            - app
     discord-bot:
         build: 
             context: ./discordbot/
@@ -58,5 +62,14 @@ services:
                 tag: "telegram-bot"
         volumes: 
             - ./telegrambot/:/usr/src/
+    redis:
+        image: redis
+        logging:
+            driver: "json-file"
+        networks:
+            - app
 
- 
+
+networks:
+  app:
+    name: app

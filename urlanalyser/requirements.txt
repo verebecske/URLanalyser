@@ -4,3 +4,4 @@ selenium
 splinter
 # pylint
 # black
+redis

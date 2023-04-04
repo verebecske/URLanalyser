@@ -5,22 +5,23 @@ import re
 
 class URLHausAPI(Ancestor):
     config: dict
+    path: str
 
     def __init__(self, config: dict):
         super().__init__()
         self.config = config
+        self.path = "urlhaus_database/csv.csv"
 
     def send_request(self, url: str) -> dict:
         data = {"url": url}
         response = requests.post(url="https://urlhaus-api.abuse.ch/v1/url/", data=data)
         if response.status_code == 200:
-            return self.format_answer(response.json())           
+            return self.format_answer(response.json())
         else:
             return {"error": response.text}
 
-    def in_urlhaus_database(self, url: str) -> str:
-        path = "urlhaus_database/csv.csv"
-        with open(path) as file:
+    def in_urlhaus_database(self, url: str) -> bool:
+        with open(self.path) as file:
             for line in file:
                 if not line.startswith("#") and not line == "":
                     datas = line.split('","')
@@ -39,11 +40,33 @@ class URLHausAPI(Ancestor):
                         return True
         return False
 
-    def read_from_file_malicious_url() -> str:
-        path = "urlhaus_database/csv.csv"
+    def get_urlhaus_database(self, url: str):
+        try:
+            with open(self.path) as file:
+                for line in file:
+                    if not line.startswith("#") and not line == "":
+                        datas = line.split('","')
+                        (
+                            id,
+                            dateadded,
+                            mal_url,
+                            url_status,
+                            last_online,
+                            threat,
+                            tags,
+                            urlhaus_link,
+                            reporter,
+                        ) = datas
+                        if url in mal_url:
+                            return datas
+        except OSError as error:
+            self.logger.error(error)
+        return None
+
+    def read_from_file_malicious_url() -> list:
         record = {}
         all_url = []
-        with open(path) as file:
+        with open(self.path) as file:
             for line in file:
                 if not line.startswith("#") and not line == "":
                     datas = line.split('","')

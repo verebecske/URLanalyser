@@ -21,7 +21,7 @@ class Malaut(Ancestor):
             self.logger.error(str(e))
             raise e
 
-    def get_repath(self, url):
+    def get_history(self, url):
         path_list = []
         resp = requests.get(url)
         data = {

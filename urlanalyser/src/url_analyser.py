@@ -2,6 +2,7 @@ import re
 from src.connectors.ipwho_api import IPWhoAPI
 from src.connectors.urlhaus_api import URLHausAPI
 from src.connectors.virustotal_api import VirusTotalAPI
+from src.connectors.redis_database import RedisDatabase
 from src.ancestor import Ancestor
 from src.malaut import Malaut
 
@@ -14,12 +15,14 @@ class URLAnalyser(Ancestor):
         urlhaus_api: URLHausAPI,
         virustotal_api: VirusTotalAPI,
         malaut: Malaut,
+        redis: RedisDatabase,
     ):
         super().__init__()
         self.ipwho_api = ipwho_api
         self.urlhaus_api = urlhaus_api
         self.virustotal_api = virustotal_api
         self.malaut = malaut
+        self.redis = redis
 
     def is_malware(self, url: str) -> bool:
         return self.urlhuas_api.in_urlhaus_database(url)
@@ -40,7 +43,7 @@ class URLAnalyser(Ancestor):
                 result["geoip"] = self.ipwho_api.get_geoip(url)
             if "history" in datas.keys() and not datas["history"] == False:
                 url = self.create_valid_url(url)
-                result["history"] = self.malaut.get_repath(url)
+                result["history"] = self.malaut.get_history(url)
             return result
         else:
             result = {"error": "not valid url"}
@@ -62,5 +65,11 @@ class URLAnalyser(Ancestor):
     def check(self, url: str) -> str:
         result = {}
         if self.valid_url(url):
-            result["urlhaus"] = self.urlhaus_api.send_request(url)
+            data = self.urlhaus_api.get_urlhaus_database(url)
+            if data: 
+                result["urlhaus_database"] = data
+            else:
+                result["urlhaus"] = self.urlhaus_api.send_request(url)
+        else:
+            result = {"error": "not valid url"}
         return result
