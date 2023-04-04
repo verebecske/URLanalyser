@@ -14,7 +14,7 @@ class URLHausAPI(Ancestor):
         data = {"url": url}
         response = requests.post(url="https://urlhaus-api.abuse.ch/v1/url/", data=data)
         if response.status_code == 200:
-            self.format_answer(response.json())
+            return self.format_answer(response.json())           
         else:
             return {"error": response.text}
 
@@ -74,3 +74,9 @@ class URLHausAPI(Ancestor):
             ans["threat"] = response["threat"]
             ans["url_status"] = response["url_status"]
         return ans
+
+    def update_urlhaus_database(self) -> None:
+        r = requests.get(url="https://urlhaus.abuse.ch/downloads/csv_online/")
+        with open("urlhaus_database/malicious_urls.csv", "w") as fd:
+            fd.write(r.text)
+        self.logger.info("URLHaus database updated")

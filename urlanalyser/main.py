@@ -48,6 +48,7 @@ class ManagerRob(Ancestor):
             )
         else:
             urlhaus_api = URLHausAPI(config["urlhaus"])
+            urlhaus_api.update_urlhaus_database()
             virustotal_api = VirusTotalAPI(config["virustotal"])
             ipwho_api = IPWhoAPI(config)
             malaut = Malaut(config=self.config["malaut"])
@@ -59,6 +60,7 @@ class ManagerRob(Ancestor):
                 malaut=malaut,
             )
         self.start_flask(analyser)
+
 
 
 if __name__ == "__main__":
