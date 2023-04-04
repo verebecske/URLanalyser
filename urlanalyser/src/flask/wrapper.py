@@ -27,10 +27,10 @@ class FlaskAppWrapper(Ancestor):
         self.app.add_url_rule("/", "index", self.index)
         self.app.add_url_rule("/check", "check", self.check, methods=["GET", "POST"])
         self.app.add_url_rule(
-            "/image", "get_screenshot", self.get_screenshot, methods=["GET"]
+            "/get_screenshot", "get_screenshot", self.get_screenshot, methods=["GET"]
         )
         self.app.add_url_rule(
-            "/get_repath", "get_repath", self.get_repath, methods=["GET"]
+            "/get_history", "get_history", self.get_history, methods=["GET"]
         )
         self.app.add_url_rule(
             "/get_infos", "get_infos", self.get_infos, methods=["POST"]
@@ -84,9 +84,9 @@ class FlaskAppWrapper(Ancestor):
         except Exception as e:
             return jsonify({"error": str(e)}), 404
 
-    def get_repath(self):
+    def get_history(self):
         url = self._get_url_from_get_request()
-        path_list = self.analyser.get_repath(url)
+        path_list = self.analyser.get_history(url)
         return jsonify({"path": path_list})
 
     def _get_url_from_get_request(self) -> str:

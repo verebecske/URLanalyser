@@ -105,7 +105,7 @@ class DiscordClient(commands.Bot, Ancestor):
         self.log_channel = channel
 
     async def _send_file(self, path, channel):
-        path = "./images/screenshot.png"
+        path = "./get_screenshots/screenshot.png"
         with open(path, "rb") as fh:
             f = discord.File(fh, filename=path)
         await channel.send(file=f)
@@ -191,8 +191,8 @@ class DiscordClient(commands.Bot, Ancestor):
     def get_screenshot(self, url: str) -> str:
         host = "urlanalyser-urlanalyser-1"
         port = 5000
-        path = "./images/screenshot.png"
-        r = requests.get(f"http://{host}:{port}/image?url={url}")
+        path = "./get_screenshots/screenshot.png"
+        r = requests.get(f"http://{host}:{port}/get_screenshot?url={url}")
         with open(path, "wb") as image_file:
             image_file.write(r.content)
         return path

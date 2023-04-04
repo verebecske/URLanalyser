@@ -172,7 +172,7 @@ class TBot(Ancestor):
             )
         for url in urls:
             url = self._encode_url(url)
-            r = requests.get(f"{self.urlanalyser_url}/image?url={url}")
+            r = requests.get(f"{self.urlanalyser_url}/get_screenshot?url={url}")
             if r.status_code == 200:
                 await context.bot.send_photo(
                     chat_id=update.effective_chat.id, photo=r.content
