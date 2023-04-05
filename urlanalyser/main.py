@@ -6,7 +6,7 @@ from src.connectors.urlhaus_api import URLHausAPI
 from src.connectors.virustotal_api import VirusTotalAPI
 from src.ancestor import Ancestor
 from src.malaut import Malaut
-from src.connectors.database import RedisDatabase
+from src.connectors.redis_database import RedisDatabase
 
 from mocks.connectors.ipwho_api import IPWhoAPI as MockIPWhoAPI
 from mocks.connectors.urlhaus_api import URLHausAPI as MockURLHausAPI
@@ -41,7 +41,7 @@ class ManagerRob(Ancestor):
             urlhaus_api = MockURLHausAPI(config["urlhaus"])
             virustotal_api = MockVirusTotalAPI(config["virustotal"])
             ipwho_api = MockIPWhoAPI(config)
-            redis = RedisDatabase(config["redis"])           
+            redis = RedisDatabase(config["redis"])
             analyser = MockAnalyser(
                 config=self.config["analyser"],
                 ipwho_api=ipwho_api,
@@ -71,4 +71,3 @@ class ManagerRob(Ancestor):
 if __name__ == "__main__":
     rob = ManagerRob()
     rob.start()
-    
