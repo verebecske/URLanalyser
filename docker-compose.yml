@@ -40,8 +40,6 @@ services:
             driver: "json-file"
             options:
                 tag: "urlanalyser"
-        networks:
-            - app
     discord-bot:
         build: 
             context: ./discordbot/
@@ -66,10 +64,4 @@ services:
         image: redis
         logging:
             driver: "json-file"
-        networks:
-            - app
 
-
-networks:
-  app:
-    name: app
