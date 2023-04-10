@@ -1,8 +1,8 @@
 build:
-	sudo docker-compose build
+	sudo docker compose build
 
 run:
-	sudo docker-compose up
+	sudo docker compose up
 	sudo docker ps -a
 
 docker:

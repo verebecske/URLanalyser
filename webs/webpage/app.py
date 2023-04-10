@@ -25,7 +25,7 @@ def ask_urlanalyserapi(datas: dict) -> dict:
 
 
 def get_screenshot(url: str) -> str:
-    r = requests.get(f"http://{host}:{port}/image?url={url}")
+    r = requests.get(f"http://{host}:{port}/get_screenshot?url={url}")
     path = "./static/screenshot.png"
     with open(path, "wb") as image_file:
         image_file.write(r.content)
@@ -68,7 +68,7 @@ def page_not_found(error):
 
 @app.route("/test", methods=["GET"])
 def get_image():
-    r = requests.get(f"http://{host}:{port}/image")
+    r = requests.get(f"http://{host}:{port}/get_screenshot")
     path = "./static/screenshot.png"
     with open(path, "wb") as image_file:
         image_file.write(r.content)

@@ -12,14 +12,8 @@ clean:
 	find . -name .pytest_cache -type d -exec rm -rf {} \;
 
 lint:
-	black .
-	pylint --fail-under=7 *.py
-	autoflake --check --quiet -r -v .
+	python -m black .
+	python -m pylint --fail-under=7 *.py
+	python -m autoflake --check --quiet -r -v .
 
-curl:
-	curl 'http://127.0.0.1:5000/check?url=napszemuveg.be'
-
-post:
-	curl -XPOST -H "Content-type: application/json" -d '{"hello": "friend", "who": "areyou?"}' 'localhost:9111/test_post'
-
-.PHONY: run clean setup test lint curl post
+.PHONY: run clean setup test lint
