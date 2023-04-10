@@ -46,13 +46,13 @@ class URLAnalyser(Ancestor):
                 result["history"] = self.malaut.get_history(url)
             return result
         else:
-            result = {"error": "not valid url"}
+            raise ValueError("invalid URL")
 
     def create_valid_url(self, url: str) -> str:
         if not url.startswith("http"):
             url = "http://" + url
         if not self.valid_url(url):
-            raise ValueError("not valid url")
+            raise ValueError("invalid URL")
         return url
 
     def create_screenshot(self, url: str) -> str:
@@ -64,12 +64,18 @@ class URLAnalyser(Ancestor):
 
     def check(self, url: str) -> str:
         result = {}
-        if self.valid_url(url):
-            data = self.urlhaus_api.get_urlhaus_database(url)
-            if data: 
-                result["urlhaus_database"] = data
-            else:
-                result["urlhaus"] = self.urlhaus_api.send_request(url)
+        data = self.redis.get_data(url)
+        if data:
+            result["redis_database"] = data
+            return result
         else:
-            result = {"error": "not valid url"}
+            self.redis.add_data(create_data_to_redis(url))
+        data = self.urlhaus_api.get_urlhaus_database(url)
+        if data:
+            result["urlhaus_database"] = data
+            return result
+        result["urlhaus"] = self.urlhaus_api.send_request(url)
         return result
+
+    def create_data_to_redis(self, url: str) -> dict:
+        pass

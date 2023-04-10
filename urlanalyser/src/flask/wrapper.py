@@ -4,7 +4,12 @@ from src.url_analyser import URLAnalyser
 from src.malaut import Malaut
 from src.ancestor import Ancestor
 from werkzeug.exceptions import HTTPException, BadRequest, InternalServerError
+from enum import Enum
 
+class BadRequestType(Enum):
+    MISSING_URL = "Missing URL"
+    INVALID_URL = "Invalid URL"
+    INVALID_CONTENT_TYPE = "Invalid Content-Type"
 
 class FlaskAppWrapper(Ancestor):
     analyser: URLAnalyser
@@ -46,13 +51,9 @@ class FlaskAppWrapper(Ancestor):
 
     def _handle_bad_request(self, error):
         self.logger.error(f"Handle: {error}")
-        visible_error_messages = [
-            "Missing URL",
-            "Invalid URL",
-            "Invalid Content-Type"
-        ]
-        if error.description in visible_error_messages:
-            return f"bad request - {error.description}", 400
+
+        if error.description in BadRequestType:
+            return f"bad request - {error.description.value}", 400
         return "bad request", 400
 
     def _handle_internal_server_error(self, error):
@@ -67,20 +68,20 @@ class FlaskAppWrapper(Ancestor):
     def _get_url_from_get_request(self) -> str:
         url = request.args.get("url", default="")
         if url == "":
-            raise BadRequest(description="Missing URL")
+            raise BadRequest(description=BadRequestType.MISSING_URL)
         if not self.analyser.valid_url(url):
-            raise BadRequest(description="Invalid URL")
+            raise BadRequest(description=BadRequestType.INVALID_URL)
         return self._decode_url(url)
 
     def _get_url_from_post_request(self) -> str:
         try:
             data = request.json
         except:
-            raise BadRequest(description="Invalid Content-Type")
+            raise BadRequest(description=BadRequestType.INVALID_CONTENT_TYPE)
         if "url" not in data or data["url"] == "":
-            raise BadRequest(description="Missing URL")
+            raise BadRequest(description=BadRequestType.MISSING_URL)
         if not self.analyser.valid_url(data["url"]):
-            raise BadRequest(description="Invalid URL")
+            raise BadRequest(description=BadRequestType.INVALID_URL)
         return data["url"]
 
 
