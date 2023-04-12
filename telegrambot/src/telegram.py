@@ -182,9 +182,9 @@ class TBot(Ancestor):
 
     async def index_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         try:
-            request = requests.get(f"{self.urlanalyser_url}")
-            if request.status_code == 200:
-                answer = request.json()["message"]
+            response = requests.get(f"{self.urlanalyser_url}")
+            if response.status_code == 200:
+                answer = response.json()["message"]
         except Exception as error:
             answer = "Something went wrong"
             self.logger.error(f"Error happened: {error}")
@@ -200,10 +200,10 @@ class TBot(Ancestor):
             )
         for url in urls:
             url = self._encode_url(url)
-            r = requests.get(f"{self.urlanalyser_url}/get_screenshot?url={url}")
-            if r.status_code == 200:
+            response = requests.get(f"{self.urlanalyser_url}/get_screenshot?url={url}")
+            if response.status_code == 200:
                 await context.bot.send_photo(
-                    chat_id=update.effective_chat.id, photo=r.content
+                    chat_id=update.effective_chat.id, photo=response.content
                 )
             else:
                 await context.bot.send_message(
@@ -242,9 +242,9 @@ class TBot(Ancestor):
     def inspect_url(self, url: str) -> bool:
         try:
             url = self._encode_url(url)
-            r = requests.get(f"{self.urlanalyser_url}/check?url={url}")
-            if r.status_code == 200:
-                return r.json()["result"]
+            response = requests.get(f"{self.urlanalyser_url}/check?url={url}")
+            if response.status_code == 200:
+                return response.json()["result"]
         except Exception as error:
             self.logger.error(f"Error happend: {error}")
         return f"Something went wrong with: {url}"
