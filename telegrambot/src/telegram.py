@@ -1,4 +1,3 @@
-import logging
 from telegram import Update
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler
 from src.ancestor import Ancestor
@@ -101,10 +100,11 @@ class TBot(Ancestor):
             "geoip": False,
             "history": False,
         }
-
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text=self.send_get_infos(update.message.text, settings),
+        self.collect_urls_and_send_get_infos(
+            message=update.message.text,
+            settings=settings,
+            update=update,
+            context=context,
         )
 
     async def urlhaus_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -114,9 +114,11 @@ class TBot(Ancestor):
             "geoip": False,
             "history": False,
         }
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text=self.send_get_infos(update.message.text, settings),
+        self.collect_urls_and_send_get_infos(
+            message=update.message.text,
+            settings=settings,
+            update=update,
+            context=context,
         )
 
     async def geoip_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -126,9 +128,11 @@ class TBot(Ancestor):
             "geoip": True,
             "history": False,
         }
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text=self.send_get_infos(update.message.text, settings),
+        self.collect_urls_and_send_get_infos(
+            message=update.message.text,
+            settings=settings,
+            update=update,
+            context=context,
         )
 
     async def history_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -138,28 +142,52 @@ class TBot(Ancestor):
             "geoip": False,
             "history": True,
         }
-        await context.bot.send_message(
-            chat_id=update.effective_chat.id,
-            text=self.send_get_infos(update.message.text, settings),
+        self.collect_urls_and_send_get_infos(
+            message=update.message.text,
+            settings=settings,
+            update=update,
+            context=context,
         )
 
-    def send_get_infos(self, message: str, settings: dict) -> str:
+    async def collect_urls_and_send_get_infos(
+        self,
+        message: str,
+        settings: dict,
+        update: Update,
+        context: ContextTypes.DEFAULT_TYPE,
+    ):
         urls = self.filter_urls(message)
         if len(urls) == 0:
-            return "Missing URL"
+            raise ValueError("Missing URL")
         for url in urls:
-            settings["url"] = url
-            answer = f"Something went wrong with: {url}"
-            r = requests.post(f"{self.urlanalyser_url}/get_infos", json=settings)
-            if r.status_code == 200:
-                answer = r.json()
-            return answer
+            try:
+                settings["url"] = url
+                response = requests.post(
+                    f"{self.urlanalyser_url}/get_infos", json=settings
+                )
+                if response.status_code == 200:
+                    answer = response.json()
+                else:
+                    answer = f"Something went wrong with: {url} - status code: {response.status_code}"
+                await context.bot.send_message(
+                    chat_id=update.effective_chat.id,
+                    text=answer,
+                )
+            except Exception as error:
+                self.logger.error(f"Error happened: {error}")
+                await context.bot.send_message(
+                    chat_id=update.effective_chat.id,
+                    text=f"Error happend while processing {url} - please send your message again",
+                )
 
     async def index_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        r = requests.get(f"{self.urlanalyser_url}")
-        answer = "Something went wrong"
-        if r.status_code == 200:
-            answer = r.json()["message"]
+        try:
+            request = requests.get(f"{self.urlanalyser_url}")
+            if request.status_code == 200:
+                answer = request.json()["message"]
+        except Exception as error:
+            answer = "Something went wrong"
+            self.logger.error(f"Error happened: {error}")
         await context.bot.send_message(chat_id=update.effective_chat.id, text=answer)
 
     async def screenshot_handler(
@@ -179,8 +207,9 @@ class TBot(Ancestor):
                 )
             else:
                 await context.bot.send_message(
-                chat_id=update.effective_chat.id, text=f"Something went wrong with: {url}"
-            )          
+                    chat_id=update.effective_chat.id,
+                    text=f"Something went wrong with: {url}",
+                )
 
     async def help_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         help_message = (
@@ -211,12 +240,14 @@ class TBot(Ancestor):
         return urls
 
     def inspect_url(self, url: str) -> bool:
-        url = self._encode_url(url)
-        r = requests.get(f"{self.urlanalyser_url}/check?url={url}")
-        if r.status_code == 200:
-            return r.json()["result"]
-        else:
-            return r.json()["error"]
+        try:
+            url = self._encode_url(url)
+            r = requests.get(f"{self.urlanalyser_url}/check?url={url}")
+            if r.status_code == 200:
+                return r.json()["result"]
+        except Exception as error:
+            self.logger.error(f"Error happend: {error}")
+        return f"Something went wrong with: {url}"
 
     def _encode_url(self, url: str):
         return base64.urlsafe_b64encode(url.encode()).decode()

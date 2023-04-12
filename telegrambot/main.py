@@ -1,4 +1,3 @@
-import logging
 from configparser import ConfigParser
 from src.telegram import TBot
 
