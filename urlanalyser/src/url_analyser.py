@@ -67,14 +67,17 @@ class URLAnalyser(Ancestor):
         data = self.redis.get_data(url)
         if data:
             result["redis_database"] = data
+            result["is_malicious"] = True
             return result
         else:
             self.redis.add_data(create_data_to_redis(url))
         data = self.urlhaus_api.get_urlhaus_database(url)
         if data:
             result["urlhaus_database"] = data
+            result["is_malicious"] = True
             return result
         result["urlhaus"] = self.urlhaus_api.send_request(url)
+        result["is_malicious"] = (result["urlhaus"]["query_status"] == "ok")
         return result
 
     def create_data_to_redis(self, url: str) -> dict:
