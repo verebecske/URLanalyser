@@ -21,27 +21,29 @@ class Malaut(Ancestor):
             self.logger.error(str(e))
             raise e
 
-    def get_history(self, url):
+    def get_history(self, url: str, all: bool = False) -> list:
         path_list = []
         resp = requests.get(url)
         data = {
             "status_code": resp.status_code,
             "url": resp.url,
-            "cookies": str(resp.cookies),
             "redirect": resp.is_redirect,
-            "headers": str(resp.headers),
             "history": [],
         }
+        if all:
+            data["headers"] = str(resp.headers)
+            data["cookies"] = str(resp.cookies)
         for h in resp.history:
-            data["history"].append(
-                {
-                    "status_code": h.status_code,
-                    "url": h.url,
-                    "cookies": str(h.cookies),
-                    "redirect": h.is_redirect,
-                    "headers": str(h.headers),
-                }
-            )
+            state = {
+                "status_code": h.status_code,
+                "url": h.url,
+                "redirect": h.is_redirect,
+            }
+            if all:
+                state["cookies"] = str(h.cookies)
+                state["headers"] = str(h.headers)
+            data["history"].append(state)
+
         path_list.append(data)
         return path_list
 
