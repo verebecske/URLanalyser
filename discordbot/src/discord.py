@@ -5,6 +5,8 @@ from src.ancestor import Ancestor
 import re
 import requests
 import base64
+import io
+
 
 class MaliciousContentError(Exception):
     def __str__(self):
@@ -150,7 +152,9 @@ class DiscordClient(commands.Bot, Ancestor):
         return is_malicious
 
     def _inspect_url(self, url: str) -> bool:
-        response = requests.get(f"{self.urlanalyser_url}/check?url={self._encode_url(url)}")
+        response = requests.get(
+            f"{self.urlanalyser_url}/check?url={self._encode_url(url)}"
+        )
         try:
             if response.status_code == 200:
                 return response.json()["result"]["is_malicious"]
@@ -197,19 +201,31 @@ class DiscordClient(commands.Bot, Ancestor):
             if response.status_code == 200:
                 return response.json()["result"]
             else:
-                return {"error": f"Error happened with url: {url} - status code: {response.status_code}"}
+                return {
+                    "error": f"Error happened with url: {url} - status code: {response.status_code}"
+                }
         except Exception as error:
             self.logger.error(f"Error happened: {error}")
             return {"error": f"Error happened with url: {url}"}
 
     async def _send_screenshot(self, url: str, channel) -> str:
+        response = requests.get(
+            f"{self.urlanalyser_url}/get_screenshot?url={self._encode_url(url)}"
+        )
+        if response.status_code == 200:
+            name = "screenshot"
+            image_file = discord.File(
+                io.BytesIO(response.content), filename=f"{name}.png"
+            )
+            await channel.send(file=image_file)
+        else:
+            await self._send_answer(
+                f"Error happened while creating screenshot url: {url} - status code: {response.status_code}",
+                channel,
+            )
         try:
-            response = requests.get(f"{self.urlanalyser_url}/get_screenshot?url={self._encode_url(url)}")
-            if response.status_code == 200:
-                await channel.send(file=response.content)
-            else: 
-                await self._send_answer(f"Error happened while creating screenshot url: {url} - status code: {response.status_code}", channel)
-        except Exception as error: 
+            pass
+        except Exception as error:
             self.logger.error(f"Error happened: {error}")
             await self._send_answer(f"Error happened with url: {url}", channel)
 
