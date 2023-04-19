@@ -198,6 +198,8 @@ class TBot(Ancestor):
             await context.bot.send_message(
                 chat_id=update.effective_chat.id, text="Missing URL"
             )
+            return
+        await context.bot.send_message(chat_id=update.effective_chat.id, text="It can be slow - thank for your patient")
         for url in urls:
             url = self._encode_url(url)
             response = requests.get(f"{self.urlanalyser_url}/get_screenshot?url={url}")
