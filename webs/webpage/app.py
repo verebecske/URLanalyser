@@ -18,17 +18,17 @@ def encode_settings(settings: dict) -> str:
 
 def ask_urlanalyserapi(datas: dict) -> dict:
     # est = encode_settings(settings)
-    r = requests.post(f"http://{host}:{port}/get_infos", json=datas)
-    if r.status_code == 200:
-        return r.json()["result"]
+    response = requests.post(f"http://{host}:{port}/get_infos", json=datas)
+    if response.status_code == 200:
+        return response.json()["result"]
     return {"result": ""}
 
 
 def get_screenshot(url: str) -> str:
-    r = requests.get(f"http://{host}:{port}/get_screenshot?url={url}")
+    response = requests.get(f"http://{host}:{port}/get_screenshot?url={url}")
     path = "./static/screenshot.png"
     with open(path, "wb") as image_file:
-        image_file.write(r.content)
+        image_file.write(response.content)
     return "screenshot.png"
 
 
@@ -68,10 +68,10 @@ def page_not_found(error):
 
 @app.route("/test", methods=["GET"])
 def get_image():
-    r = requests.get(f"http://{host}:{port}/get_screenshot")
+    response = requests.get(f"http://{host}:{port}/get_screenshot")
     path = "./static/screenshot.png"
     with open(path, "wb") as image_file:
-        image_file.write(r.content)
+        image_file.write(response.content)
     return render_template("image.html", path="screenshot.png")
 
 

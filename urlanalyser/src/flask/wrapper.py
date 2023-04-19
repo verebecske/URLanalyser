@@ -69,9 +69,10 @@ class FlaskAppWrapper(Ancestor):
         url = request.args.get("url", default="")
         if url == "":
             raise BadRequest(description=BadRequestType.MISSING_URL)
+        url = self._decode_url(url)
         if not self.analyser.valid_url(url):
             raise BadRequest(description=BadRequestType.INVALID_URL)
-        return self._decode_url(url)
+        return url
 
     def _get_url_from_post_request(self) -> str:
         try:

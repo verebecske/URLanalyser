@@ -28,8 +28,8 @@ def reset_db():
 
 
 def get_all_malicious_url() -> list:
-    r = requests.get(url="https://urlhaus.abuse.ch/downloads/csv_online/")
-    content = r.text.replace("\r", "").split("\n")
+    response = requests.get(url="https://urlhaus.abuse.ch/downloads/csv_online/")
+    content = response.text.replace("\r", "").split("\n")
     record = {}
     all_url = []
     for i in content:
@@ -47,9 +47,9 @@ def get_all_malicious_url() -> list:
 
 
 def write_file_malicious_url() -> None:
-    r = requests.get(url="https://urlhaus.abuse.ch/downloads/csv_online/")
+    response = requests.get(url="https://urlhaus.abuse.ch/downloads/csv_online/")
     with open("urlhaus_database/malicious_urls.csv", "w") as fd:
-        fd.write(r.text)
+        fd.write(response.text)
 
 
 def read_from_file_malicious_url() -> str:

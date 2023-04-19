@@ -99,7 +99,7 @@ class URLHausAPI(Ancestor):
         return ans
 
     def update_urlhaus_database(self) -> None:
-        r = requests.get(url="https://urlhaus.abuse.ch/downloads/csv_online/")
+        response = requests.get(url="https://urlhaus.abuse.ch/downloads/csv_online/")
         with open("urlhaus_database/malicious_urls.csv", "w") as fd:
-            fd.write(r.text)
+            fd.write(response.text)
         self.logger.info("URLHaus database updated")
