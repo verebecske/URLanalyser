@@ -12,9 +12,8 @@ class Malaut(Ancestor):
     def create_screenshot(self, url: str, path: str) -> None:
         resp = requests.get(url)
         try:
-            os.system(
-                f"chromium-browser --no-sandbox --headless --screenshot='{path}' {resp.url}"
-            )
+            self.call_selenium(url, path)
+            # os.system(f"chromium-browser --no-sandbox --headless --screenshot='{path}' {resp.url}")
             # --window-size=411,2000
             return
         except Exception as e:
@@ -49,3 +48,14 @@ class Malaut(Ancestor):
 
     def collect(self, url):
         pass
+
+    def call_selenium(self, url: str, path:str):
+        firefox_options = webdriver.FirefoxOptions()
+        driver = webdriver.Remote(
+            command_executor="http://selenium-hub:4444/wd/hub",
+            options=firefox_options,
+        )
+        driver.get(url)
+        driver.save_screenshot(path)
+        driver.quit()
+
