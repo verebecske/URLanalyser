@@ -20,6 +20,14 @@ class DBot(Ancestor):
     def __init__(self, config: dict) -> None:
         super().__init__()
         self.mytoken = config["token"]
+        if "urlanlayser_host" in config:
+            self.urlanlayser_host = config["urlanlayser_host"]
+        else:
+            self.urlanlayser_host = "urlanalyser-urlanalyser-1"
+        if "urlanalyser_port" in config:
+            self.urlanlayser_port = config["urlanalyser_port"]
+        else:
+            self.urlanlayser_port = 5000
 
     def set_intents(self) -> None:
         self.logger.info("Set discord client")
@@ -39,8 +47,8 @@ class DBot(Ancestor):
             intents=self.intents,
         )
         config = {
-            "host": "urlanalyser-urlanalyser-1",
-            "port": 5000,
+            "host": self.urlanlayser_host,
+            "port": self.urlanlayser_port,
         }
         bot.set_urlanalyser(config)
         bot.run(self.mytoken)
