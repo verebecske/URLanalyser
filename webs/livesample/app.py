@@ -60,7 +60,17 @@ def read_from_file_malicious_url() -> str:
         for line in file:
             if not line.startswith("#") and not line == "":
                 datas = line.split('","')
-                id,dateadded,url,url_status,last_online,threat,tags,urlhaus_link,reporter = datas
+                (
+                    id,
+                    dateadded,
+                    url,
+                    url_status,
+                    last_online,
+                    threat,
+                    tags,
+                    urlhaus_link,
+                    reporter,
+                ) = datas
                 record[id.replace('"', "")] = {
                     "id": id.replace('"', ""),
                     "url": url,

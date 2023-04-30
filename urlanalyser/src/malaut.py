@@ -49,7 +49,7 @@ class Malaut(Ancestor):
     def collect(self, url):
         pass
 
-    def call_selenium(self, url: str, path:str):
+    def call_selenium(self, url: str, path: str):
         firefox_options = webdriver.FirefoxOptions()
         driver = webdriver.Remote(
             command_executor="http://selenium-hub:4444/wd/hub",
@@ -58,4 +58,3 @@ class Malaut(Ancestor):
         driver.get(url)
         driver.save_screenshot(path)
         driver.quit()
-

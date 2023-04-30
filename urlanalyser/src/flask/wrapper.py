@@ -6,10 +6,12 @@ from src.ancestor import Ancestor
 from werkzeug.exceptions import HTTPException, BadRequest, InternalServerError
 from enum import Enum
 
+
 class BadRequestType(Enum):
     MISSING_URL = "Missing URL"
     INVALID_URL = "Invalid URL"
     INVALID_CONTENT_TYPE = "Invalid Content-Type"
+
 
 class FlaskAppWrapper(Ancestor):
     analyser: URLAnalyser
@@ -84,7 +86,6 @@ class FlaskAppWrapper(Ancestor):
         if not self.analyser.valid_url(data["url"]):
             raise BadRequest(description=BadRequestType.INVALID_URL)
         return data["url"]
-
 
     def _encode_url(self, url: str):
         return base64.urlsafe_b64encode(url.encode()).decode()

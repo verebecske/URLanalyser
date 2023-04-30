@@ -218,9 +218,9 @@ class DiscordClient(commands.Bot, Ancestor):
 
     async def _send_screenshot(self, url: str, channel) -> str:
         await self._send_answer(
-                f"Taking screenshot can be slow - thank for your patient",
-                channel,
-            )
+            f"Taking screenshot can be slow - thank for your patient",
+            channel,
+        )
         response = requests.get(
             f"{self.urlanalyser_url}/get_screenshot?url={self._encode_url(url)}"
         )
