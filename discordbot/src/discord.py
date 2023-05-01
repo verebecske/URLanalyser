@@ -55,7 +55,7 @@ class DBot(Ancestor):
 
 
 class DiscordClient(commands.Bot, Ancestor):
-    debug = True
+    debug = False
     log_channel = None
 
     def __init__(self, command_prefix, intents):
@@ -170,6 +170,33 @@ class DiscordClient(commands.Bot, Ancestor):
             self.logger.error(f"Error happened: {error}")
         return False
 
+    def _set_helper_text(self) -> str:
+        help_message = (
+            "**Commands:**\n\n"
+            + "!help - send this text\n"
+            + "!index - test message to urlanalyser\n"
+            + "!url [url] - inspect url\n"
+            + "!screenshot [url] - create a screenshot about the webpage and send it back\n"
+            + "!virustotal [url] - send url to virustotal \n"
+            + "!urlhaus [url] - send url to urlhaus \n"
+            + "!geoip [url] - send url to geoip \n"
+            + "!history [url] - get url redirect path \n"
+            + "\n_If you have any question ask:_\n"
+            + "my creator: https://t.me/trulr"
+        )
+        return help_message
+
+    async def _index_command(self, channel):
+        try:
+            response = requests.get(f"{self.urlanalyser_url}")
+            if response.status_code == 200:
+                answer = response.json()["message"]
+        except Exception as error:
+            answer = "Something went wrong"
+            self.logger.error(f"Error happened: {error}")
+        return answer
+
+
     async def _read_direct_message(self, message) -> str:
         req: str = message["content"]
         user: str = message["author"]
@@ -181,8 +208,11 @@ class DiscordClient(commands.Bot, Ancestor):
             replay = f"**{user}** sent me:\n\t{req}"
             await self._send_answer(replay, channel)
         urls = self._filter_urls(req)
-        if message.startswith("!help"):
-            return "helper message"
+        if req.startswith("!help"):
+            return self._set_helper_text()
+        if req.startswith("!index"):
+            return await self._index_command(channel)
+
         if urls == []:
             return "Missing URL"
         else:
@@ -197,6 +227,7 @@ class DiscordClient(commands.Bot, Ancestor):
             }
         screenshot = False
         ask_api = True
+        answer = ""
         if message.startswith("!url"):
             settings["urlhaus"] = True
             settings["virustotal"] = True

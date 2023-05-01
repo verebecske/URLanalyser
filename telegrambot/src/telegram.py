@@ -230,7 +230,7 @@ class TBot(Ancestor):
             + "/geoip [url] - send url to geoip \n"
             + "/history [url] - get url redirect path \n"
             + "\n_If you have any question ask:_\n"
-            + "[my creater](https://t.me/trulr)"
+            + "[my creator](https://t.me/trulr)"
         )
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
