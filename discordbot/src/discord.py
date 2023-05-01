@@ -181,26 +181,54 @@ class DiscordClient(commands.Bot, Ancestor):
             replay = f"**{user}** sent me:\n\t{req}"
             await self._send_answer(replay, channel)
         urls = self._filter_urls(req)
+        if message.startswith("!help"):
+            return "helper message"
         if urls == []:
-            replay = "Missing URL"
+            return "Missing URL"
         else:
-            replay = await self._send_to_analyser(urls, channel)
-        return replay
+            return await self._choose_command(urls, req, channel)
 
-    async def _send_to_analyser(self, urls: list, channel) -> str:
-        for url in urls:
-            settings = {
-                "url": url,
-                "urlhaus": True,
-                "virustotal": True,
-                "geoip": True,
-                "history": True,
+    async def _choose_command(self, urls:list, message: str, channel) -> str:
+        settings = {
+                "urlhaus": False,
+                "virustotal": False,
+                "geoip": False,
+                "history": False,
             }
-            answer = self._ask_urlanalyser_api(url, settings)
-            for key in answer.keys():
-                result = str(answer[key])
-                await self._send_answer(f"**{key}**: {result}", channel)
-            await self._send_screenshot(url, channel)
+        screenshot = False
+        ask_api = True
+        if message.startswith("!url"):
+            settings["urlhaus"] = True
+            settings["virustotal"] = True
+            settings["geoip"] = True
+            settings["history"] = True
+            screenshot = True
+        elif message.startswith("!urlhaus"):
+            settings["urlhaus"] = True
+        elif message.startswith("!virustotal"):
+            settings["virustotal"] = True
+        elif message.startswith("!geoip"):
+            settings["geoip"] = True
+        elif message.startswith("!history"):
+            settings["history"] = True
+        elif message.startswith("!screenshot"):
+            screenshot = True
+            ask_api = False
+        else:
+            settings["urlhaus"] = True
+            settings["virustotal"] = True
+            settings["geoip"] = True
+            settings["history"] = True
+            screenshot = True
+        for url in urls:
+            settings["url"] = url
+            if ask_api:
+                answer = self._ask_urlanalyser_api(url, settings)
+                for key in answer.keys():
+                    result = str(answer[key])
+                    await self._send_answer(f"**{key}**: {result}", channel)
+            if screenshot:
+                await self._send_screenshot(url, channel)
         return str(answer)
 
     def _ask_urlanalyser_api(self, url: str, settings: dict) -> dict:
