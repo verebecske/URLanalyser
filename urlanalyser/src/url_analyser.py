@@ -80,5 +80,11 @@ class URLAnalyser(Ancestor):
         result["is_malicious"] = result["urlhaus"]["query_status"] == "ok"
         return result
 
+    def majority_gate(self, url: str):
+        UH = self.urlhaus_api.get_is_malicous_result(url)
+        VT = self.virustotal_api.get_is_malicous_result(url)
+        ID = True
+        return (UH and VT) or (ID and VT) or (ID and UH) 
+
     def create_data_to_redis(self, url: str) -> dict:
         pass

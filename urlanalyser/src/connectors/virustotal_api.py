@@ -25,3 +25,17 @@ class VirusTotalAPI(Ancestor):
 
     def format_answer(self, response: dict) -> dict:
         return response["data"]["attributes"]["last_analysis_stats"]
+
+    def get_is_malicous_result(self, url) -> bool: 
+        try:
+            result = self.send_request(url)
+            harmless = int(result["harmless"])
+            malicious = int(result["malicious"])
+            suspicious = int(result["suspicious"])
+            timeout = int(result["timeout"])
+            undetected = int(result["undetected"])
+            sum_all = sum(result.values(), int())
+            sum_suspicious = malicious + suspicious
+            return sum_suspicious / sum_all > 0.05
+        except: 
+            return True
