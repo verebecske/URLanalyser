@@ -4,31 +4,26 @@ import socket
 import requests
 
 
-class IPWhoAPI(Ancestor):
-    config: dict
-
+class DomageAPI(Ancestor):
     def __init__(self, config: dict):
         super().__init__()
-        self.config = config
 
-    def get_ip(self, url: str) -> str:
+    def get_domain(self, url: str) -> str:
         pattern = r"(http(s)?://)?([a-z0-9-]+\.)+[a-z0-9]+"
         domain = re.match(pattern, url)[0]
         if "http" in domain:
             domain = domain.split("//")[1]
-        ip_addr = socket.gethostbyname(domain)
-        return ip_addr
+        return domain
 
-    def get_geoip(self, url: str) -> dict:
-        ip_addr = self.get_ip(url)
-        response = requests.get(f"http://ipwho.is/{ip_addr}")
+    def get_domain_age(self, url: str) -> dict:
+        domain = self.get_domain(url)
+        response = requests.get(
+            f"https://ipty.de/domage/api.php?domain={domain}&mode=full"
+        )
         if response.status_code == 200:
             return self.format_answer(response.json())
         else:
             return {"error": response.text}
 
     def format_answer(self, response: dict) -> dict:
-        return response["country"]
-
-
-# https://www.ip2location.io/ip2whois-documentation ez is hasznos lehet
+        return response["result"]["creation"]

@@ -154,3 +154,12 @@ class FlaskAppWrapper(Ancestor):
         except Exception as error:
             self.logger.error(f"Error occured while checking url history: {error}")
             raise InternalServerError()
+
+    def get_domain_reputation(self):
+        pass
+
+    def get_domain_age(self):
+        pass
+
+    def download_as_zip(self):
+        pass

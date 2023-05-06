@@ -10,7 +10,7 @@ class URLHausAPI(Ancestor):
     def __init__(self, config: dict):
         super().__init__()
         self.config = config
-        self.path = "urlhaus_database/csv.csv"
+        self.path = "static_database/urlhaus/csv.csv"
 
     def send_request(self, url: str) -> dict:
         data = {"url": url}
@@ -111,6 +111,6 @@ class URLHausAPI(Ancestor):
 
     def update_urlhaus_database(self) -> None:
         response = requests.get(url="https://urlhaus.abuse.ch/downloads/csv_online/")
-        with open("urlhaus_database/malicious_urls.csv", "w") as fd:
+        with open("static_database/urlhaus/malicious_urls.csv", "w") as fd:
             fd.write(response.text)
         self.logger.info("URLHaus database updated")

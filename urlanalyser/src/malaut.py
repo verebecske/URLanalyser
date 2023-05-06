@@ -58,3 +58,6 @@ class Malaut(Ancestor):
         driver.get(url)
         driver.save_screenshot(path)
         driver.quit()
+
+    def collect_data(self, url: str):
+        pass
