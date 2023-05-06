@@ -4,7 +4,7 @@ import socket
 import requests
 
 
-class IPWhoAPI(Ancestor):
+class IP2LocationAPI(Ancestor):
     config: dict
 
     def __init__(self, config: dict):
@@ -21,12 +21,22 @@ class IPWhoAPI(Ancestor):
 
     def get_geoip(self, url: str) -> dict:
         ip_addr = self.get_ip(url)
-        response = requests.get(f"http://ipwho.is/{ip_addr}")
+        response = requests.get(
+            f"https://api.ip2location.io/?key={api_key}&ip={ip_addr}"
+        )
         if response.status_code == 200:
             return self.format_answer(response.json())
         else:
             return {"error": response.text}
 
     def format_answer(self, response: dict) -> dict:
-        return response["country"]
+        return response["country"]  # elavult
 
+    def get_domain_whois(self, url):
+        response = requests.get(
+            f"https://api.ip2whois.com/v2?key={api_key}&domain={domain}"
+        )
+        if response.status_code == 200:
+            return self.format_answer(response.json())
+        else:
+            return {"error": response.text}
