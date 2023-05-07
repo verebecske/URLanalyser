@@ -55,7 +55,7 @@ class ManagerRob(Ancestor):
                 urlhaus_api=urlhaus_api,
                 virustotal_api=virustotal_api,
                 malaut=malaut,
-                domage_api =domage_api,
+                domage_api=domage_api,
                 redis=redis,
             )
         else:
@@ -72,7 +72,7 @@ class ManagerRob(Ancestor):
                 urlhaus_api=urlhaus_api,
                 virustotal_api=virustotal_api,
                 ipvoid_api=ipvoid_api,
-                domage_api =domage_api,
+                domage_api=domage_api,
                 malaut=malaut,
                 redis=redis,
             )

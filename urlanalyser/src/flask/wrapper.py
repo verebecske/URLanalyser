@@ -48,7 +48,10 @@ class FlaskAppWrapper(Ancestor):
             "/get_infos", "get_infos", self.get_infos, methods=["POST"]
         )
         self.app.add_url_rule(
-            "/get_domain_reputation", "get_domain_reputation", self.get_domain_reputation, methods=["GET"]
+            "/get_domain_reputation",
+            "get_domain_reputation",
+            self.get_domain_reputation,
+            methods=["GET"],
         )
         self.app.add_url_rule(
             "/get_domain_age", "get_domain_age", self.get_domain_age, methods=["GET"]
@@ -200,7 +203,9 @@ class FlaskAppWrapper(Ancestor):
         except BadRequest as error:
             raise
         except Exception as error:
-            self.logger.error(f"Error occured while checking domain reputation: {error}")
+            self.logger.error(
+                f"Error occured while checking domain reputation: {error}"
+            )
             raise InternalServerError()
 
     def download_as_zip(self):

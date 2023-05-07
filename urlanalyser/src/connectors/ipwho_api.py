@@ -29,4 +29,3 @@ class IPWhoAPI(Ancestor):
 
     def format_answer(self, response: dict) -> dict:
         return response["country"]
-

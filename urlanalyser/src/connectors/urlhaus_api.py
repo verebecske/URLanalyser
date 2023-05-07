@@ -24,12 +24,15 @@ class URLHausAPI(Ancestor):
         result = self.send_request(url)
         try:
             match response["query_status"]:
-                case "invalid_url": return False
-                case "no_result": return False
-                case "ok": return True
-        except: 
+                case "invalid_url":
+                    return False
+                case "no_result":
+                    return False
+                case "ok":
+                    return True
+        except:
             pass
-        return True    
+        return True
 
     def in_urlhaus_database(self, url: str) -> bool:
         with open(self.path) as file:

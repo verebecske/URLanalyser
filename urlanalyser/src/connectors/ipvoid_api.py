@@ -7,9 +7,9 @@ import requests
 class IPVoidAPI(Ancestor):
     config: dict
 
-# IP-t ker
-# ThreatLog.com -ot meg integrald
-# URL Reputation!!!
+    # IP-t ker
+    # ThreatLog.com -ot meg integrald
+    # URL Reputation!!!
 
     def __init__(self, config: dict):
         super().__init__()
@@ -27,12 +27,15 @@ class IPVoidAPI(Ancestor):
         result = self.send_request(url)
         try:
             match response["query_status"]:
-                case "invalid_url": return False
-                case "no_result": return False
-                case "ok": return True
-        except: 
+                case "invalid_url":
+                    return False
+                case "no_result":
+                    return False
+                case "ok":
+                    return True
+        except:
             pass
-        return True    
+        return True
 
     def format_answer(self, response: dict) -> dict:
         return response["country"]

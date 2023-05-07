@@ -2,7 +2,9 @@ import requests
 import os
 from selenium import webdriver
 from src.ancestor import Ancestor
+
 # from py7zr import SevenZipFile
+
 
 class Malaut(Ancestor):
     def __init__(self, config: dict):

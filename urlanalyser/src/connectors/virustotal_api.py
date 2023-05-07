@@ -26,7 +26,7 @@ class VirusTotalAPI(Ancestor):
     def format_answer(self, response: dict) -> dict:
         return response["data"]["attributes"]["last_analysis_stats"]
 
-    def get_is_malicous_result(self, url) -> bool: 
+    def get_is_malicous_result(self, url) -> bool:
         try:
             result = self.send_request(url)
             harmless = int(result["harmless"])
@@ -37,5 +37,5 @@ class VirusTotalAPI(Ancestor):
             sum_all = sum(result.values(), int())
             sum_suspicious = malicious + suspicious
             return sum_suspicious / sum_all > 0.05
-        except: 
+        except:
             return True
