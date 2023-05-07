@@ -199,16 +199,16 @@ class DiscordClient(commands.Bot, Ancestor):
     async def _domain_age_command(self, channel, url):
         return await self.send_get_request("get_domain_age", url)
 
-    async def _domain_reputation_command(self, channel):
+    async def _domain_reputation_command(self, channel, url):
         return await self.send_get_request("get_domain_reputation", url)
 
-    async def _history_command(self, channel):
+    async def _history_command(self, channel, url):
         return await self.send_get_request("get_history", url)
 
-    async def _location_command(self, channel):
+    async def _location_command(self, channel, url):
         return await self.send_get_request("get_location", url)
 
-    async def _download_command(self, channel):
+    async def _download_command(self, channel, url):
         return await self.send_get_request("download_as_zip", url)
 
     async def send_get_request(self, endpoint, url):
@@ -240,15 +240,15 @@ class DiscordClient(commands.Bot, Ancestor):
         if urls == []:
             return "Missing URL"
         if req.startswith("!domain_age"):
-            return await self._domain_age_command(channel)
+            return await self._domain_age_command(channel, url)
         if req.startswith("!domain_reputation"):
-            return await self._domain_reputation_command(channel)
+            return await self._domain_reputation_command(channel, url)
         if req.startswith("!download"):
-            return await self._download_as_zip_command(channel)
+            return await self._download_as_zip_command(channel, url)
         if req.startswith("!history"):
-            return await self._history_command(channel)
+            return await self._history_command(channel, url)
         if req.startswith("!location"):
-            return await self._location_command(channel)
+            return await self._location_command(channel, url)
         else:
             return await self._choose_command(urls, req, channel)
 
