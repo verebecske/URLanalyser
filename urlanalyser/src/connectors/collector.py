@@ -2,12 +2,16 @@ from ancestor import Ancestor
 
 
 class Collector(Ancestor):
+    def send_request_and_save_result(self, url, filename):
+        response = requests.get(url=url)
+        with open("static_database/{filename}", "w") as fd:
+            fd.write(response.text)
+        self.logger.info("{filename} database updated")
 
     def get_blacklists_all(self):
-        response = requests.get(url="http://blacklists.co/download/all.txt")
-        with open("static_database/urlhaus/blacklists_co_all.txt", "w") as fd:
-            fd.write(response.text)
-        self.logger.info("Blacklists.co database updated")
+        url = "http://blacklists.co/download/all.txt"
+        filename = "blacklist_co.txt"
+        self.send_request_and_save_result(url, filename)
 
     def get_azorult_tracker(self):
         pass
@@ -29,7 +33,7 @@ class Collector(Ancestor):
         pass
         # https://greensnow.co/
 
-    def get_gpf_dns_block_list(self): # maybe not
+    def get_gpf_dns_block_list(self):  # maybe not
         pass
         # https://www.gpf-comics.com/dnsbl/export.php
 
@@ -46,3 +50,22 @@ class Collector(Ancestor):
         pass
         # https://github.com/stamparm/ipsum
         # ez eleg kiraly
+
+    def get_rim(self):
+        pass
+        # https://rjmblocklist.com/
+
+    def collect_many(self):
+        source = {
+            "urlvir": "https://www.urlvir.com/",
+            "tweetfeed": "https://github.com/0xDanielLopez/TweetFeed",
+            "threatlog": "https://www.threatlog.com/",
+            "threat sourcing": "https://www.threatsourcing.com/",
+            "openphish": "https://openphish.com/",
+            "nordspam": "https://www.nordspam.com/",
+            "mirai": "https://mirai.security.gives/data/ip_list.txt",
+            "nubi_network": "https://www.nubi-network.com/list.txt",
+            "liquidbinary": "http://liquidbinary.com/blackIPs.txt",
+            "sigs_interserver": "http://sigs.interserver.net/iprbl.txt",
+            "blisxfr": "https://bl.isx.fr/raw",
+        }
