@@ -196,6 +196,31 @@ class DiscordClient(commands.Bot, Ancestor):
             self.logger.error(f"Error happened: {error}")
         return answer
 
+    async def _domain_age_command(self, channel, url):
+        return await self.send_get_request("get_domain_age", url)
+
+    async def _domain_reputation_command(self, channel):
+        return await self.send_get_request("get_domain_reputation", url)
+
+    async def _history_command(self, channel):
+        return await self.send_get_request("get_history", url)
+
+    async def _location_command(self, channel):
+        return await self.send_get_request("get_location", url)
+
+    async def _download_command(self, channel):
+        return await self.send_get_request("download_as_zip", url)
+
+    async def send_get_request(self, endpoint, url):
+        try:
+            response = requests.get(f"{self.urlanalyser_url}/{endpoint}?url={url}")
+            if response.status_code == 200:
+                answer = response.json()["message"]
+        except Exception as error:
+            answer = "Something went wrong"
+            self.logger.error(f"Error happened: {error}")
+        return answer
+  
 
     async def _read_direct_message(self, message) -> str:
         req: str = message["content"]
@@ -212,9 +237,18 @@ class DiscordClient(commands.Bot, Ancestor):
             return self._set_helper_text()
         if req.startswith("!index"):
             return await self._index_command(channel)
-
         if urls == []:
             return "Missing URL"
+        if req.startswith("!domain_age"):
+            return await self._domain_age_command(channel)
+        if req.startswith("!domain_reputation"):
+            return await self._domain_reputation_command(channel)
+        if req.startswith("!download"):
+            return await self._download_as_zip_command(channel)
+        if req.startswith("!history"):
+            return await self._history_command(channel)
+        if req.startswith("!location"):
+            return await self._location_command(channel)
         else:
             return await self._choose_command(urls, req, channel)
 
@@ -238,10 +272,6 @@ class DiscordClient(commands.Bot, Ancestor):
             settings["urlhaus"] = True
         elif message.startswith("!virustotal"):
             settings["virustotal"] = True
-        elif message.startswith("!location"):
-            settings["location"] = True
-        elif message.startswith("!history"):
-            settings["history"] = True
         elif message.startswith("!screenshot"):
             screenshot = True
             ask_api = False

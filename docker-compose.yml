@@ -40,16 +40,16 @@ services:
             driver: "json-file"
             options:
                 tag: "urlanalyser"
-    # discord-bot:
-    #     build: 
-    #         context: ./discordbot/
-    #         dockerfile: Dockerfile
-    #     logging:
-    #         driver: "json-file"
-    #         options:
-    #             tag: "discord-bot"
-    #     volumes: 
-    #         - ./discordbot/:/usr/src/
+    discord-bot:
+        build: 
+            context: ./discordbot/
+            dockerfile: Dockerfile
+        logging:
+            driver: "json-file"
+            options:
+                tag: "discord-bot"
+        volumes: 
+            - ./discordbot/:/usr/src/
     telegram-bot:
         build: 
             context: ./telegrambot/
