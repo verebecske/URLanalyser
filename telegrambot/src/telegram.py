@@ -56,6 +56,12 @@ class TBot(Ancestor):
         domain_age_handler = CommandHandler("domain_age", self.domain_age_handler)
         application.add_handler(domain_age_handler)
 
+        domain_reputation_handler = CommandHandler("domain_reputation", self.domain_reputation_handler)
+        application.add_handler(domain_reputation_handler)
+
+        download_as_zip_handler = CommandHandler("download", self.download_as_zip_handler)
+        application.add_handler(download_as_zip_handler)
+
         history_handler = CommandHandler("history", self.history_handler)
         application.add_handler(history_handler)
 
@@ -139,6 +145,26 @@ class TBot(Ancestor):
             raise ValueError("Missing URL")
         for url in urls:
             await self.send_request_and_answer("get_domain_age", url, update, context)
+
+    async def domain_reputation_handler(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ):
+        message = update.message.text
+        urls = self.filter_urls(message)
+        if len(urls) == 0:
+            raise ValueError("Missing URL")
+        for url in urls:
+            await self.send_request_and_answer("get_domain_reputation", url, update, context)
+
+    async def download_as_zip_handler(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ):
+        message = update.message.text
+        urls = self.filter_urls(message)
+        if len(urls) == 0:
+            raise ValueError("Missing URL")
+        for url in urls:
+            await self.send_request_and_answer("download_as_zip", url, update, context)
 
     async def virustotal_handler(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
