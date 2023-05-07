@@ -44,6 +44,15 @@ class FlaskAppWrapper(Ancestor):
         self.app.add_url_rule(
             "/get_infos", "get_infos", self.get_infos, methods=["POST"]
         )
+        self.app.add_url_rule(
+            "/get_domain_reputation", "get_domain_reputation", self.get_infos, methods=["POST"]
+        )
+        self.app.add_url_rule(
+            "/get_domain_age", "get_domain_age", self.get_infos, methods=["POST"]
+        )
+        self.app.add_url_rule(
+            "/download_as_zip", "download_as_zip", self.get_infos, methods=["POST"]
+        )
 
     def _add_errors(self) -> None:
         self.app.register_error_handler(400, self._handle_bad_request)
@@ -155,11 +164,38 @@ class FlaskAppWrapper(Ancestor):
             self.logger.error(f"Error occured while checking url history: {error}")
             raise InternalServerError()
 
-    def get_domain_reputation(self):
-        pass
-
     def get_domain_age(self):
-        pass
+        try:
+            self.logger.info(f"Get request: {request.json}")
+            url = self._get_url_from_get_request()
+            path_list = self.analyser.get_domain_age(url)
+            return jsonify({"result": path_list, "url": self._encode_url(url)}), 200
+        except BadRequest as error:
+            raise
+        except Exception as error:
+            self.logger.error(f"Error occured while checking domain age: {error}")
+            raise InternalServerError()
+
+    def get_domain_reputation(self):
+        try:
+            self.logger.info(f"Get request: {request.json}")
+            url = self._get_url_from_get_request()
+            path_list = self.analyser.get_domain_reputation(url)
+            return jsonify({"result": path_list, "url": self._encode_url(url)}), 200
+        except BadRequest as error:
+            raise
+        except Exception as error:
+            self.logger.error(f"Error occured while checking domain reputation: {error}")
+            raise InternalServerError()
 
     def download_as_zip(self):
-        pass
+        try:
+            self.logger.info(f"Get request: {request.json}")
+            url = self._get_url_from_get_request()
+            path_list = self.analyser.send_as_protected_zip(url)
+            return jsonify({"result": path_list, "url": self._encode_url(url)}), 200
+        except BadRequest as error:
+            raise
+        except Exception as error:
+            self.logger.error(f"Error occured while checking url history: {error}")
+            raise InternalServerError()
