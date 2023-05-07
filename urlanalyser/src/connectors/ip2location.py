@@ -19,7 +19,7 @@ class IP2LocationAPI(Ancestor):
         ip_addr = socket.gethostbyname(domain)
         return ip_addr
 
-    def get_geoip(self, url: str) -> dict:
+    def get_location(self, url: str) -> dict:
         ip_addr = self.get_ip(url)
         response = requests.get(
             f"https://api.ip2location.io/?key={api_key}&ip={ip_addr}"

@@ -50,8 +50,11 @@ class TBot(Ancestor):
         urlhaus_handler = CommandHandler("urlhaus", self.urlhaus_handler)
         application.add_handler(urlhaus_handler)
 
-        geoip_handler = CommandHandler("geoip", self.geoip_handler)
-        application.add_handler(geoip_handler)
+        location_handler = CommandHandler("location", self.location_handler)
+        application.add_handler(location_handler)
+
+        domain_age_handler = CommandHandler("domain_age", self.domain_age_handler)
+        application.add_handler(domain_age_handler)
 
         history_handler = CommandHandler("history", self.history_handler)
         application.add_handler(history_handler)
@@ -117,7 +120,7 @@ class TBot(Ancestor):
                 text=f"Error happend while processing {url} - please send your message again",
             )
 
-    async def geoip_handler(
+    async def location_handler(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ):
         message = update.message.text
@@ -125,7 +128,7 @@ class TBot(Ancestor):
         if len(urls) == 0:
             raise ValueError("Missing URL")
         for url in urls:
-            await self.send_request_and_answer("get_geoip", url, update, context)
+            await self.send_request_and_answer("get_location", url, update, context)
 
     async def domain_age_handler(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
@@ -135,7 +138,7 @@ class TBot(Ancestor):
         if len(urls) == 0:
             raise ValueError("Missing URL")
         for url in urls:
-            await self.send_request_and_answer("domain_age", url, update, context)
+            await self.send_request_and_answer("get_domain_age", url, update, context)
 
     async def virustotal_handler(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
@@ -143,10 +146,10 @@ class TBot(Ancestor):
         settings = {
             "urlhaus": False,
             "virustotal": True,
-            "geoip": False,
+            "location": False,
             "history": False,
         }
-        self.collect_urls_and_send_get_infos(
+        await self.collect_urls_and_send_get_infos(
             message=update.message.text,
             settings=settings,
             update=update,
@@ -157,24 +160,24 @@ class TBot(Ancestor):
         settings = {
             "urlhaus": True,
             "virustotal": False,
-            "geoip": False,
+            "location": False,
             "history": False,
         }
-        self.collect_urls_and_send_get_infos(
+        await self.collect_urls_and_send_get_infos(
             message=update.message.text,
             settings=settings,
             update=update,
             context=context,
         )
 
-    async def _geoip_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+    async def _location_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         settings = {
             "urlhaus": False,
             "virustotal": False,
-            "geoip": True,
+            "location": True,
             "history": False,
         }
-        self.collect_urls_and_send_get_infos(
+        await self.collect_urls_and_send_get_infos(
             message=update.message.text,
             settings=settings,
             update=update,
@@ -185,10 +188,10 @@ class TBot(Ancestor):
         settings = {
             "urlhaus": False,
             "virustotal": False,
-            "geoip": False,
+            "location": False,
             "history": True,
         }
-        self.collect_urls_and_send_get_infos(
+        await self.collect_urls_and_send_get_infos(
             message=update.message.text,
             settings=settings,
             update=update,
@@ -273,7 +276,8 @@ class TBot(Ancestor):
             + "/check [url] - just a quick test about the url \n"
             + "/virustotal [url] - send url to virustotal \n"
             + "/urlhaus [url] - send url to urlhaus \n"
-            + "/geoip [url] - send url to geoip \n"
+            + "/location [url] - send url to location \n"
+            + "/domain_age [url] - send url to domain age \n"
             + "/history [url] - get url redirect path \n"
             + "\n_If you have any question ask:_\n"
             + "[my creator](https://t.me/trulr)"
@@ -305,3 +309,6 @@ class TBot(Ancestor):
 
     def _decode_url(self, url: str):
         return base64.urlsafe_b64decode(url.encode()).decode()
+
+    def _format_answer(self, text) -> str:
+        pass

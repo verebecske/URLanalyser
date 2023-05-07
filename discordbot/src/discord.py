@@ -179,7 +179,7 @@ class DiscordClient(commands.Bot, Ancestor):
             + "!screenshot [url] - create a screenshot about the webpage and send it back\n"
             + "!virustotal [url] - send url to virustotal \n"
             + "!urlhaus [url] - send url to urlhaus \n"
-            + "!geoip [url] - send url to geoip \n"
+            + "!location [url] - send url to location \n"
             + "!history [url] - get url redirect path \n"
             + "\n_If you have any question ask:_\n"
             + "my creator: https://t.me/trulr"
@@ -222,7 +222,7 @@ class DiscordClient(commands.Bot, Ancestor):
         settings = {
                 "urlhaus": False,
                 "virustotal": False,
-                "geoip": False,
+                "location": False,
                 "history": False,
             }
         screenshot = False
@@ -231,15 +231,15 @@ class DiscordClient(commands.Bot, Ancestor):
         if message.startswith("!url"):
             settings["urlhaus"] = True
             settings["virustotal"] = True
-            settings["geoip"] = True
+            settings["location"] = True
             settings["history"] = True
             screenshot = True
         elif message.startswith("!urlhaus"):
             settings["urlhaus"] = True
         elif message.startswith("!virustotal"):
             settings["virustotal"] = True
-        elif message.startswith("!geoip"):
-            settings["geoip"] = True
+        elif message.startswith("!location"):
+            settings["location"] = True
         elif message.startswith("!history"):
             settings["history"] = True
         elif message.startswith("!screenshot"):
@@ -248,7 +248,7 @@ class DiscordClient(commands.Bot, Ancestor):
         else:
             settings["urlhaus"] = True
             settings["virustotal"] = True
-            settings["geoip"] = True
+            settings["location"] = True
             settings["history"] = True
             screenshot = True
         for url in urls:

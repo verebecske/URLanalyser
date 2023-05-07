@@ -4,6 +4,7 @@ from src.connectors.urlhaus_api import URLHausAPI
 from src.connectors.virustotal_api import VirusTotalAPI
 from src.connectors.ipvoid_api import IPVoidAPI
 from src.connectors.redis_database import RedisDatabase
+from src.connectors.domage_api import DomageAPI
 from src.ancestor import Ancestor
 from src.malaut import Malaut
 
@@ -16,6 +17,7 @@ class URLAnalyser(Ancestor):
         urlhaus_api: URLHausAPI,
         virustotal_api: VirusTotalAPI,
         ipvoid_api: IPVoidAPI,
+        domage_api: DomageAPI,
         malaut: Malaut,
         redis: RedisDatabase,
     ):
@@ -23,6 +25,7 @@ class URLAnalyser(Ancestor):
         self.ipwho_api = ipwho_api
         self.urlhaus_api = urlhaus_api
         self.virustotal_api = virustotal_api
+        self.domage_api = domage_api
         self.malaut = malaut
         self.redis = redis
 
@@ -41,8 +44,8 @@ class URLAnalyser(Ancestor):
                 result["urlhaus"] = self.urlhaus_api.send_request(url)
             if "virustotal" in datas.keys() and not datas["virustotal"] == False:
                 result["virustotal"] = self.virustotal_api.send_request(url)
-            if "geoip" in datas.keys() and not datas["geoip"] == False:
-                result["geoip"] = self.get_geoip(url)
+            if "location" in datas.keys() and not datas["location"] == False:
+                result["location"] = self.get_location(url)
             if "history" in datas.keys() and not datas["history"] == False:
                 url = self.create_valid_url(url)
                 result["history"] = self.malaut.get_history(url)
@@ -52,11 +55,11 @@ class URLAnalyser(Ancestor):
         else:
             raise ValueError("invalid URL")
 
-    def get_geoip(self, url):
-        return self.ipwho_api.get_geoip(url)
+    def get_location(self, url):
+        return self.ipwho_api.get_location(url)
 
     def get_domain_age(self, url):
-        return self.domage.get_domain_age(url)
+        return self.domage_api.get_domain_age(url)
 
     def create_valid_url(self, url: str) -> str:
         if not url.startswith("http"):

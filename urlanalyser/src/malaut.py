@@ -2,7 +2,7 @@ import requests
 import os
 from selenium import webdriver
 from src.ancestor import Ancestor
-from py7zr import SevenZipFile
+# from py7zr import SevenZipFile
 
 class Malaut(Ancestor):
     def __init__(self, config: dict):
@@ -63,7 +63,7 @@ class Malaut(Ancestor):
     def create_7z_file(self):
         original_file_path = ""
         compressed_file_path = ""
-        password = self.generate_password()
-        with SevenZipFile(compressed_file_path, 'w', password=password) as arc:
-            arc.writeall(original_file_path)
+        # password = self.generate_password()
+        # with SevenZipFile(compressed_file_path, 'w', password=password) as arc:
+        #     arc.writeall(original_file_path)
         return compressed_file_path, password

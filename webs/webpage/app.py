@@ -11,7 +11,7 @@ def encode_settings(settings: dict) -> str:
     res = [
         int(settings["urlhaus"]),
         int(settings["virustotal"]),
-        int(settings["geoip"]),
+        int(settings["location"]),
     ]
     return "".join([str(i) for i in res])
 
@@ -39,14 +39,14 @@ def home():
         url = request.form["url"]
         urlhaus = request.form.get("urlhaus", False)
         virustotal = request.form.get("virustotal", False)
-        geoip = request.form.get("geoip", False)
+        location = request.form.get("location", False)
         screenshot = request.form.get("screenshot", False)
         history = request.form.get("history", False)
         data = {
             "url": url,
             "urlhaus": urlhaus,
             "virustotal": virustotal,
-            "geoip": geoip,
+            "location": location,
             "screenshot": screenshot,
             "history": history,
         }

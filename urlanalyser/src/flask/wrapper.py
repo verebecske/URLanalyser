@@ -42,16 +42,19 @@ class FlaskAppWrapper(Ancestor):
             "/get_history", "get_history", self.get_history, methods=["GET"]
         )
         self.app.add_url_rule(
+            "/get_location", "get_location", self.get_location, methods=["GET"]
+        )
+        self.app.add_url_rule(
             "/get_infos", "get_infos", self.get_infos, methods=["POST"]
         )
         self.app.add_url_rule(
-            "/get_domain_reputation", "get_domain_reputation", self.get_infos, methods=["POST"]
+            "/get_domain_reputation", "get_domain_reputation", self.get_domain_reputation, methods=["GET"]
         )
         self.app.add_url_rule(
-            "/get_domain_age", "get_domain_age", self.get_infos, methods=["POST"]
+            "/get_domain_age", "get_domain_age", self.get_domain_age, methods=["GET"]
         )
         self.app.add_url_rule(
-            "/download_as_zip", "download_as_zip", self.get_infos, methods=["POST"]
+            "/download_as_zip", "download_as_zip", self.download_as_zip, methods=["GET"]
         )
 
     def _add_errors(self) -> None:
@@ -152,11 +155,11 @@ class FlaskAppWrapper(Ancestor):
             self.logger.error(f"Error occured while creating screenshot: {error}")
             raise InternalServerError()
 
-    def get_geoip(self):
+    def get_location(self):
         try:
-            self.logger.info(f"Get request: {request.json}")
+            self.logger.info(f"Get request: {request.data}")
             url = self._get_url_from_get_request()
-            path_list = self.analyser.get_geoip(url)
+            path_list = self.analyser.get_location(url)
             return jsonify({"result": path_list, "url": self._encode_url(url)}), 200
         except BadRequest as error:
             raise
@@ -166,7 +169,7 @@ class FlaskAppWrapper(Ancestor):
 
     def get_history(self):
         try:
-            self.logger.info(f"Get request: {request.json}")
+            self.logger.info(f"Get request: {request.data}")
             url = self._get_url_from_get_request()
             path_list = self.analyser.get_history(url)
             return jsonify({"result": path_list, "url": self._encode_url(url)}), 200
@@ -178,7 +181,7 @@ class FlaskAppWrapper(Ancestor):
 
     def get_domain_age(self):
         try:
-            self.logger.info(f"Get request: {request.json}")
+            self.logger.info(f"Get request: {request.data}")
             url = self._get_url_from_get_request()
             path_list = self.analyser.get_domain_age(url)
             return jsonify({"result": path_list, "url": self._encode_url(url)}), 200
@@ -190,7 +193,7 @@ class FlaskAppWrapper(Ancestor):
 
     def get_domain_reputation(self):
         try:
-            self.logger.info(f"Get request: {request.json}")
+            self.logger.info(f"Get request: {request.data}")
             url = self._get_url_from_get_request()
             path_list = self.analyser.get_domain_reputation(url)
             return jsonify({"result": path_list, "url": self._encode_url(url)}), 200
@@ -202,7 +205,7 @@ class FlaskAppWrapper(Ancestor):
 
     def download_as_zip(self):
         try:
-            self.logger.info(f"Get request: {request.json}")
+            self.logger.info(f"Get request: {request.data}")
             url = self._get_url_from_get_request()
             path_list = self.analyser.send_as_protected_zip(url)
             return jsonify({"result": path_list, "url": self._encode_url(url)}), 200
