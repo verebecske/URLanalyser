@@ -42,13 +42,21 @@ class URLAnalyser(Ancestor):
             if "virustotal" in datas.keys() and not datas["virustotal"] == False:
                 result["virustotal"] = self.virustotal_api.send_request(url)
             if "geoip" in datas.keys() and not datas["geoip"] == False:
-                result["geoip"] = self.ipwho_api.get_geoip(url)
+                result["geoip"] = self.get_geoip(url)
             if "history" in datas.keys() and not datas["history"] == False:
                 url = self.create_valid_url(url)
                 result["history"] = self.malaut.get_history(url)
+            if "domain_age" in datas.keys() and not datas["domain_age"] == False:
+                result["domain_age"] = self.get_domain_age(url)
             return result
         else:
             raise ValueError("invalid URL")
+
+    def get_geoip(self, url):
+        return self.ipwho_api.get_geoip(url)
+
+    def get_domain_age(self, url):
+        return self.domage.get_domain_age(url)
 
     def create_valid_url(self, url: str) -> str:
         if not url.startswith("http"):
@@ -86,7 +94,7 @@ class URLAnalyser(Ancestor):
         UH = self.urlhaus_api.get_is_malicous_result(url)
         VT = self.virustotal_api.get_is_malicous_result(url)
         IV = self.ipvoid_api.get_is_malicous_result(url)
-        return (UH and VT) or (IV and VT) or (IV and UH) 
+        return (UH and VT) or (IV and VT) or (IV and UH)
 
     def create_data_to_redis(self, url: str) -> dict:
         pass

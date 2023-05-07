@@ -91,6 +91,52 @@ class TBot(Ancestor):
                 chat_id=update.effective_chat.id, text=result
             )
 
+    async def send_request_and_answer(
+        self,
+        endpoint: str,
+        url: str,
+        update: Update,
+        context: ContextTypes.DEFAULT_TYPE,
+    ):
+        try:
+            response = requests.get(
+                f"{self.urlanalyser_url}/{endpoint}?url={self._encode_url(url)}"
+            )
+            if response.status_code == 200:
+                answer = response.json()
+            else:
+                answer = f"Something went wrong with: {url} - status code: {response.status_code}"
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id,
+                text=answer,
+            )
+        except Exception as error:
+            self.logger.error(f"Error happened: {error}")
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id,
+                text=f"Error happend while processing {url} - please send your message again",
+            )
+
+    async def geoip_handler(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ):
+        message = update.message.text
+        urls = self.filter_urls(message)
+        if len(urls) == 0:
+            raise ValueError("Missing URL")
+        for url in urls:
+            await self.send_request_and_answer("get_geoip", url, update, context)
+
+    async def domain_age_handler(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ):
+        message = update.message.text
+        urls = self.filter_urls(message)
+        if len(urls) == 0:
+            raise ValueError("Missing URL")
+        for url in urls:
+            await self.send_request_and_answer("domain_age", url, update, context)
+
     async def virustotal_handler(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
     ):
@@ -121,7 +167,7 @@ class TBot(Ancestor):
             context=context,
         )
 
-    async def geoip_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+    async def _geoip_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         settings = {
             "urlhaus": False,
             "virustotal": False,

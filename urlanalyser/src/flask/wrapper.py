@@ -152,6 +152,18 @@ class FlaskAppWrapper(Ancestor):
             self.logger.error(f"Error occured while creating screenshot: {error}")
             raise InternalServerError()
 
+    def get_geoip(self):
+        try:
+            self.logger.info(f"Get request: {request.json}")
+            url = self._get_url_from_get_request()
+            path_list = self.analyser.get_geoip(url)
+            return jsonify({"result": path_list, "url": self._encode_url(url)}), 200
+        except BadRequest as error:
+            raise
+        except Exception as error:
+            self.logger.error(f"Error occured while checking url location: {error}")
+            raise InternalServerError()
+
     def get_history(self):
         try:
             self.logger.info(f"Get request: {request.json}")
