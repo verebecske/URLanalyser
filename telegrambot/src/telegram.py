@@ -38,7 +38,7 @@ class TBot(Ancestor):
         echo_handler = MessageHandler(filters.TEXT & (~filters.COMMAND), self.echo)
         application.add_handler(echo_handler)
 
-        check_url_handler = CommandHandler("url", self.check_url_handler)
+        check_url_handler = CommandHandler("check", self.check_url_handler)
         application.add_handler(check_url_handler)
 
         screenshot_handler = CommandHandler("screenshot", self.screenshot_handler)
@@ -299,24 +299,25 @@ class TBot(Ancestor):
     async def help_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         help_message = (
             "*Commands:*\n\n"
-            + "/help - send this text\n"
-            + "/start - answer a text\n"
-            + "/index - test message to urlanalyser\n"
-            + "/url [url] - inspect url\n"
-            + "/screenshot [url] - create a screenshot about the webpage and send it back\n"
-            + "/check [url] - just a quick test about the url \n"
-            + "/virustotal [url] - send url to virustotal \n"
-            + "/urlhaus [url] - send url to urlhaus \n"
-            + "/location [url] - send url to location \n"
-            + "/domain_age [url] - send url to domain age \n"
-            + "/history [url] - get url redirect path \n"
+            + "/help \- send this text\n"
+            + "/start \- answer a text\n"
+            + "/index \- test message to urlanalyser\n"
+            + "/screenshot <url\> \- create a screenshot about the webpage and send it back\n"
+            + "/check <url\> \- just a quick test about the url \n"
+            + "/virustotal <url\> \- send url to virustotal \n"
+            + "/urlhaus <url\> \- send url to urlhaus \n"
+            + "/location <url\> \- send url to location \n"
+            + "/domain\_age <url\> \- send url to domain age \n"
+            + "/domain\_reputation <url\> \- send url to domain age \n"
+            + "/download <url\> \- download as zip \n"
+            + "/history <url\> \- get url redirect path \n"
             + "\n_If you have any question ask:_\n"
             + "[my creator](https://t.me/trulr)"
         )
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
             text=help_message,
-            parse_mode="markdown",
+            parse_mode="MarkdownV2",
         )
 
     def filter_urls(self, message: str) -> list:

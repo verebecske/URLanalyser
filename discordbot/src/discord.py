@@ -12,6 +12,8 @@ class MaliciousContentError(Exception):
     def __str__(self):
         return "Woop-woop someone send something wrong!"
 
+class ServerError(Exception):
+    pass
 
 class DBot(Ancestor):
     mytoken: str
@@ -60,13 +62,11 @@ class DBot(Ancestor):
             "server": "IngenServer",
         }
         bot.set_urlanalyser(config)
-        bot.set_botinfo(config)
         bot.run(self.mytoken)
 
 
 class DiscordClient(commands.Bot, Ancestor):
     debug = False
-    log_channel = None
 
     def __init__(self, command_prefix, intents):
         commands.Bot.__init__(self, command_prefix=command_prefix, intents=intents)
@@ -74,13 +74,14 @@ class DiscordClient(commands.Bot, Ancestor):
         self.logger.info("Start DiscordClient")
 
     def set_urlanalyser(self, config: dict) -> None:
+        self.config = config
         self.urlanalyser_url = f"http://{config['host']}:{config['port']}"
 
-    def set_botinfo(self, config: dict) -> None:
+    def _set_log_channel(self) -> None:
         for channel in self.get_all_channels():
             if (
-                channel.guild == config["server"]
-                and channel.name == config["log_channel"]
+                channel.guild == self.config["server"]
+                and channel.name == self.config["log_channel"]
             ):
                 break
         self.log_channel = channel
@@ -89,8 +90,10 @@ class DiscordClient(commands.Bot, Ancestor):
 
     async def send_message(self, channel: discord.channel, text):
         self.logger.info(f"I send: {str(text)}\nin channel: {str(channel)}")
-        if channel is not None:
+        try:
             await channel.send(text)
+        except Exception as error:
+            self.logger.error(f"Error occurred during message sending error={error}")
 
     async def on_message_delete(self, message):
         msg = f"{message.author} has deleted the message: {message.content}"
@@ -114,11 +117,11 @@ class DiscordClient(commands.Bot, Ancestor):
         if message.author == self.user:
             return
         self.logger.info(
-            f"I got: {content}\nin channel: {str(channel)}\nfrom: {str(author)}"
+            f"I got: {message.content}\nin channel: {str(message.channel)}\nfrom: {str(message.author)}"
         )
         if self.debug:
-            replay = f"**{author}** sent me:\n\t{content}"
-            await self._send_answer(replay, channel)
+            replay = f"**{message.author}** sent me:\n\t{message.content}"
+            await self._send_answer(replay, message.channel)
         if message.channel.type == discord.ChannelType.private:
             await self._read_direct_message(
                 message.content, message.author, message.channel
@@ -163,7 +166,7 @@ class DiscordClient(commands.Bot, Ancestor):
         self.logger.info(f"Results: {is_malicious}")
         return is_malicious
 
-    def _check_url(self, url: str) -> bool:
+    async def _check_url(self, url: str) -> bool:
         try:
             result = await self.send_get_request("check", url)
             return result.json()["result"]["is_malicious"]
@@ -171,21 +174,24 @@ class DiscordClient(commands.Bot, Ancestor):
             self.logger.error(f"Error happened: {error}")
         return False
 
-    def _set_helper_text(self) -> str:
-        help_message = (
+    async def _help_handler(self, channel) -> str:
+        message = (
             "**Commands:**\n\n"
             + "!help - send this text\n"
             + "!index - test message to urlanalyser\n"
-            + "!url [url] - inspect url\n"
+            + "!check [url] - inspect url\n"
             + "!screenshot [url] - create a screenshot about the webpage and send it back\n"
             + "!virustotal [url] - send url to virustotal \n"
             + "!urlhaus [url] - send url to urlhaus \n"
             + "!location [url] - send url to location \n"
             + "!history [url] - get url redirect path \n"
+            + "!domain_age [url] - Missing \n"
+            + "!domain_reputation [url] - Missing \n"
+            + "!download_as_zip [url] - Missing \n"
             + "\n_If you have any question ask:_\n"
             + "my creator: https://t.me/trulr"
         )
-        return help_message
+        return await self._send_answer(message, channel)
 
     async def send_get_request(self, endpoint, url):
         try:
@@ -193,23 +199,28 @@ class DiscordClient(commands.Bot, Ancestor):
             response = requests.get(f"{self.urlanalyser_url}/{endpoint}?url={url}")
             if response.status_code == 200:
                 return response
+            else:
+                return ServerError(response.status_code)
         except Exception as error:
             self.logger.error(f"Error happened: {error}")
             raise
 
     async def _read_direct_message(self, content, author, channel) -> str:
-        urls = self._filter_urls(content)
-        if content.startswith("!help"):
-            text = self._set_helper_text()
-            return await self._send_answer(text, channel)
-        if content.startswith("!index"):
-            return await self._index_handler(channel)
-        if urls == []:
-            return await self._send_answer("Missing URL", channel)
-        else:
-            return await self._choose_handler(urls, content, channel)
+        try:
+            urls = self._filter_urls(content)
+            if content.startswith("!help"):
+                return await self._help_handler(channel)
+            if content.startswith("!index"):
+                return await self._index_handler(channel)
+            if urls == []:
+                return await self._send_answer("Missing URL", channel)
+            else:
+                return await self._choose_handler(urls, content, channel)
+        except ServerError as error:
+            self.logger.error(f"Error happened: {error}")
+            return await self._send_answer("Server error happened", channel)
 
-    async def _choose_handler(self, urls: list, message: str, channel) -> str:
+    async def _choose_handler(self, urls: list, content: str, channel) -> str:
         if content.startswith("!domain_age"):
             return await self._domain_age_handler(urls, channel)
         if content.startswith("!domain_reputation"):
@@ -220,7 +231,7 @@ class DiscordClient(commands.Bot, Ancestor):
             return await self._history_handler(urls, channel)
         if content.startswith("!location"):
             return await self._location_handler(urls, channel)
-        if content.startswith("!url"):
+        if content.startswith("!check"):
             return await self._check_url_handler(urls, channel)
         if content.startswith("!screenshot"):
             return await self._screenshot_handler(urls, channel)
@@ -231,15 +242,6 @@ class DiscordClient(commands.Bot, Ancestor):
 
     # Handlers
 
-    async def _screenshot_handler(self, urls, channel):
-        for url in urls:
-            await self._send_screenshot(url, channel)
-
-    async def _check_url_handler(self, urls, channel):
-       for url in urls:
-            response = await self.send_get_request("check", url)
-            await self._send_answer(channel, response)
-
     async def _virustotal_handler(self, urls, channel):
         settings = {
             "urlhaus": True,
@@ -249,7 +251,7 @@ class DiscordClient(commands.Bot, Ancestor):
         }
         for url in urls:
             response = await self._get_infos_handler(url, settings)
-            await self._send_answer(channel, response)
+            await self._send_answer(response.json(), channel)
 
     async def _get_infos_handler(self, url: str, settings: dict) -> dict:
         try:
@@ -275,30 +277,39 @@ class DiscordClient(commands.Bot, Ancestor):
             self.logger.error(f"Error happened: {error}")
         await self._send_answer(answer, channel)
 
+    async def _screenshot_handler(self, urls, channel):
+        for url in urls:
+            await self._send_screenshot(url, channel)
+
+    async def _check_url_handler(self, urls, channel):
+        for url in urls:
+            response = await self.send_get_request("check", url)
+            await self._send_answer(response.json()["result"], channel)
+
     async def _domain_age_handler(self, urls, channel):
         for url in urls:
             response = await self.send_get_request("get_domain_age", url)
-            await self._send_answer(channel, response)
+            await self._send_answer(response.json()["result"], channel)
 
     async def _domain_reputation_handler(self, urls, channel):
         for url in urls:
             response = await self.send_get_request("get_domain_reputation", url)
-            await self._send_answer(channel, response)
+            await self._send_answer(response.json()["result"], channel)
 
     async def _history_handler(self, urls, channel):
         for url in urls:
             response = await self.send_get_request("get_history", url)
-            await self._send_answer(channel, response)
+            await self._send_answer(response.json()["result"], channel)
 
     async def _location_handler(self, urls, channel):
         for url in urls:
             response = await self.send_get_request("get_location", url)
-            await self._send_answer(channel, response)
+            await self._send_answer(response.json()["result"], channel)
 
     async def _download_handler(self, urls, channel):
         for url in urls:
             response = await self.send_get_request("download_as_zip", url)
-            await self._send_answer(channel, response)
+            await self._send_answer(response.json()["result"], channel)
 
     async def _send_screenshot(self, url: str, channel) -> str:
         await self._send_answer(
