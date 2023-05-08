@@ -38,8 +38,8 @@ class TBot(Ancestor):
         echo_handler = MessageHandler(filters.TEXT & (~filters.COMMAND), self.echo)
         application.add_handler(echo_handler)
 
-        url_handler = CommandHandler("url", self.url_handler)
-        application.add_handler(url_handler)
+        check_url_handler = CommandHandler("url", self.check_url_handler)
+        application.add_handler(check_url_handler)
 
         screenshot_handler = CommandHandler("screenshot", self.screenshot_handler)
         application.add_handler(screenshot_handler)
@@ -56,10 +56,14 @@ class TBot(Ancestor):
         domain_age_handler = CommandHandler("domain_age", self.domain_age_handler)
         application.add_handler(domain_age_handler)
 
-        domain_reputation_handler = CommandHandler("domain_reputation", self.domain_reputation_handler)
+        domain_reputation_handler = CommandHandler(
+            "domain_reputation", self.domain_reputation_handler
+        )
         application.add_handler(domain_reputation_handler)
 
-        download_as_zip_handler = CommandHandler("download", self.download_as_zip_handler)
+        download_as_zip_handler = CommandHandler(
+            "download", self.download_as_zip_handler
+        )
         application.add_handler(download_as_zip_handler)
 
         history_handler = CommandHandler("history", self.history_handler)
@@ -87,18 +91,15 @@ class TBot(Ancestor):
             replay = urls
         await context.bot.send_message(chat_id=update.effective_chat.id, text=replay)
 
-    async def url_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        urls = self.filter_urls(update.message.text)
-        res = {}
+    async def check_url_handler(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ):
+        message = update.message.text
+        urls = self.filter_urls(message)
         if len(urls) == 0:
-            await context.bot.send_message(
-                chat_id=update.effective_chat.id, text="Missing the URL"
-            )
+            raise ValueError("Missing URL")
         for url in urls:
-            result = self.inspect_url(url)
-            await context.bot.send_message(
-                chat_id=update.effective_chat.id, text=result
-            )
+            await self.send_request_and_answer("check", url, update, context)
 
     async def send_request_and_answer(
         self,
@@ -154,7 +155,9 @@ class TBot(Ancestor):
         if len(urls) == 0:
             raise ValueError("Missing URL")
         for url in urls:
-            await self.send_request_and_answer("get_domain_reputation", url, update, context)
+            await self.send_request_and_answer(
+                "get_domain_reputation", url, update, context
+            )
 
     async def download_as_zip_handler(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE
@@ -196,7 +199,9 @@ class TBot(Ancestor):
             context=context,
         )
 
-    async def _location_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+    async def _location_handler(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ):
         settings = {
             "urlhaus": False,
             "virustotal": False,
@@ -319,16 +324,6 @@ class TBot(Ancestor):
         urls = [t[0] for t in re.findall(pattern, message)]
         self.logger.info(f"URLs: {urls}")
         return urls
-
-    def inspect_url(self, url: str) -> bool:
-        try:
-            url = self._encode_url(url)
-            response = requests.get(f"{self.urlanalyser_url}/check?url={url}")
-            if response.status_code == 200:
-                return response.json()["result"]
-        except Exception as error:
-            self.logger.error(f"Error happend: {error}")
-        return f"Something went wrong with: {url}"
 
     def _encode_url(self, url: str):
         return base64.urlsafe_b64encode(url.encode()).decode()

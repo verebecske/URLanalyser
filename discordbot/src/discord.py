@@ -221,7 +221,7 @@ class DiscordClient(commands.Bot, Ancestor):
         if content.startswith("!location"):
             return await self._location_handler(urls, channel)
         if content.startswith("!url"):
-            return await self._inspect_url_handler(urls, channel)
+            return await self._check_url_handler(urls, channel)
         if content.startswith("!screenshot"):
             return await self._screenshot_handler(urls, channel)
         if content.startswith("!virustotal"):
@@ -235,9 +235,10 @@ class DiscordClient(commands.Bot, Ancestor):
         for url in urls:
             await self._send_screenshot(url, channel)
 
-    async def _inspect_url_handler(self, urls, channel):
-        for url in urls:
-            pass
+    async def _check_url_handler(self, urls, channel):
+       for url in urls:
+            response = await self.send_get_request("check", url)
+            await self._send_answer(channel, response)
 
     async def _virustotal_handler(self, urls, channel):
         settings = {
