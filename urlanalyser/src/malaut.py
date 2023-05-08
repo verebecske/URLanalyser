@@ -1,15 +1,15 @@
 import requests
 import os
+import zipfile
 from selenium import webdriver
 from src.ancestor import Ancestor
-
-# from py7zr import SevenZipFile
 
 
 class Malaut(Ancestor):
     def __init__(self, config: dict):
         super().__init__()
         self.config = config
+        self.selenium_executor = "http://selenium-hub:4444/wd/hub"
 
     def create_screenshot(self, url: str, path: str) -> None:
         resp = requests.get(url)
@@ -52,20 +52,25 @@ class Malaut(Ancestor):
     def call_selenium(self, url: str, path: str):
         firefox_options = webdriver.FirefoxOptions()
         driver = webdriver.Remote(
-            command_executor="http://selenium-hub:4444/wd/hub",
+            command_executor=self.selenium_executor,
             options=firefox_options,
         )
         driver.get(url)
         driver.save_screenshot(path)
         driver.quit()
 
+    def create_zip_with_selenium(url: str, path: str):
+        firefox_options = webdriver.FirefoxOptions()
+        driver = webdriver.Remote(
+            command_executor=self.selenium_executor,
+            options=firefox_options,
+        )
+        driver.get(url)
+        time.sleep(3)
+        source = driver.page_source
+        with zipfile.ZipFile(path, mode="w") as archive:
+            archive.write(source)
+        driver.quit()
+
     def collect_data(self, url: str):
         pass
-
-    def create_7z_file(self):
-        original_file_path = ""
-        compressed_file_path = ""
-        # password = self.generate_password()
-        # with SevenZipFile(compressed_file_path, 'w', password=password) as arc:
-        #     arc.writeall(original_file_path)
-        return compressed_file_path, password

@@ -12,8 +12,10 @@ class MaliciousContentError(Exception):
     def __str__(self):
         return "Woop-woop someone send something wrong!"
 
+
 class ServerError(Exception):
     pass
+
 
 class DBot(Ancestor):
     mytoken: str
@@ -187,7 +189,7 @@ class DiscordClient(commands.Bot, Ancestor):
             + "!history [url] - get url redirect path \n"
             + "!domain_age [url] - Missing \n"
             + "!domain_reputation [url] - Missing \n"
-            + "!download_as_zip [url] - Missing \n"
+            + "!download [url] - Missing \n"
             + "\n_If you have any question ask:_\n"
             + "my creator: https://t.me/trulr"
         )
@@ -226,7 +228,7 @@ class DiscordClient(commands.Bot, Ancestor):
         if content.startswith("!domain_reputation"):
             return await self._domain_reputation_handler(urls, channel)
         if content.startswith("!download"):
-            return await self._download_as_zip_handler(urls, channel)
+            return await self._download_handler(urls, channel)
         if content.startswith("!history"):
             return await self._history_handler(urls, channel)
         if content.startswith("!location"):

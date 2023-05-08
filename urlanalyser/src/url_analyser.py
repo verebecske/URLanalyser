@@ -64,8 +64,12 @@ class URLAnalyser(Ancestor):
     def get_domain_reputation(self, url):
         return "not yet"
 
-    def download_as_zip(self, url):
-        return "not yet"
+    def create_zip(self, url):
+        filename = "page.zip"
+        path = "./src/flask/static/" + filename
+        url = self.create_valid_url(url)
+        self.malaut.create_zip_with_selenium(url, path)
+        return filename
 
     def create_valid_url(self, url: str) -> str:
         if not url.startswith("http"):

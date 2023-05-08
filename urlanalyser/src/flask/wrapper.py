@@ -212,10 +212,10 @@ class FlaskAppWrapper(Ancestor):
         try:
             self.logger.info(f"Get request: {request.data}")
             url = self._get_url_from_get_request()
-            path_list = self.analyser.send_as_protected_zip(url)
-            return jsonify({"result": path_list, "url": self._encode_url(url)}), 200
+            path = self.analyser.create_zip(url)
+            return send_from_directory("/src/flask/static/", path, as_attachment=True)
         except BadRequest as error:
             raise
         except Exception as error:
-            self.logger.error(f"Error occured while checking url history: {error}")
+            self.logger.error(f"Error occured while creating screenshot: {error}")
             raise InternalServerError()
