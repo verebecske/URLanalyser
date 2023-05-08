@@ -12,4 +12,9 @@ clean:
 	find . -name __pycache__ -type d -exec rm -rf {} \;
 	find . -name .pytest_cache -type d -exec rm -rf {} \;
 
-.PHONY: run, docker, clean, build
+lint:
+	python -m black .
+	python -m autoflake --check --quiet -r -v .
+
+
+.PHONY: run, docker, clean, build, lint

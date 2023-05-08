@@ -113,7 +113,7 @@ class TBot(Ancestor):
                 f"{self.urlanalyser_url}/{endpoint}?url={self._encode_url(url)}"
             )
             if response.status_code == 200:
-                answer = response.json()
+                answer = self._format_dict_answer(response.json())
             else:
                 answer = f"Something went wrong with: {url} - status code: {response.status_code}"
             await context.bot.send_message(
@@ -246,7 +246,7 @@ class TBot(Ancestor):
                     f"{self.urlanalyser_url}/get_infos", json=settings
                 )
                 if response.status_code == 200:
-                    answer = response.json()
+                    answer = self._format_dict_answer(response.json())
                 else:
                     answer = f"Something went wrong with: {url} - status code: {response.status_code}"
                 await context.bot.send_message(
@@ -332,5 +332,8 @@ class TBot(Ancestor):
     def _decode_url(self, url: str):
         return base64.urlsafe_b64decode(url.encode()).decode()
 
-    def _format_answer(self, text) -> str:
-        pass
+    def _format_dict_answer(self, result: dict) -> str:
+        text = ""
+        for key, value in result.items():
+            text += f"**{key}**: {value}\n"
+        return text

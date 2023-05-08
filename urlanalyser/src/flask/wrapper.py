@@ -114,11 +114,7 @@ class FlaskAppWrapper(Ancestor):
             data = request.json
             url = self._get_url_from_post_request()
             result = self.analyser.collect_infos(data["url"], data)
-            response = {
-                "url": data["url"],
-                "result": result,
-            }
-            return jsonify(response), 200
+            return jsonify({"result": response, "url": url}), 200
         except BadRequest as error:
             raise
         except Exception as error:
@@ -138,8 +134,7 @@ class FlaskAppWrapper(Ancestor):
             else:
                 url = self._get_url_from_post_request()
             result = self.analyser.check(url)
-            response = {"result": result, "url": self._encode_url(url)}
-            return jsonify(response), 200
+            return jsonify({"result": response, "url": url}), 200
         except BadRequest as error:
             raise
         except Exception as error:
@@ -163,7 +158,7 @@ class FlaskAppWrapper(Ancestor):
             self.logger.info(f"Get request: {request.data}")
             url = self._get_url_from_get_request()
             path_list = self.analyser.get_location(url)
-            return jsonify({"result": path_list, "url": self._encode_url(url)}), 200
+            return jsonify({"result": path_list, "url": url}), 200
         except BadRequest as error:
             raise
         except Exception as error:
@@ -175,7 +170,7 @@ class FlaskAppWrapper(Ancestor):
             self.logger.info(f"Get request: {request.data}")
             url = self._get_url_from_get_request()
             path_list = self.analyser.get_history(url)
-            return jsonify({"result": path_list, "url": self._encode_url(url)}), 200
+            return jsonify({"result": path_list, "url": url}), 200
         except BadRequest as error:
             raise
         except Exception as error:
@@ -187,7 +182,7 @@ class FlaskAppWrapper(Ancestor):
             self.logger.info(f"Get request: {request.data}")
             url = self._get_url_from_get_request()
             path_list = self.analyser.get_domain_age(url)
-            return jsonify({"result": path_list, "url": self._encode_url(url)}), 200
+            return jsonify({"result": path_list, "url": url}), 200
         except BadRequest as error:
             raise
         except Exception as error:
@@ -199,7 +194,7 @@ class FlaskAppWrapper(Ancestor):
             self.logger.info(f"Get request: {request.data}")
             url = self._get_url_from_get_request()
             path_list = self.analyser.get_domain_reputation(url)
-            return jsonify({"result": path_list, "url": self._encode_url(url)}), 200
+            return jsonify({"result": path_list, "url": url}), 200
         except BadRequest as error:
             raise
         except Exception as error:
@@ -210,12 +205,13 @@ class FlaskAppWrapper(Ancestor):
 
     def download_as_zip(self):
         try:
-            self.logger.info(f"Get request: {request.data}")
+            self.logger.info(f"Get request: {request}")
             url = self._get_url_from_get_request()
             path = self.analyser.create_zip(url)
+            self.logger.info(f"created zip in: {path}")
             return send_from_directory("/src/flask/static/", path, as_attachment=True)
         except BadRequest as error:
             raise
         except Exception as error:
-            self.logger.error(f"Error occured while creating screenshot: {error}")
+            self.logger.error(f"Error occured while download file: {error}")
             raise InternalServerError()

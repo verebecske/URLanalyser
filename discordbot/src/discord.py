@@ -253,7 +253,8 @@ class DiscordClient(commands.Bot, Ancestor):
         }
         for url in urls:
             response = await self._get_infos_handler(url, settings)
-            await self._send_answer(response.json(), channel)
+            answer = self._format_dict_answer(response.json())
+            await self._send_answer(answer, channel)
 
     async def _get_infos_handler(self, url: str, settings: dict) -> dict:
         try:
@@ -286,32 +287,52 @@ class DiscordClient(commands.Bot, Ancestor):
     async def _check_url_handler(self, urls, channel):
         for url in urls:
             response = await self.send_get_request("check", url)
-            await self._send_answer(response.json()["result"], channel)
+            answer = self._format_dict_answer(response.json()["result"])
+            await self._send_answer(answer, channel)
 
     async def _domain_age_handler(self, urls, channel):
         for url in urls:
             response = await self.send_get_request("get_domain_age", url)
-            await self._send_answer(response.json()["result"], channel)
+            answer = self._format_dict_answer(response.json()["result"])
+            await self._send_answer(answer, channel)
 
     async def _domain_reputation_handler(self, urls, channel):
         for url in urls:
             response = await self.send_get_request("get_domain_reputation", url)
-            await self._send_answer(response.json()["result"], channel)
+            answer = self._format_dict_answer(response.json()["result"])
+            await self._send_answer(answer, channel)
 
     async def _history_handler(self, urls, channel):
         for url in urls:
             response = await self.send_get_request("get_history", url)
-            await self._send_answer(response.json()["result"], channel)
+            answer = self._format_dict_answer(response.json()["result"])
+            await self._send_answer(answer, channel)
 
     async def _location_handler(self, urls, channel):
         for url in urls:
             response = await self.send_get_request("get_location", url)
-            await self._send_answer(response.json()["result"], channel)
+            answer = self._format_dict_answer(response.json()["result"])
+            await self._send_answer(answer, channel)
 
     async def _download_handler(self, urls, channel):
         for url in urls:
-            response = await self.send_get_request("download_as_zip", url)
-            await self._send_answer(response.json()["result"], channel)
+            response = requests.get(f"{self.urlanalyser_url}/download_as_zip?url={self._encode_url(url)}")
+        if response.status_code == 200:
+            name = "page"
+            image_file = discord.File(
+                io.BytesIO(response.content), filename=f"{name}.zip"
+            )
+            await channel.send(file=image_file)
+        else:
+            await self._send_answer(
+                f"Error happened while sending zip file: {url} - status code: {response.status_code}",
+                channel,
+            )
+        try:
+            pass
+        except Exception as error:
+            self.logger.error(f"Error happened: {error}")
+            await self._send_answer(f"Error happened with url: {url}", channel)
 
     async def _send_screenshot(self, url: str, channel) -> str:
         await self._send_answer(
@@ -343,3 +364,9 @@ class DiscordClient(commands.Bot, Ancestor):
 
     def _decode_url(self, url: str):
         return base64.urlsafe_b64decode(url.encode()).decode()
+
+    def _format_dict_answer(self, result: dict) -> str:
+        text = ""
+        for key, value in result.items():
+            text += f"*{key}*: {value}\n"
+        return text

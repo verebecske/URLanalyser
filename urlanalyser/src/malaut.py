@@ -1,6 +1,7 @@
 import requests
 import os
 import zipfile
+import time
 from selenium import webdriver
 from src.ancestor import Ancestor
 
@@ -59,7 +60,8 @@ class Malaut(Ancestor):
         driver.save_screenshot(path)
         driver.quit()
 
-    def create_zip_with_selenium(url: str, path: str):
+    def create_zip_with_selenium(self, url: str, path: str):
+        self.logger.info(f"Get url: {url}, get path: {path}")
         firefox_options = webdriver.FirefoxOptions()
         driver = webdriver.Remote(
             command_executor=self.selenium_executor,
@@ -69,8 +71,12 @@ class Malaut(Ancestor):
         time.sleep(3)
         source = driver.page_source
         with zipfile.ZipFile(path, mode="w") as archive:
-            archive.write(source)
+            archive.writestr('/page.txt', source)
         driver.quit()
+        self.logger.info(f"Created zip file")
 
     def collect_data(self, url: str):
+        pass
+
+    def delete_old_files(self):
         pass
