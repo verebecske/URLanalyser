@@ -388,7 +388,7 @@ class DiscordClient(commands.Bot, Ancestor):
         if isinstance(result, dict):
             text = ""
             for key, value in result.items():
-                text += f"*{key}*: {value}\n"
+                text += f"**{key}**: {value}\n"
             return text
         if isinstance(result, list):
             text = ""
