@@ -116,29 +116,34 @@ class DiscordClient(commands.Bot, Ancestor):
         self._set_log_channel()
 
     async def on_message(self, message):
-        if message.author == self.user:
-            return
-        self.logger.info(
-            f"I got: {message.content}\nin channel: {str(message.channel)}\nfrom: {str(message.author)}"
-        )
-        if self.debug:
-            replay = f"**{message.author}** sent me:\n\t{message.content}"
-            await self._send_answer(replay, message.channel)
-        if message.channel.type == discord.ChannelType.private:
-            await self._read_direct_message(
-                message.content, message.author, message.channel
+        try:
+            if message.author == self.user:
+                return
+            self.logger.info(
+                f"I got: {message.content}\nin channel: {str(message.channel)}\nfrom: {str(message.author)}"
             )
-        else:
-            try:
-                await self._read_message(
+            if self.debug:
+                replay = f"**{message.author}** sent me:\n\t{message.content}"
+                await self._send_answer(replay, message.channel)
+            if message.channel.type == discord.ChannelType.private:
+                await self._read_direct_message(
                     message.content, message.author, message.channel
                 )
-            except (
-                MaliciousContentError
-            ) as error:  # itt valamit lehet kezdeni kellene ezzel koncepcio szinten is
-                await self._delete_message(message)
-                await self._send_answer(error, message.channel)
-                return
+            else:
+                try:
+                    await self._read_message(
+                        message.content, message.author, message.channel
+                    )
+                except (
+                    MaliciousContentError
+                ) as error:  # itt valamit lehet kezdeni kellene ezzel koncepcio szinten is
+                    await self._delete_message(message)
+                    await self._send_answer(error, message.channel)
+                    return
+        except Exception as error:
+            self.logger.error(f"Client error: {error}")
+            await self._send_answer("Client error happened", message.channel)
+
 
     async def _read_message(self, content, author, channel) -> str:
         url_list = self._filter_urls(content)

@@ -26,4 +26,10 @@ class DomageAPI(Ancestor):
             return {"error": response.text}
 
     def format_answer(self, response: dict) -> dict:
-        return response["result"]["creation"]
+        res = response["result"]["creation"]
+        res.pop("classification", None)
+        field = res.pop("field", "date")
+        new_field = ''.join(char for char in field if char.isalnum() or char == ' ')
+        date = res.pop("date", "unknown")
+        res[new_field] = date
+        return res

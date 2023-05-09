@@ -34,6 +34,7 @@ class FlaskAppWrapper(Ancestor):
 
     def _add_all_endpoints(self):
         self.app.add_url_rule("/", "index", self.index)
+        self.app.add_url_rule("/index", "index", self.index)
         self.app.add_url_rule("/check", "check", self.check, methods=["GET", "POST"])
         self.app.add_url_rule(
             "/get_screenshot", "get_screenshot", self.get_screenshot, methods=["GET"]
