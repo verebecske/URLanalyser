@@ -183,20 +183,20 @@ class DiscordClient(commands.Bot, Ancestor):
 
     async def _help_handler(self, channel) -> str:
         message = (
-            "**Commands:**\n\n"
+            "**Commands:**\n"
             + "!help - send this text\n"
             + "!index - test message to urlanalyser\n"
-            + "!check [url] - inspect url\n"
-            + "!screenshot [url] - create a screenshot about the webpage and send it back\n"
-            + "!virustotal [url] - send url to virustotal \n"
-            + "!urlhaus [url] - send url to urlhaus \n"
-            + "!location [url] - send url to location \n"
-            + "!history [url] - get url redirect path \n"
-            + "!domain_age [url] - Missing \n"
-            + "!domain_reputation [url] - Missing \n"
-            + "!download [url] - Missing \n"
+            + "!check <url> - inspect url\n"
+            + "!screenshot <url> - create a screenshot about the webpage and send it back\n"
+            + "!virustotal <url> - send url to virustotal \n"
+            + "!urlhaus <url> - send url to urlhaus \n"
+            + "!location <url> - send url to location \n"
+            + "!history <url> - get url redirect path \n"
+            + "!domain_age <url> - Missing \n"
+            + "!domain_reputation <url> - Missing \n"
+            + "!download <url> - Missing \n"
             + "\n_If you have any question ask:_\n"
-            + "my creator: https://t.me/trulr"
+            + "my creator:\n\t https://t.me/trulr"
         )
         return await self._send_answer(message, channel)
 
