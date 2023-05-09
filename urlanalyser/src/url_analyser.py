@@ -5,6 +5,7 @@ from src.connectors.virustotal_api import VirusTotalAPI
 from src.connectors.ipvoid_api import IPVoidAPI
 from src.connectors.redis_database import RedisDatabase
 from src.connectors.domage_api import DomageAPI
+from src.connectors.collector import Collector
 from src.ancestor import Ancestor
 from src.malaut import Malaut
 
@@ -19,6 +20,7 @@ class URLAnalyser(Ancestor):
         ipvoid_api: IPVoidAPI,
         domage_api: DomageAPI,
         malaut: Malaut,
+        collector: Collector,
         redis: RedisDatabase,
     ):
         super().__init__()
@@ -27,6 +29,7 @@ class URLAnalyser(Ancestor):
         self.virustotal_api = virustotal_api
         self.domage_api = domage_api
         self.malaut = malaut
+        self.collector = collector
         self.redis = redis
 
     def is_malware(self, url: str) -> bool:
@@ -48,12 +51,18 @@ class URLAnalyser(Ancestor):
                 result["location"] = self.get_location(url)
             if "history" in datas.keys() and not datas["history"] == False:
                 url = self.create_valid_url(url)
-                result["history"] = self.malaut.get_history(url)
+                result["history"] = self.get_history(url)
             if "domain_age" in datas.keys() and not datas["domain_age"] == False:
                 result["domain_age"] = self.get_domain_age(url)
+            if "domain_reputation" in datas.keys() and not datas["domain_reputation"] == False:
+                result["domain_reputation"] = self.get_domain_reputation(url)
             return result
         else:
             raise ValueError("invalid URL")
+
+    def get_history(self, url):
+        url = self.create_valid_url(url)
+        return self.malaut.get_history(url)
 
     def get_location(self, url):
         return self.ipwho_api.get_location(url)
@@ -62,7 +71,13 @@ class URLAnalyser(Ancestor):
         return self.domage_api.get_domain_age(url)
 
     def get_domain_reputation(self, url):
-        return "not yet"
+        ip = self.ipwho_api.get_ip(url)
+        res = self.collector.check_ip_reputation(ip)
+        if res == []:
+            return {"Block list in": "none of known list"}
+        else:
+            strlist = ",".join(res)
+            return {"Block list in": strlist}
 
     def create_zip(self, url):
         filename = "page.zip"

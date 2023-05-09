@@ -199,10 +199,12 @@ class DiscordClient(commands.Bot, Ancestor):
         try:
             url = self._encode_url(url)
             response = requests.get(f"{self.urlanalyser_url}/{endpoint}?url={url}")
+            self.logger.debug(f"Server response: {response}")
             if response.status_code == 200:
                 return response
             else:
-                return ServerError(response.status_code)
+                self.logger.error(f"Server error happened: {response}")
+                return { "result": "Server error happened"}
         except Exception as error:
             self.logger.error(f"Error happened: {error}")
             raise
@@ -246,6 +248,18 @@ class DiscordClient(commands.Bot, Ancestor):
 
     async def _virustotal_handler(self, urls, channel):
         settings = {
+            "urlhaus": False,
+            "virustotal": True,
+            "geoip": False,
+            "history": False,
+        }
+        for url in urls:
+            response = await self._get_infos_handler(url, settings)
+            answer = self._format_answer(response)
+            await self._send_answer(answer, channel)
+
+    async def _urlhaus_handler(self, urls, channel):
+        settings = {
             "urlhaus": True,
             "virustotal": False,
             "geoip": False,
@@ -253,7 +267,7 @@ class DiscordClient(commands.Bot, Ancestor):
         }
         for url in urls:
             response = await self._get_infos_handler(url, settings)
-            answer = self._format_dict_answer(response.json())
+            answer = self._format_answer(response)
             await self._send_answer(answer, channel)
 
     async def _get_infos_handler(self, url: str, settings: dict) -> dict:
@@ -287,31 +301,31 @@ class DiscordClient(commands.Bot, Ancestor):
     async def _check_url_handler(self, urls, channel):
         for url in urls:
             response = await self.send_get_request("check", url)
-            answer = self._format_dict_answer(response.json()["result"])
+            answer = self._format_answer(response.json()["result"])
             await self._send_answer(answer, channel)
 
     async def _domain_age_handler(self, urls, channel):
         for url in urls:
             response = await self.send_get_request("get_domain_age", url)
-            answer = self._format_dict_answer(response.json()["result"])
+            answer = self._format_answer(response.json()["result"])
             await self._send_answer(answer, channel)
 
     async def _domain_reputation_handler(self, urls, channel):
         for url in urls:
             response = await self.send_get_request("get_domain_reputation", url)
-            answer = self._format_dict_answer(response.json()["result"])
+            answer = self._format_answer(response.json()["result"])
             await self._send_answer(answer, channel)
 
     async def _history_handler(self, urls, channel):
         for url in urls:
             response = await self.send_get_request("get_history", url)
-            answer = self._format_dict_answer(response.json()["result"])
+            answer = self._format_answer(response.json()["result"])
             await self._send_answer(answer, channel)
 
     async def _location_handler(self, urls, channel):
         for url in urls:
             response = await self.send_get_request("get_location", url)
-            answer = self._format_dict_answer(response.json()["result"])
+            answer = self._format_answer(response.json()["result"])
             await self._send_answer(answer, channel)
 
     async def _download_handler(self, urls, channel):
@@ -336,7 +350,7 @@ class DiscordClient(commands.Bot, Ancestor):
 
     async def _send_screenshot(self, url: str, channel) -> str:
         await self._send_answer(
-            f"Taking screenshot can be slow - thank for your patient",
+            f"Taking screenshot can be slow - thank for your patience",
             channel,
         )
         response = requests.get(
@@ -365,8 +379,15 @@ class DiscordClient(commands.Bot, Ancestor):
     def _decode_url(self, url: str):
         return base64.urlsafe_b64decode(url.encode()).decode()
 
-    def _format_dict_answer(self, result: dict) -> str:
-        text = ""
-        for key, value in result.items():
-            text += f"*{key}*: {value}\n"
-        return text
+    def _format_answer(self, result) -> str:
+        if isinstance(result, dict):
+            text = ""
+            for key, value in result.items():
+                text += f"*{key}*: {value}\n"
+            return text
+        if isinstance(result, list):
+            text = ""
+            for value in result:
+                text += f"{value}\n"
+            return text
+        return result

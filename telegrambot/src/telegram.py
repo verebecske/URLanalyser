@@ -281,7 +281,7 @@ class TBot(Ancestor):
             return
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
-            text="It can be slow - thank for your patient",
+            text="Taking screenshot can be slow - thank for your patience",
         )
         for url in urls:
             url = self._encode_url(url)

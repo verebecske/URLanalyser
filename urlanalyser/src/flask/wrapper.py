@@ -114,7 +114,7 @@ class FlaskAppWrapper(Ancestor):
             data = request.json
             url = self._get_url_from_post_request()
             result = self.analyser.collect_infos(data["url"], data)
-            return jsonify({"result": response, "url": url}), 200
+            return jsonify({"result": result, "url": url}), 200
         except BadRequest as error:
             raise
         except Exception as error:
@@ -134,7 +134,7 @@ class FlaskAppWrapper(Ancestor):
             else:
                 url = self._get_url_from_post_request()
             result = self.analyser.check(url)
-            return jsonify({"result": response, "url": url}), 200
+            return jsonify({"result": result, "url": url}), 200
         except BadRequest as error:
             raise
         except Exception as error:

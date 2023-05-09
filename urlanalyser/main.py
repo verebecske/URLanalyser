@@ -6,6 +6,7 @@ from src.connectors.urlhaus_api import URLHausAPI
 from src.connectors.virustotal_api import VirusTotalAPI
 from src.connectors.ipvoid_api import IPVoidAPI
 from src.connectors.domage_api import DomageAPI
+from src.connectors.collector import Collector
 from src.ancestor import Ancestor
 from src.malaut import Malaut
 from src.connectors.redis_database import RedisDatabase
@@ -42,40 +43,25 @@ class ManagerRob(Ancestor):
 
     def start(self) -> None:
         config = self.config
-        if self.debug:
-            malaut = MockMalaut(config=self.config["malaut"])
-            urlhaus_api = MockURLHausAPI(config["urlhaus"])
-            virustotal_api = MockVirusTotalAPI(config["virustotal"])
-            ipwho_api = MockIPWhoAPI(config)
-            redis = RedisDatabase(config["redis"])
-            domage_api = DomageAPI({})
-            analyser = MockAnalyser(
-                config=self.config["analyser"],
-                ipwho_api=ipwho_api,
-                urlhaus_api=urlhaus_api,
-                virustotal_api=virustotal_api,
-                malaut=malaut,
-                domage_api=domage_api,
-                redis=redis,
-            )
-        else:
-            urlhaus_api = URLHausAPI(config["urlhaus"])
-            virustotal_api = VirusTotalAPI(config["virustotal"])
-            ipvoid_api = IPVoidAPI(config["ipvoid"])
-            ipwho_api = IPWhoAPI(config)
-            malaut = Malaut(config=self.config["malaut"])
-            domage_api = DomageAPI({})
-            redis = RedisDatabase(config["redis"])
-            analyser = URLAnalyser(
-                config=self.config["analyser"],
-                ipwho_api=ipwho_api,
-                urlhaus_api=urlhaus_api,
-                virustotal_api=virustotal_api,
-                ipvoid_api=ipvoid_api,
-                domage_api=domage_api,
-                malaut=malaut,
-                redis=redis,
-            )
+        urlhaus_api = URLHausAPI(config["urlhaus"])
+        virustotal_api = VirusTotalAPI(config["virustotal"])
+        ipvoid_api = IPVoidAPI(config["ipvoid"])
+        ipwho_api = IPWhoAPI(config)
+        malaut = Malaut(config=self.config["malaut"])
+        domage_api = DomageAPI({})
+        collector = Collector()
+        redis = RedisDatabase(config["redis"])
+        analyser = URLAnalyser(
+            config=self.config["analyser"],
+            ipwho_api=ipwho_api,
+            urlhaus_api=urlhaus_api,
+            virustotal_api=virustotal_api,
+            ipvoid_api=ipvoid_api,
+            domage_api=domage_api,
+            collector=collector,
+            malaut=malaut,
+            redis=redis,
+        )
         self.start_flask(analyser)
 
 
