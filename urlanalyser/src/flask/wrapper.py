@@ -123,7 +123,7 @@ class FlaskAppWrapper(Ancestor):
 
     def index(self):
         self.logger.info(f"Get request: {request.data}")
-        response = {"message": "Live long and prosper!"}
+        response = {"result": "URLAnalyser is active"}
         return jsonify(response), 200
 
     def check(self):
