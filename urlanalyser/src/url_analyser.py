@@ -54,7 +54,10 @@ class URLAnalyser(Ancestor):
                 result["history"] = self.get_history(url)
             if "domain_age" in datas.keys() and not datas["domain_age"] == False:
                 result["domain_age"] = self.get_domain_age(url)
-            if "domain_reputation" in datas.keys() and not datas["domain_reputation"] == False:
+            if (
+                "domain_reputation" in datas.keys()
+                and not datas["domain_reputation"] == False
+            ):
                 result["domain_reputation"] = self.get_domain_reputation(url)
             return result
         else:

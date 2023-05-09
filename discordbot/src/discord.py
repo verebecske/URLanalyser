@@ -144,7 +144,6 @@ class DiscordClient(commands.Bot, Ancestor):
             self.logger.error(f"Client error: {error}")
             await self._send_answer("Client error happened", message.channel)
 
-
     async def _read_message(self, content, author, channel) -> str:
         url_list = self._filter_urls(content)
         if self._is_malicious_list(url_list):
@@ -209,7 +208,7 @@ class DiscordClient(commands.Bot, Ancestor):
                 return response
             else:
                 self.logger.error(f"Server error happened: {response}")
-                return { "result": "Server error happened"}
+                return {"result": "Server error happened"}
         except Exception as error:
             self.logger.error(f"Error happened: {error}")
             raise
@@ -335,7 +334,9 @@ class DiscordClient(commands.Bot, Ancestor):
 
     async def _download_handler(self, urls, channel):
         for url in urls:
-            response = requests.get(f"{self.urlanalyser_url}/download_as_zip?url={self._encode_url(url)}")
+            response = requests.get(
+                f"{self.urlanalyser_url}/download_as_zip?url={self._encode_url(url)}"
+            )
         if response.status_code == 200:
             name = "page"
             image_file = discord.File(

@@ -71,7 +71,7 @@ class Malaut(Ancestor):
         time.sleep(3)
         source = driver.page_source
         with zipfile.ZipFile(path, mode="w") as archive:
-            archive.writestr('/page.txt', source)
+            archive.writestr("/page.txt", source)
         driver.quit()
         self.logger.info(f"Created zip file")
 

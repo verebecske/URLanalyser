@@ -29,7 +29,7 @@ class DomageAPI(Ancestor):
         res = response["result"]["creation"]
         res.pop("classification", None)
         field = res.pop("field", "date")
-        new_field = ''.join(char for char in field if char.isalnum() or char == ' ')
+        new_field = "".join(char for char in field if char.isalnum() or char == " ")
         date = res.pop("date", "unknown")
         res[new_field] = date
         return res
