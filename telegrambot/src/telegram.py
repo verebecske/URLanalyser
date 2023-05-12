@@ -166,8 +166,22 @@ class TBot(Ancestor):
         urls = self.filter_urls(message)
         if len(urls) == 0:
             raise ValueError("Missing URL")
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text="Download a webpage can be slow - thank for your patience",
+        )
         for url in urls:
-            await self.send_request_and_answer("download_as_zip", url, update, context)
+            url = self._encode_url(url)
+            response = requests.get(f"{self.urlanalyser_url}/download_as_zip?url={url}")
+            if response.status_code == 200:
+                await context.bot.send_document(
+                    chat_id=update.effective_chat.id, document=response.content, filename="page.zip"
+                )
+            else:
+                await context.bot.send_message(
+                    chat_id=update.effective_chat.id,
+                    text=f"Something went wrong with: {url}",
+                )
 
     async def virustotal_handler(
         self, update: Update, context: ContextTypes.DEFAULT_TYPE

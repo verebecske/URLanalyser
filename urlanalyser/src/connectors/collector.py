@@ -87,6 +87,12 @@ class Collector(Ancestor):
                 "url": "https://rjmblocklist.com/sizzling/worst.txt",
                 "type": "unformatted",
             },
+            "openfish": {
+                "list_type": "url",
+                "name": "openfish",
+                "url": "https://openphish.com/feed.txt",
+                "type": "unformatted",
+            }
             # "tweetfeed": { Mukszik meg jo, de csv-t ad vissza nem raw ip cimeket :(
             #     "list_type": "both",
             #     "type": "csv",

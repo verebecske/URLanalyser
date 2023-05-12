@@ -4,7 +4,7 @@ import socket
 import requests
 
 
-class IPVoidAPI(Ancestor):
+class APIVoidAPI(Ancestor):
     config: dict
 
     # IP-t ker

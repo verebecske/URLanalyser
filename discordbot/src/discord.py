@@ -333,6 +333,10 @@ class DiscordClient(commands.Bot, Ancestor):
             await self._send_answer(answer, channel)
 
     async def _download_handler(self, urls, channel):
+        await self._send_answer(
+            f"Download a webpage can be slow - thank for your patience",
+            channel,
+        )
         for url in urls:
             response = requests.get(
                 f"{self.urlanalyser_url}/download_as_zip?url={self._encode_url(url)}"

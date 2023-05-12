@@ -4,7 +4,7 @@ from src.flask.wrapper import FlaskAppWrapper
 from src.connectors.ipwho_api import IPWhoAPI
 from src.connectors.urlhaus_api import URLHausAPI
 from src.connectors.virustotal_api import VirusTotalAPI
-from src.connectors.ipvoid_api import IPVoidAPI
+from src.connectors.apivoid_api import APIVoidAPI
 from src.connectors.domage_api import DomageAPI
 from src.connectors.collector import Collector
 from src.ancestor import Ancestor
@@ -45,7 +45,7 @@ class ManagerRob(Ancestor):
         config = self.config
         urlhaus_api = URLHausAPI(config["urlhaus"])
         virustotal_api = VirusTotalAPI(config["virustotal"])
-        ipvoid_api = IPVoidAPI(config["ipvoid"])
+        apivoid_api = APIVoidAPI(config["apivoid"])
         ipwho_api = IPWhoAPI(config)
         malaut = Malaut(config=self.config["malaut"])
         domage_api = DomageAPI({})
@@ -56,7 +56,7 @@ class ManagerRob(Ancestor):
             ipwho_api=ipwho_api,
             urlhaus_api=urlhaus_api,
             virustotal_api=virustotal_api,
-            ipvoid_api=ipvoid_api,
+            apivoid_api=apivoid_api,
             domage_api=domage_api,
             collector=collector,
             malaut=malaut,

@@ -2,7 +2,7 @@ import re
 from src.connectors.ipwho_api import IPWhoAPI
 from src.connectors.urlhaus_api import URLHausAPI
 from src.connectors.virustotal_api import VirusTotalAPI
-from src.connectors.ipvoid_api import IPVoidAPI
+from src.connectors.apivoid_api import APIVoidAPI
 from src.connectors.redis_database import RedisDatabase
 from src.connectors.domage_api import DomageAPI
 from src.connectors.collector import Collector
@@ -17,7 +17,7 @@ class URLAnalyser(Ancestor):
         ipwho_api: IPWhoAPI,
         urlhaus_api: URLHausAPI,
         virustotal_api: VirusTotalAPI,
-        ipvoid_api: IPVoidAPI,
+        apivoid_api: APIVoidAPI,
         domage_api: DomageAPI,
         malaut: Malaut,
         collector: Collector,
@@ -124,7 +124,7 @@ class URLAnalyser(Ancestor):
     def majority_gate(self, url: str):
         UH = self.urlhaus_api.get_is_malicous_result(url)
         VT = self.virustotal_api.get_is_malicous_result(url)
-        IV = self.ipvoid_api.get_is_malicous_result(url)
+        IV = self.apivoid_api.get_is_malicous_result(url)
         return (UH and VT) or (IV and VT) or (IV and UH)
 
     def create_data_to_redis(self, url: str) -> dict:
