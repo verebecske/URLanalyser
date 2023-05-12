@@ -24,27 +24,25 @@ class Malaut(Ancestor):
     def get_redirection(self, url: str, all: bool = False) -> list:
         path_list = []
         resp = requests.get(url)
-        data = {
+        or_data = {
             "status_code": resp.status_code,
             "url": resp.url,
             "redirect": resp.is_redirect,
-            "redirection": [],
         }
         if all:
-            data["headers"] = str(resp.headers)
-            data["cookies"] = str(resp.cookies)
+            or_data["headers"] = str(resp.headers)
+            or_data["cookies"] = str(resp.cookies)
         for h in resp.history:
-            state = {
+            data = {
                 "status_code": h.status_code,
                 "url": h.url,
                 "redirect": h.is_redirect,
             }
             if all:
-                state["cookies"] = str(h.cookies)
-                state["headers"] = str(h.headers)
-            data["redirection"].append(state)
-
-        path_list.append(data)
+                data["cookies"] = str(h.cookies)
+                data["headers"] = str(h.headers)
+            path_list.append(data)
+        path_list.append(or_data)
         return path_list
 
     def collect(self, url):
