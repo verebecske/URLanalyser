@@ -28,4 +28,8 @@ class IPWhoAPI(Ancestor):
             return {"error": response.text}
 
     def format_answer(self, response: dict) -> dict:
-        return response["country"]
+        return {
+            "continent": response["continent"],
+            "country": response["country"],
+            "city": response["city"],
+        }
