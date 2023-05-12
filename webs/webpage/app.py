@@ -18,7 +18,7 @@ def encode_settings(settings: dict) -> str:
 
 def ask_urlanalyserapi(datas: dict) -> dict:
     # est = encode_settings(settings)
-    response = requests.post(f"http://{host}:{port}/get_infos", json=datas)
+    response = requests.post(f"http://{host}:{port}/get_info", json=datas)
     if response.status_code == 200:
         return response.json()["result"]
     return {"result": ""}

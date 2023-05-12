@@ -258,7 +258,7 @@ class DiscordClient(commands.Bot, Ancestor):
             "history": False,
         }
         for url in urls:
-            response = await self._get_infos_handler(url, settings)
+            response = await self._get_info_handler(url, settings)
             answer = self._format_answer(response)
             await self._send_answer(answer, channel)
 
@@ -270,14 +270,14 @@ class DiscordClient(commands.Bot, Ancestor):
             "history": False,
         }
         for url in urls:
-            response = await self._get_infos_handler(url, settings)
+            response = await self._get_info_handler(url, settings)
             answer = self._format_answer(response)
             await self._send_answer(answer, channel)
 
-    async def _get_infos_handler(self, url: str, settings: dict) -> dict:
+    async def _get_info_handler(self, url: str, settings: dict) -> dict:
         try:
             settings["url"] = url
-            response = requests.post(f"{self.urlanalyser_url}/get_infos", json=settings)
+            response = requests.post(f"{self.urlanalyser_url}/get_info", json=settings)
             if response.status_code == 200:
                 return response.json()["result"]
             else:

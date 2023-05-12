@@ -210,7 +210,7 @@ class TBot(Ancestor):
             "location": False,
             "history": False,
         }
-        await self.collect_urls_and_send_get_infos(
+        await self.collect_urls_and_send_get_info(
             message=update.message.text,
             settings=settings,
             update=update,
@@ -224,7 +224,7 @@ class TBot(Ancestor):
             "location": False,
             "history": False,
         }
-        await self.collect_urls_and_send_get_infos(
+        await self.collect_urls_and_send_get_info(
             message=update.message.text,
             settings=settings,
             update=update,
@@ -240,7 +240,7 @@ class TBot(Ancestor):
             "location": True,
             "history": False,
         }
-        await self.collect_urls_and_send_get_infos(
+        await self.collect_urls_and_send_get_info(
             message=update.message.text,
             settings=settings,
             update=update,
@@ -254,14 +254,14 @@ class TBot(Ancestor):
             "location": False,
             "history": True,
         }
-        await self.collect_urls_and_send_get_infos(
+        await self.collect_urls_and_send_get_info(
             message=update.message.text,
             settings=settings,
             update=update,
             context=context,
         )
 
-    async def collect_urls_and_send_get_infos(
+    async def collect_urls_and_send_get_info(
         self,
         message: str,
         settings: dict,
@@ -278,7 +278,7 @@ class TBot(Ancestor):
             try:
                 settings["url"] = url
                 response = requests.post(
-                    f"{self.urlanalyser_url}/get_infos", json=settings
+                    f"{self.urlanalyser_url}/get_info", json=settings
                 )
                 if response.status_code == 200:
                     answer = self._format_dict_answer(response.json()["result"])

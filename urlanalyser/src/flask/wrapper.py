@@ -46,7 +46,7 @@ class FlaskAppWrapper(Ancestor):
             "/get_location", "get_location", self.get_location, methods=["GET"]
         )
         self.app.add_url_rule(
-            "/get_infos", "get_infos", self.get_infos, methods=["POST"]
+            "/get_info", "get_info", self.get_info, methods=["POST"]
         )
         self.app.add_url_rule(
             "/get_domain_reputation",
@@ -109,7 +109,7 @@ class FlaskAppWrapper(Ancestor):
     def _decode_url(self, url: str):
         return base64.urlsafe_b64decode(url.encode()).decode()
 
-    def get_infos(self):
+    def get_info(self):
         try:
             self.logger.info(f"Get request: {request.json}")
             data = request.json
