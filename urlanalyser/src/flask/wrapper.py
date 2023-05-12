@@ -40,7 +40,7 @@ class FlaskAppWrapper(Ancestor):
             "/get_screenshot", "get_screenshot", self.get_screenshot, methods=["GET"]
         )
         self.app.add_url_rule(
-            "/get_history", "get_history", self.get_history, methods=["GET"]
+            "/get_redirection", "get_redirection", self.get_redirection, methods=["GET"]
         )
         self.app.add_url_rule(
             "/get_location", "get_location", self.get_location, methods=["GET"]
@@ -166,16 +166,16 @@ class FlaskAppWrapper(Ancestor):
             self.logger.error(f"Error occured while checking url location: {error}")
             raise InternalServerError()
 
-    def get_history(self):
+    def get_redirection(self):
         try:
             self.logger.info(f"Get request: {request.data}")
             url = self._get_url_from_get_request()
-            path_list = self.analyser.get_history(url)
+            path_list = self.analyser.get_redirection(url)
             return jsonify({"result": path_list, "url": url}), 200
         except BadRequest as error:
             raise
         except Exception as error:
-            self.logger.error(f"Error occured while checking url history: {error}")
+            self.logger.error(f"Error occured while checking url redirection: {error}")
             raise InternalServerError()
 
     def get_domain_age(self):

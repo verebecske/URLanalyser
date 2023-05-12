@@ -41,14 +41,14 @@ def home():
         virustotal = request.form.get("virustotal", False)
         location = request.form.get("location", False)
         screenshot = request.form.get("screenshot", False)
-        history = request.form.get("history", False)
+        redirection = request.form.get("redirection", False)
         data = {
             "url": url,
             "urlhaus": urlhaus,
             "virustotal": virustotal,
             "location": location,
             "screenshot": screenshot,
-            "history": history,
+            "redirection": redirection,
         }
         result = ask_urlanalyserapi(data)
         filename = ""

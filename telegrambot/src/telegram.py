@@ -66,8 +66,8 @@ class TBot(Ancestor):
         )
         application.add_handler(download_as_zip_handler)
 
-        history_handler = CommandHandler("history", self.history_handler)
-        application.add_handler(history_handler)
+        redirection_handler = CommandHandler("redirection", self.redirection_handler)
+        application.add_handler(redirection_handler)
 
         index_handler = CommandHandler("index", self.index_handler)
         application.add_handler(index_handler)
@@ -208,7 +208,7 @@ class TBot(Ancestor):
             "urlhaus": False,
             "virustotal": True,
             "location": False,
-            "history": False,
+            "redirection": False,
         }
         await self.collect_urls_and_send_get_info(
             message=update.message.text,
@@ -222,7 +222,7 @@ class TBot(Ancestor):
             "urlhaus": True,
             "virustotal": False,
             "location": False,
-            "history": False,
+            "redirection": False,
         }
         await self.collect_urls_and_send_get_info(
             message=update.message.text,
@@ -238,7 +238,7 @@ class TBot(Ancestor):
             "urlhaus": False,
             "virustotal": False,
             "location": True,
-            "history": False,
+            "redirection": False,
         }
         await self.collect_urls_and_send_get_info(
             message=update.message.text,
@@ -247,12 +247,12 @@ class TBot(Ancestor):
             context=context,
         )
 
-    async def history_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+    async def redirection_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         settings = {
             "urlhaus": False,
             "virustotal": False,
             "location": False,
-            "history": True,
+            "redirection": True,
         }
         await self.collect_urls_and_send_get_info(
             message=update.message.text,
@@ -346,7 +346,7 @@ class TBot(Ancestor):
             + "/domain\_age <url\> \- return the domain age \n"
             + "/domain\_reputation <url\> \- calculate the domain reputation from IP block lists\n"
             + "/download <url\> \- download as zip \n"
-            + "/history <url\> \- get url redirect path \n"
+            + "/redirection <url\> \- get url redirect path \n"
             + "\n_If you have any question ask:_\n"
             + "[my creator](https://t.me/trulr)"
         )

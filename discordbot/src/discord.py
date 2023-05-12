@@ -190,7 +190,7 @@ class DiscordClient(commands.Bot, Ancestor):
             + "!virustotal <url> - send url to virustotal \n"
             + "!urlhaus <url> - send url to urlhaus \n"
             + "!location <url> - send url to location \n"
-            + "!history <url> - get url redirect path \n"
+            + "!redirection <url> - get url redirect path \n"
             + "!domain_age <url> - Missing \n"
             + "!domain_reputation <url> - Missing \n"
             + "!download <url> - Missing \n"
@@ -235,8 +235,8 @@ class DiscordClient(commands.Bot, Ancestor):
             return await self._domain_reputation_handler(urls, channel)
         if content.startswith("!download"):
             return await self._download_handler(urls, channel)
-        if content.startswith("!history"):
-            return await self._history_handler(urls, channel)
+        if content.startswith("!redirection"):
+            return await self._redirection_handler(urls, channel)
         if content.startswith("!location"):
             return await self._location_handler(urls, channel)
         if content.startswith("!check"):
@@ -255,7 +255,7 @@ class DiscordClient(commands.Bot, Ancestor):
             "urlhaus": False,
             "virustotal": True,
             "geoip": False,
-            "history": False,
+            "redirection": False,
         }
         for url in urls:
             response = await self._get_info_handler(url, settings)
@@ -267,7 +267,7 @@ class DiscordClient(commands.Bot, Ancestor):
             "urlhaus": True,
             "virustotal": False,
             "geoip": False,
-            "history": False,
+            "redirection": False,
         }
         for url in urls:
             response = await self._get_info_handler(url, settings)
@@ -320,9 +320,9 @@ class DiscordClient(commands.Bot, Ancestor):
             answer = self._format_answer(response.json()["result"])
             await self._send_answer(answer, channel)
 
-    async def _history_handler(self, urls, channel):
+    async def _redirection_handler(self, urls, channel):
         for url in urls:
-            response = await self.send_get_request("get_history", url)
+            response = await self.send_get_request("get_redirection", url)
             answer = self._format_answer(response.json()["result"])
             await self._send_answer(answer, channel)
 

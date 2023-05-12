@@ -51,9 +51,9 @@ class URLAnalyser(Ancestor):
                 result["virustotal"] = self.virustotal_api.send_request(url)
             if "location" in datas.keys() and not datas["location"] == False:
                 result["location"] = self.get_location(url)
-            if "history" in datas.keys() and not datas["history"] == False:
+            if "redirection" in datas.keys() and not datas["redirection"] == False:
                 url = self.create_valid_url(url)
-                result["history"] = self.get_history(url)
+                result["redirection"] = self.get_redirection(url)
             if "domain_age" in datas.keys() and not datas["domain_age"] == False:
                 result["domain_age"] = self.get_domain_age(url)
             if (
@@ -65,9 +65,9 @@ class URLAnalyser(Ancestor):
         else:
             raise ValueError("invalid URL")
 
-    def get_history(self, url):
+    def get_redirection(self, url):
         url = self.create_valid_url(url)
-        return self.malaut.get_history(url)
+        return self.malaut.get_redirection(url)
 
     def get_location(self, url):
         return self.ipwho_api.get_location(url)

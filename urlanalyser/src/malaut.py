@@ -21,14 +21,14 @@ class Malaut(Ancestor):
             self.logger.error(str(e))
             raise e
 
-    def get_history(self, url: str, all: bool = False) -> list:
+    def get_redirection(self, url: str, all: bool = False) -> list:
         path_list = []
         resp = requests.get(url)
         data = {
             "status_code": resp.status_code,
             "url": resp.url,
             "redirect": resp.is_redirect,
-            "history": [],
+            "redirection": [],
         }
         if all:
             data["headers"] = str(resp.headers)
@@ -42,7 +42,7 @@ class Malaut(Ancestor):
             if all:
                 state["cookies"] = str(h.cookies)
                 state["headers"] = str(h.headers)
-            data["history"].append(state)
+            data["redirection"].append(state)
 
         path_list.append(data)
         return path_list
