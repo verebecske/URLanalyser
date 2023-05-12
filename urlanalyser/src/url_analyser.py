@@ -1,4 +1,5 @@
 import re
+import uuid
 from src.connectors.ipwho_api import IPWhoAPI
 from src.connectors.urlhaus_api import URLHausAPI
 from src.connectors.virustotal_api import VirusTotalAPI
@@ -84,7 +85,7 @@ class URLAnalyser(Ancestor):
             return {"Block list in": strlist}
 
     def create_zip(self, url):
-        filename = "page.zip"
+        filename = str(uuid.uuid4())[:8] + "_page.zip"
         path = "./src/flask/static/" + filename
         url = self.create_valid_url(url)
         self.malaut.create_zip_with_selenium(url, path)
@@ -98,7 +99,7 @@ class URLAnalyser(Ancestor):
         return url
 
     def create_screenshot(self, url: str) -> str:
-        filename = "screenshot.png"
+        filename = str(uuid.uuid4())[:8] + "_screenshot.png"
         path = "./src/flask/static/" + filename
         url = self.create_valid_url(url)
         self.malaut.create_screenshot(url, path)
