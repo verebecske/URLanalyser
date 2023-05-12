@@ -28,6 +28,7 @@ class URLAnalyser(Ancestor):
         self.urlhaus_api = urlhaus_api
         self.virustotal_api = virustotal_api
         self.domage_api = domage_api
+        self.apivoid_api = apivoid_api
         self.malaut = malaut
         self.collector = collector
         self.redis = redis

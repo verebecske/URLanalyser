@@ -9,7 +9,6 @@ class APIVoidAPI(Ancestor):
 
     # IP-t ker
     # ThreatLog.com -ot meg integrald
-    # URL Reputation!!!
 
     def __init__(self, config: dict):
         super().__init__()

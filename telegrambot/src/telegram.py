@@ -97,7 +97,10 @@ class TBot(Ancestor):
         message = update.message.text
         urls = self.filter_urls(message)
         if len(urls) == 0:
-            raise ValueError("Missing URL")
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id, text="Missing URL"
+            )
+            return
         for url in urls:
             await self.send_request_and_answer("check", url, update, context)
 
@@ -113,12 +116,13 @@ class TBot(Ancestor):
                 f"{self.urlanalyser_url}/{endpoint}?url={self._encode_url(url)}"
             )
             if response.status_code == 200:
-                answer = self._format_dict_answer(response.json())
+                answer = self._format_dict_answer(response.json()["result"])
             else:
                 answer = f"Something went wrong with: {url} - status code: {response.status_code}"
             await context.bot.send_message(
                 chat_id=update.effective_chat.id,
                 text=answer,
+                parse_mode="MarkdownV2",
             )
         except Exception as error:
             self.logger.error(f"Error happened: {error}")
@@ -133,7 +137,10 @@ class TBot(Ancestor):
         message = update.message.text
         urls = self.filter_urls(message)
         if len(urls) == 0:
-            raise ValueError("Missing URL")
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id, text="Missing URL"
+            )
+            return
         for url in urls:
             await self.send_request_and_answer("get_location", url, update, context)
 
@@ -143,7 +150,10 @@ class TBot(Ancestor):
         message = update.message.text
         urls = self.filter_urls(message)
         if len(urls) == 0:
-            raise ValueError("Missing URL")
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id, text="Missing URL"
+            )
+            return
         for url in urls:
             await self.send_request_and_answer("get_domain_age", url, update, context)
 
@@ -153,7 +163,10 @@ class TBot(Ancestor):
         message = update.message.text
         urls = self.filter_urls(message)
         if len(urls) == 0:
-            raise ValueError("Missing URL")
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id, text="Missing URL"
+            )
+            return
         for url in urls:
             await self.send_request_and_answer(
                 "get_domain_reputation", url, update, context
@@ -165,7 +178,10 @@ class TBot(Ancestor):
         message = update.message.text
         urls = self.filter_urls(message)
         if len(urls) == 0:
-            raise ValueError("Missing URL")
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id, text="Missing URL"
+            )
+            return
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
             text="Download a webpage can be slow - thank for your patience",
@@ -175,7 +191,9 @@ class TBot(Ancestor):
             response = requests.get(f"{self.urlanalyser_url}/download_as_zip?url={url}")
             if response.status_code == 200:
                 await context.bot.send_document(
-                    chat_id=update.effective_chat.id, document=response.content, filename="page.zip"
+                    chat_id=update.effective_chat.id,
+                    document=response.content,
+                    filename="page.zip",
                 )
             else:
                 await context.bot.send_message(
@@ -252,7 +270,10 @@ class TBot(Ancestor):
     ):
         urls = self.filter_urls(message)
         if len(urls) == 0:
-            raise ValueError("Missing URL")
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id, text="Missing URL"
+            )
+            return
         for url in urls:
             try:
                 settings["url"] = url
@@ -260,12 +281,13 @@ class TBot(Ancestor):
                     f"{self.urlanalyser_url}/get_infos", json=settings
                 )
                 if response.status_code == 200:
-                    answer = self._format_dict_answer(response.json())
+                    answer = self._format_dict_answer(response.json()["result"])
                 else:
                     answer = f"Something went wrong with: {url} - status code: {response.status_code}"
                 await context.bot.send_message(
                     chat_id=update.effective_chat.id,
                     text=answer,
+                    parse_mode="MarkdownV2",
                 )
             except Exception as error:
                 self.logger.error(f"Error happened: {error}")
@@ -314,15 +336,15 @@ class TBot(Ancestor):
         help_message = (
             "*Commands:*\n\n"
             + "/help \- send this text\n"
-            + "/start \- answer a text\n"
-            + "/index \- test message to urlanalyser\n"
+            + "/start \- send the welcome message\n"
+            + "/index \- perform health-check\n"
             + "/screenshot <url\> \- create a screenshot about the webpage and send it back\n"
-            + "/check <url\> \- just a quick test about the url \n"
+            + "/check <url\> \- just a quick test about the url, the result is yes or no\n"
             + "/virustotal <url\> \- send url to virustotal \n"
             + "/urlhaus <url\> \- send url to urlhaus \n"
-            + "/location <url\> \- send url to location \n"
-            + "/domain\_age <url\> \- send url to domain age \n"
-            + "/domain\_reputation <url\> \- send url to domain age \n"
+            + "/location <url\> \- the location of the domain IP address with geoip search\n"
+            + "/domain\_age <url\> \- return the domain age \n"
+            + "/domain\_reputation <url\> \- calculate the domain reputation from IP block lists\n"
             + "/download <url\> \- download as zip \n"
             + "/history <url\> \- get url redirect path \n"
             + "\n_If you have any question ask:_\n"
@@ -349,5 +371,5 @@ class TBot(Ancestor):
     def _format_dict_answer(self, result: dict) -> str:
         text = ""
         for key, value in result.items():
-            text += f"**{key}**: {value}\n"
+            text += f"*{key}*: {value}\n"
         return text
