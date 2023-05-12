@@ -17,9 +17,9 @@ class Malaut(Ancestor):
         try:
             self.call_selenium(url, path)
             return
-        except Exception as e:
-            self.logger.error(str(e))
-            raise e
+        except Exception as error:
+            self.logger.error(str(error))
+            raise error
 
     def get_redirection(self, url: str, all: bool = False) -> list:
         path_list = []
