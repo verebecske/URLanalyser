@@ -116,19 +116,19 @@ class TBot(Ancestor):
                 f"{self.urlanalyser_url}/{endpoint}?url={self._encode_url(url)}"
             )
             if response.status_code == 200:
-                answer = self._format_dict_answer(response.json()["result"])
+                answer = self._format_answer(response.json()["result"])
             else:
-                answer = f"Something went wrong with: {url} - status code: {response.status_code}"
+                answer = f"Something went wrong with: {url} \- status code: {response.status_code}"
             await context.bot.send_message(
                 chat_id=update.effective_chat.id,
                 text=answer,
-                parse_mode="MarkdownV2",
+                parse_mode="Markdown",
             )
         except Exception as error:
             self.logger.error(f"Error happened: {error}")
             await context.bot.send_message(
                 chat_id=update.effective_chat.id,
-                text=f"Error happend while processing {url} - please send your message again",
+                text=f"Error happend while processing {url} \- please send your message again",
             )
 
     async def location_handler(
@@ -281,13 +281,13 @@ class TBot(Ancestor):
                     f"{self.urlanalyser_url}/get_info", json=settings
                 )
                 if response.status_code == 200:
-                    answer = self._format_dict_answer(response.json()["result"])
+                    answer = self._format_answer(response.json()["result"])
                 else:
                     answer = f"Something went wrong with: {url} - status code: {response.status_code}"
                 await context.bot.send_message(
                     chat_id=update.effective_chat.id,
                     text=answer,
-                    parse_mode="MarkdownV2",
+                    parse_mode="Markdown",
                 )
             except Exception as error:
                 self.logger.error(f"Error happened: {error}")
@@ -337,16 +337,16 @@ class TBot(Ancestor):
             "*Commands:*\n\n"
             + "/help \- send this text\n"
             + "/start \- send the welcome message\n"
-            + "/index \- perform health-check\n"
+            + "/index \- perform health\-check\n"
             + "/screenshot <url\> \- create a screenshot about the webpage and send it back\n"
             + "/check <url\> \- just a quick test about the url, the result is yes or no\n"
-            + "/virustotal <url\> \- send url to virustotal \n"
-            + "/urlhaus <url\> \- send url to urlhaus \n"
+            + "/virustotal <url\> \- send url to virustotal\n"
+            + "/urlhaus <url\> \- send url to urlhaus\n"
             + "/location <url\> \- the location of the domain IP address with geoip search\n"
-            + "/domain\_age <url\> \- return the domain age \n"
+            + "/domain\_age <url\> \- return the domain age\n"
             + "/domain\_reputation <url\> \- calculate the domain reputation from IP block lists\n"
-            + "/download <url\> \- download as zip \n"
-            + "/redirection <url\> \- get url redirect path \n"
+            + "/download <url\> \- download as zip\n"
+            + "/redirection <url\> \- get url redirect path\n"
             + "\n_If you have any question ask:_\n"
             + "[my creator](https://t.me/trulr)"
         )
@@ -368,8 +368,20 @@ class TBot(Ancestor):
     def _decode_url(self, url: str):
         return base64.urlsafe_b64decode(url.encode()).decode()
 
-    def _format_dict_answer(self, result: dict) -> str:
-        text = ""
-        for key, value in result.items():
-            text += f"*{key}*: {value}\n"
+    def _change_characters(self, text: str) -> str:
+        for old in ['_', '*', '`', '[']:
+            text.replace(old, '\\' + old)
         return text
+
+    def _format_answer(self, result) -> str:
+        if isinstance(result, dict):
+            text = ""
+            for key, value in result.items():
+                text += f"*{self._change_characters(key)}*: {self._change_characters(value)}\n"
+            return text
+        if isinstance(result, list):
+            text = ""
+            for value in result:
+                text += f"{self._change_characters(value)}\n"
+            return text
+        return result
