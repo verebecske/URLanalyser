@@ -78,6 +78,15 @@
       button:hover {
       background: #5f9900;
       } 
+      .error {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      border: none;
+      font-weight: bolder;
+      font-size: 14px;
+      color: rgba(155, 0, 0, 0.67);       
+      }
       @media (min-width: 568px) {
       form {
       width: 40%;
@@ -89,32 +98,73 @@
     <form method="post" class="decor">
       <div class="form-inner">
         <h1>Check url</h1>
-        <input name="name" type="text" placeholder="Username (optional)">
+        {% if error != "" %}
+        <div class="error">{{error}}</div>
+        {% endif %}
         <input name="url" type="text" placeholder="URL">
         <button type="submit">Submit</button>
       </div>
       <fieldset>
         <legend>Settings</legend>
-        <div>
-          <input type="checkbox" name="urlhaus" id="urlhaus" checked="checked">
-          <label for="urlhaus">Send to URLHaus</label>
-        </div>
-        <div>
-          <input type="checkbox" name="virustotal" id="virustotal" checked="checked">
-          <label for="virustotal">Send to virustotal</label>
-        </div>
-        <div>
-          <input type="checkbox" name="location" id="location" checked="checked">
-          <label for="screenshot">Get location</label>
-        </div>
-        <div>
-          <input type="checkbox" name="redirection" id="redirection" checked="checked">
-          <label for="redirection">Get metadata</label>
-        </div>
-        <div>
-          <input type="checkbox" name="screenshot" id="screenshot" checked="checked">
-          <label for="screenshot">Create screenshot</label>
-        </div>
+
+        <table style="width:100%">
+          <tr>
+            <td>
+              <div>
+                <input type="checkbox" name="urlhaus" id="urlhaus" checked="checked">
+                <label for="urlhaus">Send to URLHaus</label>
+              </div>
+            </td>
+            <td>
+              <div>
+                <input type="checkbox" name="virustotal" id="virustotal" checked="checked">
+                <label for="virustotal">Send to virustotal</label>
+              </div>
+            </td>
+          </tr>
+           <tr>
+            <td>
+              <div>
+                <input type="checkbox" name="location" id="location" checked="checked">
+                <label for="location">Get location</label>
+              </div>
+            </td>
+            <td>
+              <div>
+                <input type="checkbox" name="redirection" id="redirection" checked="checked">
+                <label for="redirection">Get redirection</label>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div>
+                <input type="checkbox" name="domain_age" id="domain_age" checked="checked">
+                <label for="domain_age">Get domain age</label>
+              </div>
+            </td>
+            <td>
+              <div>
+                <input type="checkbox" name="domain_reputation" id="domain_reputation" checked="checked">
+                <label for="domain_reputation">Get domain reputation</label>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <div>
+                <input type="checkbox" name="screenshot" id="screenshot" checked="checked">
+                <label for="screenshot">Send screenshot</label>
+              </div>
+            </td>
+            <td>
+              <div>
+                <input type="checkbox" name="download" id="download" checked="checked">
+                <label for="download">Get page source as zip</label>
+              </div>
+            </td>
+          </tr>
+        </table>
       </fieldset>
     </form>
   </body>
