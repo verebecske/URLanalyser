@@ -92,6 +92,9 @@ class FlaskAppWrapper(Ancestor):
             raise BadRequest(description=BadRequestType.INVALID_URL)
         return url
 
+    def _get_optional_parameter_from_get_request(self, param: str) -> str:
+        return request.args.get(param, default="")
+
     def _get_url_from_post_request(self) -> str:
         try:
             data = request.json
@@ -170,7 +173,8 @@ class FlaskAppWrapper(Ancestor):
         try:
             self.logger.info(f"Get request: {request.data}")
             url = self._get_url_from_get_request()
-            path_list = self.analyser.get_redirection(url)
+            verbosity = self._get_optional_parameter_from_get_request("all")
+            path_list = self.analyser.get_redirection(url, verbosity)
             return jsonify({"result": path_list, "url": url}), 200
         except BadRequest as error:
             raise

@@ -53,7 +53,7 @@ class URLAnalyser(Ancestor):
                 result["location"] = self.get_location(url)
             if "redirection" in datas.keys() and not datas["redirection"] == False:
                 url = self.create_valid_url(url)
-                result["redirection"] = self.get_redirection(url)
+                result["redirection"] = self.get_redirection(url, "False")
             if "domain_age" in datas.keys() and not datas["domain_age"] == False:
                 result["domain_age"] = self.get_domain_age(url)
             if (
@@ -65,9 +65,10 @@ class URLAnalyser(Ancestor):
         else:
             raise ValueError("invalid URL")
 
-    def get_redirection(self, url):
+    def get_redirection(self, url, verbosity: str=""):
+        _all = verbosity.lower() in ["true", "y", "yes"]
         url = self.create_valid_url(url)
-        return self.malaut.get_redirection(url)
+        return self.malaut.get_redirection(url, all=_all)
 
     def get_location(self, url):
         return self.ipwho_api.get_location(url)

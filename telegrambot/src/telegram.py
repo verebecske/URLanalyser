@@ -110,15 +110,20 @@ class TBot(Ancestor):
         url: str,
         update: Update,
         context: ContextTypes.DEFAULT_TYPE,
+        extras: dict = None,
     ):
+        if extras is None:
+            _extras = ""
+        else:
+            _extras = "".join([f"&{key}={value}" for key, value in extras.items()])
         try:
             response = requests.get(
-                f"{self.urlanalyser_url}/{endpoint}?url={self._encode_url(url)}"
+                f"{self.urlanalyser_url}/{endpoint}?url={self._encode_url(url)}{_extras}"
             )
             if response.status_code == 200:
                 answer = self._format_answer(response.json()["result"])
             else:
-                answer = f"Something went wrong with: {url} \- status code: {response.status_code}"
+                answer = f"Something went wrong with: {url} - status code: {response.status_code}"
             await context.bot.send_message(
                 chat_id=update.effective_chat.id,
                 text=answer,
@@ -128,7 +133,7 @@ class TBot(Ancestor):
             self.logger.error(f"Error happened: {error}")
             await context.bot.send_message(
                 chat_id=update.effective_chat.id,
-                text=f"Error happend while processing {url} \- please send your message again",
+                text=f"Error happend while processing {url} - please send your message again",
             )
 
     async def location_handler(
@@ -247,19 +252,24 @@ class TBot(Ancestor):
             context=context,
         )
 
-    async def redirection_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        settings = {
-            "urlhaus": False,
-            "virustotal": False,
-            "location": False,
-            "redirection": True,
-        }
-        await self.collect_urls_and_send_get_info(
-            message=update.message.text,
-            settings=settings,
-            update=update,
-            context=context,
-        )
+    async def redirection_handler(
+        self, update: Update, context: ContextTypes.DEFAULT_TYPE
+    ):
+        message = update.message.text
+        urls = self.filter_urls(message)
+        if len(urls) == 0:
+            await context.bot.send_message(
+                chat_id=update.effective_chat.id, text="Missing URL"
+            )
+            return
+        if " -v " in message:
+            extras = {"all": "True"}
+        else:
+            extras = None
+        for url in urls:
+            await self.send_request_and_answer(
+                "get_redirection", url, update, context, extras
+            )
 
     async def collect_urls_and_send_get_info(
         self,
@@ -346,7 +356,7 @@ class TBot(Ancestor):
             + "/domain\_age <url\> \- return the domain age\n"
             + "/domain\_reputation <url\> \- calculate the domain reputation from IP block lists\n"
             + "/download <url\> \- download as zip\n"
-            + "/redirection <url\> \- get url redirect path\n"
+            + "/redirection <url\> \[\-v] \- get url redirections pass \-v for verbose mode\n"
             + "\n_If you have any question ask:_\n"
             + "[my creator](https://t.me/trulr)"
         )
@@ -369,19 +379,25 @@ class TBot(Ancestor):
         return base64.urlsafe_b64decode(url.encode()).decode()
 
     def _change_characters(self, text: str) -> str:
-        for old in ['_', '*', '`', '[']:
-            text.replace(old, '\\' + old)
+        for old in ["_", "*", "`", "["]:
+            text.replace(old, "\\" + old)
+        return text
+
+    def _format_dict(self, result) -> str:
+        text = ""
+        for key, value in result.items():
+            text += f"*{self._change_characters(str(key))}*: {self._change_characters(str(value))}\n"
         return text
 
     def _format_answer(self, result) -> str:
         if isinstance(result, dict):
-            text = ""
-            for key, value in result.items():
-                text += f"*{self._change_characters(key)}*: {self._change_characters(value)}\n"
-            return text
+            return self._format_dict(result)
         if isinstance(result, list):
             text = ""
             for value in result:
-                text += f"{self._change_characters(value)}\n"
+                if isinstance(value, dict):
+                    text += self._format_dict(value) + "\n"
+                else:
+                    text += f"{self._change_characters(str(value))}\n"
             return text
         return result

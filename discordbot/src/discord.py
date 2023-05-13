@@ -190,7 +190,7 @@ class DiscordClient(commands.Bot, Ancestor):
             + "!virustotal <url> - send url to virustotal \n"
             + "!urlhaus <url> - send url to urlhaus \n"
             + "!location <url> - send url to location \n"
-            + "!redirection <url> - get url redirect path \n"
+            + "!redirection <url> [-v] - get url redirections pass -v for verbose mode\n"
             + "!domain_age <url> - Missing \n"
             + "!domain_reputation <url> - Missing \n"
             + "!download <url> - Missing \n"
@@ -199,10 +199,16 @@ class DiscordClient(commands.Bot, Ancestor):
         )
         return await self._send_answer(message, channel)
 
-    async def send_get_request(self, endpoint, url):
+    async def send_get_request(self, endpoint, url, extras: dict = None):
+        if extras is None:
+            _extras = ""
+        else:
+            _extras = "".join([f"&{key}={value}" for key, value in extras.items()])
         try:
             url = self._encode_url(url)
-            response = requests.get(f"{self.urlanalyser_url}/{endpoint}?url={url}")
+            response = requests.get(
+                f"{self.urlanalyser_url}/{endpoint}?url={url}{_extras}"
+            )
             self.logger.debug(f"Server response: {response}")
             if response.status_code == 200:
                 return response
@@ -236,7 +242,7 @@ class DiscordClient(commands.Bot, Ancestor):
         if content.startswith("!download"):
             return await self._download_handler(urls, channel)
         if content.startswith("!redirection"):
-            return await self._redirection_handler(urls, channel)
+            return await self._redirection_handler(urls, content, channel)
         if content.startswith("!location"):
             return await self._location_handler(urls, channel)
         if content.startswith("!check"):
@@ -320,9 +326,13 @@ class DiscordClient(commands.Bot, Ancestor):
             answer = self._format_answer(response.json()["result"])
             await self._send_answer(answer, channel)
 
-    async def _redirection_handler(self, urls, channel):
+    async def _redirection_handler(self, urls, content, channel):
+        if " -v " in content:
+            extras = {"all": "True"}
+        else:
+            extras = None
         for url in urls:
-            response = await self.send_get_request("get_redirection", url)
+            response = await self.send_get_request("get_redirection", url, extras)
             answer = self._format_answer(response.json()["result"])
             await self._send_answer(answer, channel)
 
@@ -389,15 +399,30 @@ class DiscordClient(commands.Bot, Ancestor):
     def _decode_url(self, url: str):
         return base64.urlsafe_b64decode(url.encode()).decode()
 
+    def _format_dict(self, result) -> str:
+        text = ""
+        for key, value in result.items():
+            text += f"**{key}**: {value}\n"
+        return text
+
+    def change_https(self, match_obj):
+        if match_obj.group() is not None:
+            return f"<->{match_obj.group()}<->"
+
+    def _disable_link_preview(self, text: str) -> str:
+        url_regex="https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)"
+        return re.sub(url_regex, self.change_https, text)
+
     def _format_answer(self, result) -> str:
         if isinstance(result, dict):
-            text = ""
-            for key, value in result.items():
-                text += f"**{key}**: {value}\n"
-            return text
-        if isinstance(result, list):
+           text = self._format_dict(result)
+        elif isinstance(result, list):
             text = ""
             for value in result:
-                text += f"{value}\n"
-            return text
-        return result
+                if isinstance(value, dict):
+                    text += self._format_dict(value) + "\n"
+                else:
+                    text += f"{value}\n"
+        else:
+            text = result
+        return self._disable_link_preview(text)
