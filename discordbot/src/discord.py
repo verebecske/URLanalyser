@@ -410,12 +410,12 @@ class DiscordClient(commands.Bot, Ancestor):
             return f"<->{match_obj.group()}<->"
 
     def _disable_link_preview(self, text: str) -> str:
-        url_regex="https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)"
+        url_regex = "https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)"
         return re.sub(url_regex, self.change_https, text)
 
     def _format_answer(self, result) -> str:
         if isinstance(result, dict):
-           text = self._format_dict(result)
+            text = self._format_dict(result)
         elif isinstance(result, list):
             text = ""
             for value in result:

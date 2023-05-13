@@ -65,7 +65,7 @@ class URLAnalyser(Ancestor):
         else:
             raise ValueError("invalid URL")
 
-    def get_redirection(self, url, verbosity: str=""):
+    def get_redirection(self, url, verbosity: str = ""):
         _all = verbosity.lower() in ["true", "y", "yes"]
         url = self.create_valid_url(url)
         return self.malaut.get_redirection(url, all=_all)

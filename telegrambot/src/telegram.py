@@ -357,7 +357,6 @@ class TBot(Ancestor):
             + "/domain\_age <url\> \- return the domain age\n"
             + "/domain\_reputation <url\> \- calculate the domain reputation from IP block lists\n"
             + "/download <url\> \- download the page source as zip\n"
-    
             + "\n_If you have any question ask:_\n"
             + "[my creator](https://t.me/trulr)"
         )

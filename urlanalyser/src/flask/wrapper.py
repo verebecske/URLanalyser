@@ -45,9 +45,7 @@ class FlaskAppWrapper(Ancestor):
         self.app.add_url_rule(
             "/get_location", "get_location", self.get_location, methods=["GET"]
         )
-        self.app.add_url_rule(
-            "/get_info", "get_info", self.get_info, methods=["POST"]
-        )
+        self.app.add_url_rule("/get_info", "get_info", self.get_info, methods=["POST"])
         self.app.add_url_rule(
             "/get_domain_reputation",
             "get_domain_reputation",

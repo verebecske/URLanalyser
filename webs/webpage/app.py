@@ -45,13 +45,11 @@ class FlaskWebPage:
     def _decode_url(self, url: str):
         return base64.urlsafe_b64decode(url.encode()).decode()
 
-
     def ask_urlanalyserapi(self, settings: dict) -> dict:
         response = requests.post(f"{self.analyser}/get_info", json=settings)
         if response.status_code == 200:
             return response.json()["result"]
         return {"result": ""}
-
 
     def get_screenshot(self, url: str) -> str:
         url = self._encode_url(url)
@@ -60,7 +58,6 @@ class FlaskWebPage:
         with open(path, "wb") as image_file:
             image_file.write(response.content)
         return "screenshot.png"
-
 
     def get_settings_from_form(self, request):
         settings = {
@@ -84,8 +81,6 @@ class FlaskWebPage:
         return render_template(
             "return.html", url=settings["url"], result=result, filename=filename
         )
-
-
 
 
 if __name__ == "__main__":
