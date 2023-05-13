@@ -34,15 +34,29 @@ class FlaskAppWrapper(Ancestor):
 
     def _add_all_endpoints(self):
         self.app.add_url_rule("/", "index", self.index)
+        self.app.add_url_rule("/index", "index", self.index)
         self.app.add_url_rule("/check", "check", self.check, methods=["GET", "POST"])
         self.app.add_url_rule(
             "/get_screenshot", "get_screenshot", self.get_screenshot, methods=["GET"]
         )
         self.app.add_url_rule(
-            "/get_history", "get_history", self.get_history, methods=["GET"]
+            "/get_redirection", "get_redirection", self.get_redirection, methods=["GET"]
         )
         self.app.add_url_rule(
-            "/get_infos", "get_infos", self.get_infos, methods=["POST"]
+            "/get_location", "get_location", self.get_location, methods=["GET"]
+        )
+        self.app.add_url_rule("/get_info", "get_info", self.get_info, methods=["POST"])
+        self.app.add_url_rule(
+            "/get_domain_reputation",
+            "get_domain_reputation",
+            self.get_domain_reputation,
+            methods=["GET"],
+        )
+        self.app.add_url_rule(
+            "/get_domain_age", "get_domain_age", self.get_domain_age, methods=["GET"]
+        )
+        self.app.add_url_rule(
+            "/download_as_zip", "download_as_zip", self.download_as_zip, methods=["GET"]
         )
 
     def _add_errors(self) -> None:
@@ -76,6 +90,9 @@ class FlaskAppWrapper(Ancestor):
             raise BadRequest(description=BadRequestType.INVALID_URL)
         return url
 
+    def _get_optional_parameter_from_get_request(self, param: str) -> str:
+        return request.args.get(param, default="")
+
     def _get_url_from_post_request(self) -> str:
         try:
             data = request.json
@@ -93,17 +110,13 @@ class FlaskAppWrapper(Ancestor):
     def _decode_url(self, url: str):
         return base64.urlsafe_b64decode(url.encode()).decode()
 
-    def get_infos(self):
+    def get_info(self):
         try:
             self.logger.info(f"Get request: {request.json}")
             data = request.json
             url = self._get_url_from_post_request()
             result = self.analyser.collect_infos(data["url"], data)
-            response = {
-                "url": data["url"],
-                "result": result,
-            }
-            return jsonify(response), 200
+            return jsonify({"result": result, "url": url}), 200
         except BadRequest as error:
             raise
         except Exception as error:
@@ -112,7 +125,7 @@ class FlaskAppWrapper(Ancestor):
 
     def index(self):
         self.logger.info(f"Get request: {request.data}")
-        response = {"message": "Live long and prosper!"}
+        response = {"result": "URLAnalyser is active"}
         return jsonify(response), 200
 
     def check(self):
@@ -123,8 +136,7 @@ class FlaskAppWrapper(Ancestor):
             else:
                 url = self._get_url_from_post_request()
             result = self.analyser.check(url)
-            response = {"result": result, "url": self._encode_url(url)}
-            return jsonify(response), 200
+            return jsonify({"result": result, "url": url}), 200
         except BadRequest as error:
             raise
         except Exception as error:
@@ -143,14 +155,66 @@ class FlaskAppWrapper(Ancestor):
             self.logger.error(f"Error occured while creating screenshot: {error}")
             raise InternalServerError()
 
-    def get_history(self):
+    def get_location(self):
         try:
-            self.logger.info(f"Get request: {request.json}")
+            self.logger.info(f"Get request: {request.data}")
             url = self._get_url_from_get_request()
-            path_list = self.analyser.get_history(url)
-            return jsonify({"result": path_list, "url": self._encode_url(url)}), 200
+            path_list = self.analyser.get_location(url)
+            return jsonify({"result": path_list, "url": url}), 200
         except BadRequest as error:
             raise
         except Exception as error:
-            self.logger.error(f"Error occured while checking url history: {error}")
+            self.logger.error(f"Error occured while checking url location: {error}")
+            raise InternalServerError()
+
+    def get_redirection(self):
+        try:
+            self.logger.info(f"Get request: {request.data}")
+            url = self._get_url_from_get_request()
+            verbosity = self._get_optional_parameter_from_get_request("all")
+            path_list = self.analyser.get_redirection(url, verbosity)
+            return jsonify({"result": path_list, "url": url}), 200
+        except BadRequest as error:
+            raise
+        except Exception as error:
+            self.logger.error(f"Error occured while checking url redirection: {error}")
+            raise InternalServerError()
+
+    def get_domain_age(self):
+        try:
+            self.logger.info(f"Get request: {request.data}")
+            url = self._get_url_from_get_request()
+            path_list = self.analyser.get_domain_age(url)
+            return jsonify({"result": path_list, "url": url}), 200
+        except BadRequest as error:
+            raise
+        except Exception as error:
+            self.logger.error(f"Error occured while checking domain age: {error}")
+            raise InternalServerError()
+
+    def get_domain_reputation(self):
+        try:
+            self.logger.info(f"Get request: {request.data}")
+            url = self._get_url_from_get_request()
+            path_list = self.analyser.get_domain_reputation(url)
+            return jsonify({"result": path_list, "url": url}), 200
+        except BadRequest as error:
+            raise
+        except Exception as error:
+            self.logger.error(
+                f"Error occured while checking domain reputation: {error}"
+            )
+            raise InternalServerError()
+
+    def download_as_zip(self):
+        try:
+            self.logger.info(f"Get request: {request}")
+            url = self._get_url_from_get_request()
+            path = self.analyser.create_zip(url)
+            self.logger.info(f"created zip in: {path}")
+            return send_from_directory("/src/flask/static/", path, as_attachment=True)
+        except BadRequest as error:
+            raise
+        except Exception as error:
+            self.logger.error(f"Error occured while download file: {error}")
             raise InternalServerError()

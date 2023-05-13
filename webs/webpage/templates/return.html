@@ -96,11 +96,7 @@
 
 <body>
   <div class="form-inner">
-    {% if name != "" %}
-    <h1>Welcome, {{name}}</h1>
-    {% else %}
     <h1>Welcome!</h1>
-    {% endif %}
     URL: {{url}}
     <table>
       <tbody>
@@ -115,7 +111,7 @@
     {% if filename != "" %}
       <img src="{{ url_for('static', filename='screenshot.png') }}" alt="screenshot" class="midImg">
     {% endif %}
-      <a href="{{ url_for('home') }}"><button>Home</button></a>
+      <a href="{{ url_for('index') }}"><button>Home</button></a>
   </div>
 
 </body>

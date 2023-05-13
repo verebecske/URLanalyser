@@ -25,10 +25,10 @@ class TestAPIConnector(unittest.TestCase):
         result = self.api_connector.get_ip(url)
         self.assertEqual(excepted_result, result)
 
-    def test_get_geoip(self):
+    def test_get_location(self):
         url = "https://www.example.com/test1"
         excepted_result = "United States"
-        result = self.api_connector.get_geoip(url)
+        result = self.api_connector.get_location(url)
         self.assertEqual(excepted_result, result)
 
 

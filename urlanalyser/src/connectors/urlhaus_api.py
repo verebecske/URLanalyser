@@ -10,7 +10,7 @@ class URLHausAPI(Ancestor):
     def __init__(self, config: dict):
         super().__init__()
         self.config = config
-        self.path = "urlhaus_database/csv.csv"
+        self.path = "static_database/urlhaus/csv.csv"
 
     def send_request(self, url: str) -> dict:
         data = {"url": url}
@@ -19,6 +19,20 @@ class URLHausAPI(Ancestor):
             return self.format_answer(response.json())
         else:
             return {"error": response.text}
+
+    def get_is_malicous_result(self, url) -> bool:
+        result = self.send_request(url)
+        try:
+            match response["query_status"]:
+                case "invalid_url":
+                    return False
+                case "no_result":
+                    return False
+                case "ok":
+                    return True
+        except:
+            pass
+        return True
 
     def in_urlhaus_database(self, url: str) -> bool:
         with open(self.path) as file:
@@ -100,6 +114,6 @@ class URLHausAPI(Ancestor):
 
     def update_urlhaus_database(self) -> None:
         response = requests.get(url="https://urlhaus.abuse.ch/downloads/csv_online/")
-        with open("urlhaus_database/malicious_urls.csv", "w") as fd:
+        with open("static_database/urlhaus/malicious_urls.csv", "w") as fd:
             fd.write(response.text)
         self.logger.info("URLHaus database updated")
