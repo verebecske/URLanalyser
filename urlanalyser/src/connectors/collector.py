@@ -17,7 +17,7 @@ class Collector(Ancestor):
         for line in response.text.split("\n"):
             if line.startswith("#"): 
                 continue
-            line.strip()
+            line = line.strip(' \r\n\t')
             try:
                 if list_type == "ip":
                     ip = ipaddress.ip_address(line)
