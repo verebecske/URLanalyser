@@ -75,12 +75,21 @@ class TBot(Ancestor):
         help_handler = CommandHandler("help", self.help_handler)
         application.add_handler(help_handler)
 
+        unknown_handler = MessageHandler((filters.COMMAND), self.unknown_handler)
+        application.add_handler(unknown_handler)
+
         application.run_polling()
 
     async def start_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
             text="Send me an URL, and use /help if you need some help",
+        )
+
+    async def unknown_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text="Unknown command",
         )
 
     async def echo(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
