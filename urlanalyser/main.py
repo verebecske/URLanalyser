@@ -37,9 +37,9 @@ class ManagerRob(Ancestor):
         flaskwrapper = FlaskAppWrapper(config=config, analyser=analyser)
         flaskwrapper.run()
 
-    def update_static_databases(self, urlhaus_api) -> None:
+    def update_static_databases(self, urlhaus_api, collector) -> None:
         urlhaus_api.update_urlhaus_database()
-        collector.get_blacklists_all()
+        collector.collect_many()
 
     def start(self) -> None:
         config = self.config
@@ -62,6 +62,7 @@ class ManagerRob(Ancestor):
             malaut=malaut,
             redis=redis,
         )
+        self.update_static_databases(urlhaus_api, collector)
         self.start_flask(analyser)
 
 

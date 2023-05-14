@@ -114,7 +114,8 @@ class URLAnalyser(Ancestor):
     def majority_gate(self, url: str):
         UH = self.urlhaus_api.get_is_malicous_result(url)
         VT = self.virustotal_api.get_is_malicous_result(url)
-        IV = self.apivoid_api.get_is_malicous_result(url)
+        ip = self.ipwho_api.get_ip(url)
+        IV = self.collector.get_is_malicous_result(ip, url)
         return (UH and VT) or (IV and VT) or (IV and UH)
 
     def create_data_to_redis(self, url: str) -> dict:
