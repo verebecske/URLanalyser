@@ -253,6 +253,8 @@ class DiscordClient(commands.Bot, Ancestor):
             return await self._virustotal_handler(urls, channel)
         if content.startswith("!urlhaus"):
             return await self._urlhaus_handler(urls, channel)
+        if content.startswith("!"):
+            return await self._unknown_handler(content, channel)
 
     # Handlers
 
@@ -303,7 +305,12 @@ class DiscordClient(commands.Bot, Ancestor):
             answer = "Something went wrong"
             self.logger.error(f"Error happened: {error}")
         await self._send_answer(answer, channel)
-
+    
+    async def _unknown_handler(self, content, channel):
+        cmd = content.split(" ")[0]
+        answer = f"Unknown command: {cmd}"
+        await self._send_answer(answer, channel)
+    
     async def _screenshot_handler(self, urls, channel):
         for url in urls:
             await self._send_screenshot(url, channel)
