@@ -16,5 +16,7 @@ lint:
 	python -m black .
 	python -m autoflake --check --quiet -r -v .
 
+version:
+	@echo 1.2
 
-.PHONY: run, docker, clean, build, lint
+.PHONY: run, docker, clean, build, lint, version
