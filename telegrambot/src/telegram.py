@@ -201,7 +201,9 @@ class TBot(Ancestor):
             text="Download a webpage can be slow - thank for your patience",
         )
         for url in urls:
-            response = requests.get(f"{self.urlanalyser_url}/download_as_zip?url={self._encode_url(url)}")
+            response = requests.get(
+                f"{self.urlanalyser_url}/download_as_zip?url={self._encode_url(url)}"
+            )
             if response.status_code == 200:
                 await context.bot.send_document(
                     chat_id=update.effective_chat.id,
@@ -338,7 +340,9 @@ class TBot(Ancestor):
             text="Taking screenshot can be slow - thank for your patience",
         )
         for url in urls:
-            response = requests.get(f"{self.urlanalyser_url}/get_screenshot?url={self._encode_url(url)}")
+            response = requests.get(
+                f"{self.urlanalyser_url}/get_screenshot?url={self._encode_url(url)}"
+            )
             if response.status_code == 200:
                 await context.bot.send_photo(
                     chat_id=update.effective_chat.id, photo=response.content

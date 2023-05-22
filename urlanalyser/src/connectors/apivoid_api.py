@@ -35,4 +35,3 @@ class APIVoidAPI(Ancestor):
         except:
             pass
         return True
-

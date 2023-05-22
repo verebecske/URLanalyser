@@ -15,9 +15,9 @@ class Collector(Ancestor):
         with open(f"static_database/{filename}", "w") as fd:
             fd.write(response.text)
         for line in response.text.split("\n"):
-            if line.startswith("#"): 
+            if line.startswith("#"):
                 continue
-            line = line.strip(' \r\n\t')
+            line = line.strip(" \r\n\t")
             try:
                 if list_type == "ip":
                     ip = ipaddress.ip_address(line)
@@ -143,4 +143,6 @@ class Collector(Ancestor):
         return self.in_memory_bad_urls.get(url, [])
 
     def get_is_malicous_result(self, ip, url) -> bool:
-        return self.check_ip_reputation(ip) != [] or self.check_url_reputation(url) != []
+        return (
+            self.check_ip_reputation(ip) != [] or self.check_url_reputation(url) != []
+        )

@@ -87,7 +87,7 @@ if __name__ == "__main__":
     config = {
         "host": "0.0.0.0",
         "port": os.getenv("PORT"),
-        "analyser_host": "urlanalyser-urlanalyser-1",
+        "analyser_host": "urlanalyser-main",
         "analyser_port": os.getenv("URLANALYSER_PORT"),
     }
     flaskapp = FlaskWebPage(config)

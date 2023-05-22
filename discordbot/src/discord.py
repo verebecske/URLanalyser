@@ -30,7 +30,7 @@ class DBot(Ancestor):
         if "urlanlayser_host" in config:
             self.urlanlayser_host = config["urlanlayser_host"]
         else:
-            self.urlanlayser_host = "urlanalyser-urlanalyser-1"
+            self.urlanlayser_host = "urlanalyser-main"
         if "urlanalyser_port" in config:
             self.urlanlayser_port = config["urlanalyser_port"]
         else:
@@ -227,7 +227,10 @@ class DiscordClient(commands.Bot, Ancestor):
             if content.startswith("!index"):
                 return await self._index_handler(channel)
             if urls == []:
-                return await self._send_answer("Missing URL", channel)
+                if content.startswith("!"):
+                    return await self._send_answer("Missing URL", channel)
+                else:
+                    return await self.send_message(channel, content)
             else:
                 return await self._choose_handler(urls, content, channel)
         except ServerError as error:
@@ -255,6 +258,7 @@ class DiscordClient(commands.Bot, Ancestor):
             return await self._urlhaus_handler(urls, channel)
         if content.startswith("!"):
             return await self._unknown_handler(content, channel)
+        return await self._check_url_handler(urls, channel)
 
     # Handlers
 
@@ -300,17 +304,17 @@ class DiscordClient(commands.Bot, Ancestor):
         try:
             response = requests.get(f"{self.urlanalyser_url}")
             if response.status_code == 200:
-                answer = response.json()["message"]
+                answer = response.json()["result"]
         except Exception as error:
             answer = "Something went wrong"
             self.logger.error(f"Error happened: {error}")
         await self._send_answer(answer, channel)
-    
+
     async def _unknown_handler(self, content, channel):
         cmd = content.split(" ")[0]
         answer = f"Unknown command: {cmd}"
         await self._send_answer(answer, channel)
-    
+
     async def _screenshot_handler(self, urls, channel):
         for url in urls:
             await self._send_screenshot(url, channel)
