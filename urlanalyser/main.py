@@ -11,7 +11,8 @@ from src.connectors.virustotal_api import VirusTotalAPI
 from src.connectors.apivoid_api import APIVoidAPI
 from src.connectors.domage_api import DomageAPI
 from src.connectors.collector import Collector
-from src.connectors.redis_database import RedisDatabase
+
+from src.database.blocklistdb import BlockListDatabase, BlockListDatabaseFactory
 
 # from mocks.connectors.ipwho_api import IPWhoAPI as MockIPWhoAPI
 # from mocks.connectors.urlhaus_api import URLHausAPI as MockURLHausAPI
@@ -49,9 +50,10 @@ class Application(Ancestor):
         apivoid_api = APIVoidAPI(config)
         ipwho_api = IPWhoAPI(config)
         malaut = Malaut(config=config)
-        domage_api = DomageAPI({})
-        collector = Collector()
-        redis = RedisDatabase(self.config["redis"])
+        domage_api = DomageAPI(config=config)
+        blocklistdbfactory = BlockListDatabaseFactory(config)
+        blocklistdb = blocklistdbfactory.get_blocklistdb()
+        collector = Collector(blocklistdb)
         analyser = URLAnalyser(
             config=config,
             ipwho_api=ipwho_api,
@@ -61,11 +63,9 @@ class Application(Ancestor):
             domage_api=domage_api,
             collector=collector,
             malaut=malaut,
-            redis=redis,
         )
         self.update_static_databases(urlhaus_api, collector)
         self.start_flask(analyser)
-
 
 if __name__ == "__main__":
     app = Application()

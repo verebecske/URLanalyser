@@ -16,8 +16,11 @@ class IPWhoAPI(Ancestor):
         domain = re.match(pattern, url)[0]
         if "http" in domain:
             domain = domain.split("//")[1]
-        ip_addr = socket.gethostbyname(domain)
-        return ip_addr
+        try:
+            ip_addr = socket.gethostbyname(domain)
+            return ip_addr
+        except Exception:
+            raise Exception("URL resolving failed")
 
     def get_location(self, url: str) -> dict:
         ip_addr = self.get_ip(url)

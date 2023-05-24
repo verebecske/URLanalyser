@@ -4,7 +4,6 @@ from src.connectors.ipwho_api import IPWhoAPI
 from src.connectors.urlhaus_api import URLHausAPI
 from src.connectors.virustotal_api import VirusTotalAPI
 from src.connectors.apivoid_api import APIVoidAPI
-from src.connectors.redis_database import RedisDatabase
 from src.connectors.domage_api import DomageAPI
 from src.connectors.collector import Collector
 from src.ancestor import Ancestor
@@ -22,7 +21,6 @@ class URLAnalyser(Ancestor):
         domage_api: DomageAPI,
         malaut: Malaut,
         collector: Collector,
-        redis: RedisDatabase,
     ):
         super().__init__()
         self.ipwho_api = ipwho_api
@@ -32,7 +30,6 @@ class URLAnalyser(Ancestor):
         self.apivoid_api = apivoid_api
         self.malaut = malaut
         self.collector = collector
-        self.redis = redis
 
     def is_malware(self, url: str) -> bool:
         return self.urlhuas_api.in_urlhaus_database(url)
@@ -79,6 +76,7 @@ class URLAnalyser(Ancestor):
     def get_domain_reputation(self, url):
         ip = self.ipwho_api.get_ip(url)
         res = self.collector.check_ip_reputation(ip)
+        res += self.collector.check_url_reputation(url)
         if res == []:
             return {"Block list in": "none of known list"}
         else:
@@ -118,5 +116,3 @@ class URLAnalyser(Ancestor):
         IV = self.collector.get_is_malicous_result(ip, url)
         return (UH and VT) or (IV and VT) or (IV and UH)
 
-    def create_data_to_redis(self, url: str) -> dict:
-        pass

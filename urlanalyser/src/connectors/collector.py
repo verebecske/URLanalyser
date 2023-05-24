@@ -2,13 +2,28 @@ from src.ancestor import Ancestor
 import requests
 import ipaddress
 from collections import defaultdict
+import re
 
+class LocalResponse():
+    text: str
 
 class Collector(Ancestor):
-    def __init__(self):
+    def __init__(self, blocklistdb):
         super().__init__()
-        self.in_memory_bad_ips = defaultdict(list)
-        self.in_memory_bad_urls = defaultdict(list)
+        self.blocklistdb = blocklistdb
+
+    def check_ip_reputation(self, ip: str) -> list:
+        ip_addr = ipaddress.ip_address(ip)
+        return self.blocklistdb.get_from_database("ip", ip)
+
+    def check_url_reputation(self, url: str) -> list:
+        return self.blocklistdb.get_from_database("url", url)
+
+    def get_is_malicous_result(self, ip, url) -> bool:
+        return (
+            self.blocklistdb.get_from_database("ip", ip) != []
+            or self.blocklistdb.get_from_database("url", url) != []
+        )
 
     def send_request_and_save_result(self, url, filename, list_type):
         response = requests.get(url=url)
@@ -20,10 +35,12 @@ class Collector(Ancestor):
             line = line.strip(" \r\n\t")
             try:
                 if list_type == "ip":
-                    ip = ipaddress.ip_address(line)
-                    self.in_memory_bad_ips[ip].append(filename)
+                    match = re.search((r"((\d+).)*\d+"), line)
+                    if match:
+                        ip = ipaddress.ip_address(match.group(0))
+                        self.blocklistdb.add_to_database("ip", ip, filename)
                 if list_type == "url":
-                    self.in_memory_bad_urls[line].append(filename)
+                    self.blocklistdb.add_to_database("url", line, filename)
             except ValueError as error:
                 self.logger.warning(f"line: {line} error {error}")
 
@@ -134,15 +151,3 @@ class Collector(Ancestor):
             self.send_request_and_save_result(
                 value["url"], f"{value['list_type']}/{key}.txt", value["list_type"]
             )
-
-    def check_ip_reputation(self, ip: str) -> list:
-        ip_addr = ipaddress.ip_address(ip)
-        return self.in_memory_bad_ips.get(ip_addr, [])
-
-    def check_url_reputation(self, url: str) -> list:
-        return self.in_memory_bad_urls.get(url, [])
-
-    def get_is_malicous_result(self, ip, url) -> bool:
-        return (
-            self.check_ip_reputation(ip) != [] or self.check_url_reputation(url) != []
-        )
