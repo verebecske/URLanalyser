@@ -116,7 +116,15 @@ class Collector(Ancestor):
                 "name": "openfish",
                 "url": "https://openphish.com/feed.txt",
                 "type": "unformatted",
-            }
+            },
+            "phishunt.io": {
+                "list_type": "url",
+                "name": "openfish",
+                "url": "hhttps://phishunt.io/feed.txt",
+                "type": "unformatted",
+            },
+
+            
             # "tweetfeed": { Mukszik meg jo, de csv-t ad vissza nem raw ip cimeket :(
             #     "list_type": "both",
             #     "type": "csv",
@@ -147,7 +155,19 @@ class Collector(Ancestor):
             # },
             # "urlvir": {"list_type": "ip", "url": "https://www.urlvir.com/"},
         }
-        for key, value in source.items():
+        source2 = {
+                "university": {
+                "list_type": "url",
+                "type": "unformatted",
+                "url": "https://raw.githubusercontent.com/verebecske/URLanalyser/DT-22-fix-webpage/urlanalyser/datas/testdata/url_list.txt",
+            },
+                "url_with_m": {
+                "list_type": "url",
+                "type": "unformatted",
+                "url": "https://raw.githubusercontent.com/verebecske/URLanalyser/DT-22-fix-webpage/urlanalyser/datas/testdata/url_m.txt",
+            },
+        }
+        for key, value in source2.items():
             self.send_request_and_save_result(
                 value["url"], f"{value['list_type']}/{key}.txt", value["list_type"]
             )

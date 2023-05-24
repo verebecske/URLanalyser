@@ -21,6 +21,8 @@ class BlockListDatabase(Ancestor):
     def get_from_database(self, type, data) -> list:
         pass
 
+    def reset_database(self) -> None:
+        pass
 
 class DefaultDatabase(BlockListDatabase):
     def __init__(self):
@@ -44,6 +46,8 @@ class DefaultDatabase(BlockListDatabase):
                 case "url":
                     return self.in_memory_bad_urls.get(url, [])
 
+    def reset_database(self):
+        pass
 
 class RedisDatabase(BlockListDatabase):
     config: dict
@@ -61,21 +65,11 @@ class RedisDatabase(BlockListDatabase):
     def get_from_database(self, data_type, data) -> list:
         self.logger.error(f"get redis {data_type}-{data}")
         res = self.redis.lrange(f"{data_type}-{data}", 0, -1)
-        self.logger.error(f"get redis {res}")
-        return list(map(str, res))
+        self.logger.error(f"get redis {res}, {type(res)}")
+        return list(set(name.decode() for name in res))
 
-    def add_data(self, data: dict) -> bool:
-        encoded_url = self._encode_url(data["url"])
-        data["time"] = time()
-        return self.redis.hset(encoded_url, mapping=data)
-
-    def get_data(self, url: str) -> dict:
-        encoded_url = self._encode_url(url)
-        return self.redis.hgetall(encoded_url)
-
-    def _encode_url(self, url: str):
-        return base64.urlsafe_b64encode(url.encode()).decode()
-
+    def reset_database(self):
+        self.redis.flushall()
 
 class OldRedisDatabase(Ancestor):
     config: dict
