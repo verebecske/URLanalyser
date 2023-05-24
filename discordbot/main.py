@@ -1,7 +1,7 @@
 import logging
 from configparser import ConfigParser
 from src.discord import DBot
-
+from os import getenv
 
 def start_discord(config):
     discord = DBot(config["discord"])
@@ -11,6 +11,9 @@ def start_discord(config):
 def get_config():
     config = ConfigParser()
     config.read("secrets/config.ini")
+    config["discord"]["host"] = getenv("URLANALYSER_HOST")
+    config["discord"]["port"] = getenv("URLANALYSER_PORT")
+    config["discord"]["debug"] = getenv("DEBUG", True)
     return config
 
 

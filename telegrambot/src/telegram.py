@@ -20,12 +20,13 @@ class MaliciousContentError(Exception):
 
 
 class TBot(Ancestor):
-    debug = True
+    debug: bool = True
     mytoken: str
     urlanalyser_url: str
 
     def __init__(self, config: dict) -> None:
         super().__init__()
+        self.debug = config["debug"]
         self.mytoken = config["token"]
         self.urlanalyser_url = f"http://{config['host']}:{config['port']}"
 

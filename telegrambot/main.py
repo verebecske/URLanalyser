@@ -1,6 +1,6 @@
 from configparser import ConfigParser
 from src.telegram import TBot
-
+from os import getenv
 
 def start_telegram(config):
     telegram = TBot(config["telegram"])
@@ -10,6 +10,9 @@ def start_telegram(config):
 def get_config():
     config = ConfigParser()
     config.read("secrets/config.ini")
+    config["telegram"]["host"] = getenv("URLANALYSER_HOST")
+    config["telegram"]["port"] = getenv("URLANALYSER_PORT")
+    config["telegram"]["debug"] = getenv("DEBUG", True)
     return config
 
 
