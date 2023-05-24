@@ -10,8 +10,8 @@ class BlockListDatabaseFactory(Ancestor):
 
     def get_blocklistdb(self):
         if self.config["redis"]:
-            return RedisDatabase(self.config)
-        return DefaultDatabase()
+            return RedisBlockListDatabase(self.config)
+        return DefaultBlockListDatabase()
 
 
 class BlockListDatabase(Ancestor):
@@ -24,7 +24,7 @@ class BlockListDatabase(Ancestor):
     def reset_database(self) -> None:
         pass
 
-class DefaultDatabase(BlockListDatabase):
+class DefaultBlockListDatabase(BlockListDatabase):
     def __init__(self):
         super().__init__()
         self.in_memory_bad_ips = defaultdict(list)
@@ -49,13 +49,11 @@ class DefaultDatabase(BlockListDatabase):
     def reset_database(self):
         pass
 
-class RedisDatabase(BlockListDatabase):
-    config: dict
+class RedisBlockListDatabase(BlockListDatabase):
 
     def __init__(self, config: dict):
         super().__init__()
-        self.config = config
-        self.redis = Redis(host="redis")
+        self.redis = Redis(host=config["redis_host"])
 
     def add_to_database(self, data_type, data, source):
         self.logger.error(f"add redis {data_type}-{data}")
