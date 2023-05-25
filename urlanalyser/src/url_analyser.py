@@ -1,5 +1,6 @@
 import re
 import uuid
+import hashlib
 from src.connectors.ipwho_api import IPWhoAPI
 from src.connectors.urlhaus_api import URLHausAPI
 from src.connectors.virustotal_api import VirusTotalAPI
@@ -80,7 +81,7 @@ class URLAnalyser(Ancestor):
         if res == []:
             return {"Block list in": "none of known list"}
         else:
-            strlist = ",".join(res)
+            strlist = ", ".join(res)
             return {"Block list in": strlist}
 
     def create_zip(self, url):
@@ -88,6 +89,13 @@ class URLAnalyser(Ancestor):
         path = "./src/flask/static/" + filename
         url = self.create_valid_url(url)
         self.malaut.create_zip_with_selenium(url, path)
+        return filename
+
+    def collect_malware_sample(self, url: str):
+        filename = hashlib.md5(url.encode()).hexdigest() + "_sample.zip"
+        path = "./src/flask/static/" + filename
+        url = self.create_valid_url(url)
+        self.malaut.collect_malware_sample(url, path)
         return filename
 
     def create_valid_url(self, url: str) -> str:
