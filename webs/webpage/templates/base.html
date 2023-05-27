@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>URLAnalyser</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+    <style>
+      * {
+      box-sizing: border-box;
+      }
+      html, body {
+      min-height: 100vh;
+      padding: 0;
+      margin: 0;
+      font-family: Roboto, Arial, sans-serif;
+      font-size: 14px; 
+      color: #666;
+      }
+      input, textarea { 
+      outline: none;
+      }
+      body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      /* background: #ffffff; */
+      }
+      h1 {
+      margin-top: 0;
+      font-weight: 500;
+      }
+      form {
+      position: relative;
+      width: 80%;
+      border-radius: 30px;
+      background: rgba(130, 161, 19, 0.671);
+      }
+      .form-inner {
+      padding: 40px;
+      }
+      .return {
+      position: relative;
+      width: 80%;
+      border-radius: 30px;
+      background: rgba(130, 161, 19, 0.671);
+      }
+      fieldset {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      margin-bottom: 10px;
+      border: none;
+      border-radius: 20px;
+      }
+      fieldset legend {
+      margin-top: 15;
+      font-weight: 450;
+      }
+      .form-inner input,
+      .form-inner textarea {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      margin-bottom: 10px;
+      border: none;
+      border-radius: 20px;
+      background: #e4e8d0;
+      }
+      .form-inner textarea {
+      resize: none;
+      }
+      button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 20px;
+      border-radius: 20px;
+      border: none;
+      border-bottom: 4px solid #3e4f24;
+      background: #5a7233; 
+      font-size: 16px;
+      font-weight: 400;
+      color: #fff;
+      }
+      button:hover {
+      background: #5f9900;
+      } 
+      .error {
+      display: block;
+      width: 100%;
+      padding: 15px;
+      border: none;
+      font-weight: bolder;
+      font-size: 14px;
+      color: rgba(155, 0, 0, 0.67);       
+      }
+      .malicious {
+      padding: 20px;
+      border-radius: 20px;
+      background: #8b1a1a; 
+      font-weight: bolder;
+      font-size: 16px;
+      color: rgb(43, 0, 0);     
+      }
+      @media (min-width: 568px) {
+      form {
+      width: 40%;
+      }
+      }
+    </style>
+  </head>
+
+<body>
+    {% block content %}
+    <h1>Welcome to URLAnalyser!</h1>
+    {% endblock content %}
+</body>
+</html>
