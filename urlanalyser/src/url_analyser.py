@@ -31,6 +31,7 @@ class URLAnalyser(Ancestor):
         self.apivoid_api = apivoid_api
         self.malaut = malaut
         self.collector = collector
+        self.flask_path = "./src/flask/static/"
 
     def is_malware(self, url: str) -> bool:
         return self.urlhuas_api.in_urlhaus_database(url)
@@ -86,14 +87,17 @@ class URLAnalyser(Ancestor):
 
     def create_zip(self, url):
         filename = str(uuid.uuid4())[:8] + "_page.zip"
-        path = "./src/flask/static/" + filename
+        path = self.flask_path + filename
         url = self.create_valid_url(url)
         self.malaut.create_zip_with_selenium(url, path)
         return filename
 
+    # TODO: nem a flask hiv erre ra, hanem belulrol hivodik meg ha karos dolgot talal es olyan meg nincs
+    # TODO: kivulrol hivhato, de nem adja vissza a letoltott file-t
+    # TODO: egy endpoint megmondja milyen gyujtemeny van - csak a nevuket
     def collect_malware_sample(self, url: str):
         filename = hashlib.md5(url.encode()).hexdigest() + "_sample.zip"
-        path = "./src/flask/static/" + filename
+        path = self.flask_path + filename
         url = self.create_valid_url(url)
         self.malaut.collect_malware_sample(url, path)
         return filename
@@ -107,7 +111,7 @@ class URLAnalyser(Ancestor):
 
     def create_screenshot(self, url: str) -> str:
         filename = str(uuid.uuid4())[:8] + "_screenshot.png"
-        path = "./src/flask/static/" + filename
+        path = self.flask_path + filename
         url = self.create_valid_url(url)
         self.malaut.create_screenshot(url, path)
         return filename
@@ -123,4 +127,3 @@ class URLAnalyser(Ancestor):
         ip = self.ipwho_api.get_ip(url)
         IV = self.collector.get_is_malicous_result(ip, url)
         return (UH and VT) or (IV and VT) or (IV and UH)
-
