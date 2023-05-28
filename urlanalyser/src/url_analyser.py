@@ -8,7 +8,7 @@ from src.connectors.apivoid_api import APIVoidAPI
 from src.connectors.domage_api import DomageAPI
 from src.connectors.collector import Collector
 from src.ancestor import Ancestor
-from src.malaut import Malaut
+from src.sample_analyser import SampleAnalyser
 
 
 class URLAnalyser(Ancestor):
@@ -20,7 +20,7 @@ class URLAnalyser(Ancestor):
         virustotal_api: VirusTotalAPI,
         apivoid_api: APIVoidAPI,
         domage_api: DomageAPI,
-        malaut: Malaut,
+        sample_analyser: SampleAnalyser,
         collector: Collector,
     ):
         super().__init__()
@@ -29,7 +29,7 @@ class URLAnalyser(Ancestor):
         self.virustotal_api = virustotal_api
         self.domage_api = domage_api
         self.apivoid_api = apivoid_api
-        self.malaut = malaut
+        self.sample_analyser = sample_analyser
         self.collector = collector
         self.flask_path = "./src/flask/static/"
 
@@ -67,7 +67,7 @@ class URLAnalyser(Ancestor):
     def get_redirection(self, url, verbosity: str = ""):
         _all = verbosity.lower() in ["true", "y", "yes"]
         url = self.create_valid_url(url)
-        return self.malaut.get_redirection(url, all=_all)
+        return self.sample_analyser.get_redirection(url, all=_all)
 
     def get_location(self, url):
         return self.ipwho_api.get_location(url)
@@ -89,7 +89,7 @@ class URLAnalyser(Ancestor):
         filename = str(uuid.uuid4())[:8] + "_page.zip"
         path = self.flask_path + filename
         url = self.create_valid_url(url)
-        self.malaut.create_zip_with_selenium(url, path)
+        self.sample_analyser.create_zip_with_selenium(url, path)
         return filename
 
     # TODO: nem a flask hiv erre ra, hanem belulrol hivodik meg ha karos dolgot talal es olyan meg nincs
@@ -99,7 +99,7 @@ class URLAnalyser(Ancestor):
         filename = hashlib.md5(url.encode()).hexdigest() + "_sample.zip"
         path = self.flask_path + filename
         url = self.create_valid_url(url)
-        self.malaut.collect_malware_sample(url, path)
+        self.sample_analyser.collect_malware_sample(url, path)
         return filename
 
     def create_valid_url(self, url: str) -> str:
@@ -113,7 +113,7 @@ class URLAnalyser(Ancestor):
         filename = str(uuid.uuid4())[:8] + "_screenshot.png"
         path = self.flask_path + filename
         url = self.create_valid_url(url)
-        self.malaut.create_screenshot(url, path)
+        self.sample_analyser.create_screenshot(url, path)
         return filename
 
     def check(self, url: str) -> str:

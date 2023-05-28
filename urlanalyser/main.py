@@ -1,7 +1,7 @@
 from configparser import ConfigParser
 
 from src.ancestor import Ancestor
-from src.malaut import Malaut
+from src.sample_analyser import SampleAnalyser
 from src.url_analyser import URLAnalyser
 from src.flask.wrapper import FlaskWrapper
 
@@ -18,7 +18,7 @@ from src.database.blocklistdb import BlockListDatabase, BlockListDatabaseFactory
 # from mocks.connectors.urlhaus_api import URLHausAPI as MockURLHausAPI
 # from mocks.connectors.virustotal_api import VirusTotalAPI as MockVirusTotalAPI
 # from mocks.url_analyser import URLAnalyser as MockAnalyser
-# from mocks.malaut import Malaut as MockMalaut
+# from mocks.sample_analyser import SampleAnalyser as MockSampleAnalyser
 
 
 class Application(Ancestor):
@@ -49,7 +49,7 @@ class Application(Ancestor):
         virustotal_api = VirusTotalAPI(config)
         apivoid_api = APIVoidAPI(config)
         ipwho_api = IPWhoAPI(config)
-        malaut = Malaut(config=config)
+        sample_analyser = SampleAnalyser(config=config)
         domage_api = DomageAPI(config=config)
         blocklistdbfactory = BlockListDatabaseFactory(config)
         blocklistdb = blocklistdbfactory.get_blocklistdb()
@@ -62,7 +62,7 @@ class Application(Ancestor):
             apivoid_api=apivoid_api,
             domage_api=domage_api,
             collector=collector,
-            malaut=malaut,
+            sample_analyser=sample_analyser,
         )
         self.update_static_databases(urlhaus_api, collector)
         self.start_flask(analyser)

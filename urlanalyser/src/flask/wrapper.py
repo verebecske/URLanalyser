@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request, send_from_directory
 import base64
 from src.url_analyser import URLAnalyser
-from src.malaut import Malaut
+from src.sample_analyser import SampleAnalyser
 from src.ancestor import Ancestor
 from werkzeug.exceptions import HTTPException, BadRequest, InternalServerError
 from enum import Enum

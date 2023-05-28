@@ -9,7 +9,7 @@ from selenium.webdriver.common.by import By
 from src.ancestor import Ancestor
 
 
-class Malaut(Ancestor):
+class SampleAnalyser(Ancestor):
     def __init__(self, config: dict):
         super().__init__()
         selenium_host = config.get("selenium_host", "selenium-hub")
