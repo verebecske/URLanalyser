@@ -31,7 +31,7 @@ class URLAnalyser(Ancestor):
         self.apivoid_api = apivoid_api
         self.sample_analyser = sample_analyser
         self.collector = collector
-        self.temp_folder = "./temp/"
+        self.temp_folder = "./src/flask/static/"
 
     def is_malware(self, url: str) -> bool:
         return self.urlhuas_api.in_urlhaus_database(url)

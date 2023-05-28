@@ -1,4 +1,5 @@
-import sched
+from threading import Thread
+import os, time
 from configparser import ConfigParser
 
 from src.ancestor import Ancestor
@@ -29,25 +30,24 @@ class Application(Ancestor):
         self.config = ConfigParser()
         self.config.read("secrets/config.ini")
         self.debug = self.config["urlanalyser"].getboolean("debug")
-        self.config["urlanalyser"].setdefault("update_delay", 300)
+        self.config["urlanalyser"].setdefault("update_delay", "300")
         self.config["urlanalyser"]["redis_host"] = os.getenv("REDIS_HOST", None)
         self.config["urlanalyser"]["selenium_host"] = os.getenv("SELENIUM_HOST", "selenium-hub")
-        self.config["urlanalyser"]["selenium_host"] = os.getenv("SELENIUM_PORT", "4444")
+        self.config["urlanalyser"]["selenium_post"] = os.getenv("SELENIUM_PORT", "4444")
 
     def start_flask(self, analyser) -> None:
         flaskwrapper = FlaskWrapper(config=self.config["flask"], analyser=analyser)
         flaskwrapper.run()
 
-    def update_static_databases(self, urlhaus_api, collector, delay) -> None:
-        sc = sched.scheduler()
+    def update_static_databases(self, delay) -> None:
         while True:
-            sc.enter(delay, 0, urlhaus_api.update_urlhaus_database())
-            sc.enter(delay, 0, collector.collect_many())
-            sc.run()
+            self.urlhaus_api.update_urlhaus_database()
+            self.collector.collect_many()
+            time.sleep(int(delay))
 
     def start(self) -> None:
         config = self.config["urlanalyser"]
-        urlhaus_api = URLHausAPI(config)
+        self.urlhaus_api = URLHausAPI(config)
         virustotal_api = VirusTotalAPI(config)
         apivoid_api = APIVoidAPI(config)
         ipwho_api = IPWhoAPI(config)
@@ -55,21 +55,21 @@ class Application(Ancestor):
         domage_api = DomageAPI(config=config)
         blocklistdbfactory = BlockListDatabaseFactory(config)
         blocklistdb = blocklistdbfactory.get_blocklistdb()
-        collector = Collector(blocklistdb)
+        self.collector = Collector(blocklistdb)
         analyser = URLAnalyser(
             config=config,
             ipwho_api=ipwho_api,
-            urlhaus_api=urlhaus_api,
+            urlhaus_api=self.urlhaus_api,
             virustotal_api=virustotal_api,
             apivoid_api=apivoid_api,
             domage_api=domage_api,
-            collector=collector,
+            collector=self.collector,
             sample_analyser=sample_analyser,
         )
-        self.update_static_databases(
-            urlhaus_api, collector, self.config["update_delay"]
-        )
+        thread = Thread(target=self.update_static_databases, args=(config["update_delay"],))
+        thread.start()
         self.start_flask(analyser)
+        thread.stop()
 
 
 if __name__ == "__main__":
