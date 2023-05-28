@@ -9,7 +9,7 @@ class BlockListDatabaseFactory(Ancestor):
         self.config = config
 
     def get_blocklistdb(self):
-        if self.config.get("redis", False):
+        if self.config["redis_host"] != None:
             return RedisBlockListDatabase(self.config)
         return DefaultBlockListDatabase()
 
@@ -54,6 +54,7 @@ class RedisBlockListDatabase(BlockListDatabase):
     def __init__(self, config: dict):
         super().__init__()
         self.redis = Redis(host=config["redis_host"])
+        self.ttl = config["update_delay"]
 
     def add_to_database(self, data_type, data, source):
         self.logger.error(f"add redis {data_type}-{data}")

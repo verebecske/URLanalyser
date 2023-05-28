@@ -1,3 +1,4 @@
+import sched
 from configparser import ConfigParser
 
 from src.ancestor import Ancestor
@@ -28,16 +29,21 @@ class Application(Ancestor):
         self.config = ConfigParser()
         self.config.read("secrets/config.ini")
         self.debug = self.config["urlanalyser"].getboolean("debug")
+        self.config["urlanalyser"].setdefault("update_delay", 300)
+        self.config["urlanalyser"]["redis_host"] = os.getenv("REDIS_HOST", None)
+        self.config["urlanalyser"]["selenium_host"] = os.getenv("SELENIUM_HOST", "selenium-hub")
+        self.config["urlanalyser"]["selenium_host"] = os.getenv("SELENIUM_PORT", "4444")
 
     def start_flask(self, analyser) -> None:
         flaskwrapper = FlaskWrapper(config=self.config["flask"], analyser=analyser)
         flaskwrapper.run()
 
-    def update_static_databases(self, urlhaus_api, collector) -> None:
-        urlhaus_api.update_urlhaus_database()
-        collector.collect_many()
-        # TODO: adj hozzá egy időzítőt hogy frissítse magát,
-        # és a milyen időnként konfigurálható legyen
+    def update_static_databases(self, urlhaus_api, collector, delay) -> None:
+        sc = sched.scheduler()
+        while True:
+            sc.enter(delay, 0, urlhaus_api.update_urlhaus_database())
+            sc.enter(delay, 0, collector.collect_many())
+            sc.run()
 
     def start(self) -> None:
         config = self.config["urlanalyser"]
@@ -60,7 +66,9 @@ class Application(Ancestor):
             collector=collector,
             sample_analyser=sample_analyser,
         )
-        self.update_static_databases(urlhaus_api, collector)
+        self.update_static_databases(
+            urlhaus_api, collector, self.config["update_delay"]
+        )
         self.start_flask(analyser)
 
 
