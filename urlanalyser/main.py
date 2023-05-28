@@ -14,12 +14,6 @@ from src.connectors.collector import Collector
 
 from src.database.blocklistdb import BlockListDatabase, BlockListDatabaseFactory
 
-# from mocks.connectors.ipwho_api import IPWhoAPI as MockIPWhoAPI
-# from mocks.connectors.urlhaus_api import URLHausAPI as MockURLHausAPI
-# from mocks.connectors.virustotal_api import VirusTotalAPI as MockVirusTotalAPI
-# from mocks.url_analyser import URLAnalyser as MockAnalyser
-# from mocks.sample_analyser import SampleAnalyser as MockSampleAnalyser
-
 
 class Application(Ancestor):
     config: ConfigParser
@@ -42,6 +36,8 @@ class Application(Ancestor):
     def update_static_databases(self, urlhaus_api, collector) -> None:
         urlhaus_api.update_urlhaus_database()
         collector.collect_many()
+        # TODO: adj hozzá egy időzítőt hogy frissítse magát,
+        # és a milyen időnként konfigurálható legyen
 
     def start(self) -> None:
         config = self.config["urlanalyser"]
@@ -66,6 +62,7 @@ class Application(Ancestor):
         )
         self.update_static_databases(urlhaus_api, collector)
         self.start_flask(analyser)
+
 
 if __name__ == "__main__":
     app = Application()
