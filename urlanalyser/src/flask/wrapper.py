@@ -13,7 +13,7 @@ class BadRequestType(Enum):
     INVALID_CONTENT_TYPE = "Invalid Content-Type"
 
 
-class FlaskAppWrapper(Ancestor):
+class FlaskWrapper(Ancestor):
     analyser: URLAnalyser
     debug: bool
     config: dict

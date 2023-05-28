@@ -3,7 +3,7 @@ from configparser import ConfigParser
 from src.ancestor import Ancestor
 from src.malaut import Malaut
 from src.url_analyser import URLAnalyser
-from src.flask.wrapper import FlaskAppWrapper
+from src.flask.wrapper import FlaskWrapper
 
 from src.connectors.ipwho_api import IPWhoAPI
 from src.connectors.urlhaus_api import URLHausAPI
@@ -36,7 +36,7 @@ class Application(Ancestor):
         self.debug = self.config["urlanalyser"].getboolean("debug")
 
     def start_flask(self, analyser) -> None:
-        flaskwrapper = FlaskAppWrapper(config=self.config["flask"], analyser=analyser)
+        flaskwrapper = FlaskWrapper(config=self.config["flask"], analyser=analyser)
         flaskwrapper.run()
 
     def update_static_databases(self, urlhaus_api, collector) -> None:
