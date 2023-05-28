@@ -31,7 +31,7 @@ class URLAnalyser(Ancestor):
         self.apivoid_api = apivoid_api
         self.sample_analyser = sample_analyser
         self.collector = collector
-        self.flask_path = "./src/flask/static/"
+        self.temp_folder = "./temp/"
 
     def is_malware(self, url: str) -> bool:
         return self.urlhuas_api.in_urlhaus_database(url)
@@ -87,7 +87,7 @@ class URLAnalyser(Ancestor):
 
     def create_zip(self, url):
         filename = str(uuid.uuid4())[:8] + "_page.zip"
-        path = self.flask_path + filename
+        path = self.temp_folder + filename
         url = self.create_valid_url(url)
         self.sample_analyser.create_zip_with_selenium(url, path)
         return filename
@@ -97,7 +97,7 @@ class URLAnalyser(Ancestor):
     # TODO: egy endpoint megmondja milyen gyujtemeny van - csak a nevuket
     def collect_malware_sample(self, url: str):
         filename = hashlib.md5(url.encode()).hexdigest() + "_sample.zip"
-        path = self.flask_path + filename
+        path = self.temp_folder + filename
         url = self.create_valid_url(url)
         self.sample_analyser.collect_malware_sample(url, path)
         return filename
@@ -111,7 +111,7 @@ class URLAnalyser(Ancestor):
 
     def create_screenshot(self, url: str) -> str:
         filename = str(uuid.uuid4())[:8] + "_screenshot.png"
-        path = self.flask_path + filename
+        path = self.temp_folder + filename
         url = self.create_valid_url(url)
         self.sample_analyser.create_screenshot(url, path)
         return filename
