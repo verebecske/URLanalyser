@@ -47,7 +47,8 @@ class DefaultBlockListDatabase(BlockListDatabase):
                     return self.in_memory_bad_urls.get(url, [])
 
     def reset_database(self):
-        pass
+        self.in_memory_bad_ips = defaultdict(list)
+        self.in_memory_bad_urls = defaultdict(list)
 
 class RedisBlockListDatabase(BlockListDatabase):
 
@@ -59,6 +60,7 @@ class RedisBlockListDatabase(BlockListDatabase):
     def add_to_database(self, data_type, data, source):
         self.logger.error(f"add redis {data_type}-{data}")
         res = self.redis.lpush(f"{data_type}-{data}", source)
+        self.redis.expire(f"{data_type}-{data}", self.ttl)
         self.logger.error(f"add redis {res}")
 
     def get_from_database(self, data_type, data) -> list:
@@ -69,23 +71,3 @@ class RedisBlockListDatabase(BlockListDatabase):
 
     def reset_database(self):
         self.redis.flushall()
-
-class OldRedisDatabase(Ancestor):
-    config: dict
-
-    def __init__(self, config: dict):
-        super().__init__()
-        self.config = config
-        self.redis = Redis(host="redis")
-
-    def add_data(self, data: dict) -> bool:
-        encoded_url = self._encode_url(data["url"])
-        data["time"] = time()
-        return self.redis.hset(encoded_url, mapping=data)
-
-    def get_data(self, url: str) -> dict:
-        encoded_url = self._encode_url(url)
-        return self.redis.hgetall(encoded_url)
-
-    def _encode_url(self, url: str):
-        return base64.urlsafe_b64encode(url.encode()).decode()
