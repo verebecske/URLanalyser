@@ -54,7 +54,7 @@ class RedisBlockListDatabase(BlockListDatabase):
 
     def __init__(self, config: dict):
         super().__init__()
-        self.redis = Redis(host=config["redis_host"])
+        self.redis = Redis(host=config["redis_host"], port=config["redis_port"])
         self.ttl = config["update_delay"]
 
     def add_to_database(self, data_type, data, source):

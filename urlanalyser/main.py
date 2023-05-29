@@ -33,10 +33,12 @@ class Application(Ancestor):
         self.config["urlanalyser"]["debug"] = os.getenv("DEBUG", True)
         self.config["urlanalyser"]["update_delay"] = os.getenv("UPDATE_DELAY", "300")
         self.config["urlanalyser"]["redis_host"] = os.getenv("REDIS_HOST", None)
+        self.config["urlanalyser"]["redis_port"] = os.getenv("REDIS_PORT", "6379")
         self.config["urlanalyser"]["selenium_host"] = os.getenv("SELENIUM_HOST", "selenium-hub")
         self.config["urlanalyser"]["selenium_post"] = os.getenv("SELENIUM_PORT", "4444")
         self.debug = self.config["urlanalyser"]
 
+        self.config["flask"] = {}
         self.config["flask"]["debug"] = os.getenv("DEBUG", True)
         self.config["flask"]["host"] = os.getenv("FLASK_HORT", "0.0.0.0")
         self.config["flask"]["port"] = os.getenv("FLASK_PORT", "5000")
