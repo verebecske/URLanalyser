@@ -226,7 +226,7 @@ class FlaskWrapper(Ancestor):
         try:
             self.logger.info(f"Get request: {request}")
             url = self._get_url_from_get_request()
-            path = self.analyser.collect_malware_sample(url)
+            path = self.analyser.collect_malware_sample(url, "./src/flask/static/")
             self.logger.info(f"created sample in: {path}")
             return send_from_directory("/src/flask/static/", path, as_attachment=True)
         except BadRequest as error:

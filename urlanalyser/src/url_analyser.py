@@ -32,6 +32,7 @@ class URLAnalyser(Ancestor):
         self.sample_analyser = sample_analyser
         self.collector = collector
         self.temp_folder = "./src/flask/static/"
+        self.collection_database = []
 
     def is_malware(self, url: str) -> bool:
         return self.urlhuas_api.in_urlhaus_database(url)
@@ -92,12 +93,15 @@ class URLAnalyser(Ancestor):
         self.sample_analyser.create_zip_with_selenium(url, path)
         return filename
 
+    def add_to_malware_collection(self, url):
+        self.collection_database.append(url)
+
     # TODO: nem a flask hiv erre ra, hanem belulrol hivodik meg ha karos dolgot talal es olyan meg nincs
     # TODO: kivulrol hivhato, de nem adja vissza a letoltott file-t
     # TODO: egy endpoint megmondja milyen gyujtemeny van - csak a nevuket
-    def collect_malware_sample(self, url: str):
+    def collect_malware_sample(self, url: str, path: str):
         filename = hashlib.md5(url.encode()).hexdigest() + "_sample.zip"
-        path = self.temp_folder + filename
+        path = path + filename
         url = self.create_valid_url(url)
         self.sample_analyser.collect_malware_sample(url, path)
         return filename
@@ -119,6 +123,8 @@ class URLAnalyser(Ancestor):
     def check(self, url: str) -> str:
         result = {}
         result["is_malicious"] = self.majority_gate(url)
+        if result["is_malicious"]:
+            self.add_to_malware_collection(url)
         return result
 
     def majority_gate(self, url: str):

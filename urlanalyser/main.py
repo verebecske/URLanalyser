@@ -32,6 +32,7 @@ class Application(Ancestor):
 
         self.config["urlanalyser"]["debug"] = os.getenv("DEBUG", True)
         self.config["urlanalyser"]["update_delay"] = os.getenv("UPDATE_DELAY", "300")
+        self.config["urlanalyser"]["collection_path"] = os.getenv("COLLECTION_PATH", "./collection/")
         self.config["urlanalyser"]["redis_host"] = os.getenv("REDIS_HOST", None)
         self.config["urlanalyser"]["redis_port"] = os.getenv("REDIS_PORT", "6379")
         self.config["urlanalyser"]["selenium_host"] = os.getenv("SELENIUM_HOST", "selenium-hub")
@@ -54,6 +55,14 @@ class Application(Ancestor):
             self.collector.collect_many()
             time.sleep(int(delay))
 
+    def save_malware_samples(self) -> None:
+        path = self.config["urlanalyser"]["collection_path"]
+        while True:
+            if len(self.analyser.collection_database) > 0:
+                url = self.analyser.collection_database.pop()
+                self.analyser.collect_malware_sample(url, path)
+            time.sleep(20)
+
     def start(self) -> None:
         config = self.config["urlanalyser"]
         self.urlhaus_api = URLHausAPI(config)
@@ -65,7 +74,7 @@ class Application(Ancestor):
         blocklistdbfactory = BlockListDatabaseFactory(config)
         blocklistdb = blocklistdbfactory.get_blocklistdb()
         self.collector = Collector(blocklistdb)
-        analyser = URLAnalyser(
+        self.analyser = URLAnalyser(
             config=config,
             ipwho_api=ipwho_api,
             urlhaus_api=self.urlhaus_api,
@@ -79,7 +88,7 @@ class Application(Ancestor):
             target=self.update_static_databases, args=(config["update_delay"],)
         )
         thread.start()
-        self.start_flask(analyser)
+        self.start_flask(self.analyser)
         thread.stop()
 
 
