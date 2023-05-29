@@ -120,7 +120,7 @@ class Collector(Ancestor):
             "phishunt.io": {
                 "list_type": "url",
                 "name": "openfish",
-                "url": "hhttps://phishunt.io/feed.txt",
+                "url": "https://phishunt.io/feed.txt",
                 "type": "unformatted",
             },
 

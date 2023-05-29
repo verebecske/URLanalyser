@@ -58,15 +58,13 @@ class RedisBlockListDatabase(BlockListDatabase):
         self.ttl = config["update_delay"]
 
     def add_to_database(self, data_type, data, source):
-        self.logger.error(f"add redis {data_type}-{data}")
         res = self.redis.lpush(f"{data_type}-{data}", source)
         self.redis.expire(f"{data_type}-{data}", self.ttl)
-        self.logger.error(f"add redis {res}")
+        self.logger.debug(f"add redis {data_type}-{data}: {res}")
 
     def get_from_database(self, data_type, data) -> list:
-        self.logger.error(f"get redis {data_type}-{data}")
+        self.logger.debug(f"get redis {data_type}-{data}")
         res = self.redis.lrange(f"{data_type}-{data}", 0, -1)
-        self.logger.error(f"get redis {res}, {type(res)}")
         return list(set(name.decode() for name in res))
 
     def reset_database(self):
