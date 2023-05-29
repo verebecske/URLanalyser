@@ -153,21 +153,9 @@ class Collector(Ancestor):
             #     "list_type": "ip",
             #     "url": "https://rjmblocklist.com/",
             # },
-            # "urlvir": {"list_type": "ip", "url": "https://www.urlvir.com/"},
+            # "urlvir": {"list_type": "ip", "url": "https://www.urlvir.com/"},        
         }
-        source2 = {
-                "university": {
-                "list_type": "url",
-                "type": "unformatted",
-                "url": "https://raw.githubusercontent.com/verebecske/URLanalyser/DT-22-fix-webpage/urlanalyser/datas/testdata/url_list.txt",
-            },
-                "url_with_m": {
-                "list_type": "url",
-                "type": "unformatted",
-                "url": "https://raw.githubusercontent.com/verebecske/URLanalyser/DT-22-fix-webpage/urlanalyser/datas/testdata/url_m.txt",
-            },
-        }
-        for key, value in source2.items():
+        for key, value in source.items():
             self.send_request_and_save_result(
                 value["url"], f"{value['list_type']}/{key}.txt", value["list_type"]
             )
