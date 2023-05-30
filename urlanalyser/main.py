@@ -39,7 +39,7 @@ class Application(Ancestor):
         self.config["urlanalyser"]["selenium_post"] = os.getenv("SELENIUM_PORT", "4444")
         self.debug = self.config["urlanalyser"]
         if "ip2location_api_key" in self.config["urlanalyser"]:
-            self.config["urlanalyser"]["use_ip2location"] = True
+            self.config["urlanalyser"]["use_ip2location"] = "True"
 
         self.config["flask"] = {}
         self.config["flask"]["debug"] = os.getenv("DEBUG", True)
