@@ -72,7 +72,7 @@ class URLAnalyser(Ancestor):
         return self.sample_analyser.get_redirection(url, all=_all)
 
     def get_location(self, url):
-        if config["use_ip2location"]:
+        if "use_ip2location" in self.config:
             return self.ip2location.get_location(url)
         return self.ipwho_api.get_location(url)
 
