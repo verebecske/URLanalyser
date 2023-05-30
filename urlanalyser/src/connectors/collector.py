@@ -164,5 +164,5 @@ class Collector(Ancestor):
         }
         for key, value in source.items():
             self.send_request_and_save_result(
-                value["url"], f"{value['list_type']}/{key}.txt", value["list_type"]
+                value["url"], f"{value['list_type']}/{value['name']}.txt", value["list_type"]
             )
