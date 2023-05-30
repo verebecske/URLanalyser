@@ -11,6 +11,7 @@ from src.connectors.ipwho_api import IPWhoAPI
 from src.connectors.urlhaus_api import URLHausAPI
 from src.connectors.virustotal_api import VirusTotalAPI
 from src.connectors.apivoid_api import APIVoidAPI
+from src.connectors.ip2location import IP2LocationAPI
 from src.connectors.domage_api import DomageAPI
 from src.connectors.collector import Collector
 
@@ -70,6 +71,7 @@ class Application(Ancestor):
         self.urlhaus_api = URLHausAPI(config)
         virustotal_api = VirusTotalAPI(config)
         apivoid_api = APIVoidAPI(config)
+        ip2location = IP2LocationAPI(config)
         ipwho_api = IPWhoAPI(config)
         sample_analyser = SampleAnalyser(config=config)
         domage_api = DomageAPI(config=config)
@@ -82,6 +84,7 @@ class Application(Ancestor):
             urlhaus_api=self.urlhaus_api,
             virustotal_api=virustotal_api,
             apivoid_api=apivoid_api,
+            ip2location=ip2location,
             domage_api=domage_api,
             collector=self.collector,
             sample_analyser=sample_analyser,
