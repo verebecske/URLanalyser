@@ -50,78 +50,85 @@ class Collector(Ancestor):
                 "list_type": "ip",
                 "type": "unformatted",
                 "url": "https://mirai.security.gives/data/ip_list.txt",
-                "name": "",
+                "name": "Mirai Tracker",
             },
             "nubi_network": {
                 "list_type": "ip",
                 "type": "unformatted",
                 "url": "https://www.nubi-network.com/list.txt",
+                "name": "NUBI",
             },
             "liquidbinary": {
                 "list_type": "ip",
                 "type": "unformatted",
                 "url": "http://liquidbinary.com/blackIPs.txt",
+                "name": "Liquid Binary",
             },
             "sigs_interserver": {
                 "list_type": "ip",
                 "type": "unformatted",
                 "url": "http://sigs.interserver.net/iprbl.txt",
+                "name": "InterServer"
             },
             "blisxfr": {
                 "list_type": "ip",
                 "type": "unformatted",
                 "url": "https://bl.isx.fr/raw",
+                "name": "ISX.fr"
             },
             "blacklists": {
                 "list_type": "ip",
                 "type": "unformatted",
                 "url": "http://blacklists.co/download/all.txt",
+                "name": "Blacklists.co",
             },
             "threat sourcing": {
                 "list_type": "ip",
                 "type": "unformatted",
                 "url": "https://www.threatsourcing.com/ipall.txt",
+                "name": "Theat Sourcing"
             },
             "feodo": {
                 "list_type": "ip",
-                "name": "https://feodotracker.abuse.ch/blocklist/#ip-blocklist",
                 "type": "unformatted",
                 "url": "https://feodotracker.abuse.ch/downloads/ipblocklist_recommended.txt",
+                "name": "Feodo Tracker",
             },
             "charles_haleys": {
                 "list_type": "ip",
                 "type": "unformatted",
                 "url": "https://charles.the-haleys.org/ssh_dico_attack_with_timestamps.php?days=1",
+                "name": "Charles B. Haley",
             },
             "green_snow": {
                 "list_type": "ip",
-                "name": "https://greensnow.co/",
                 "type": "unformatted",
                 "url": "https://blocklist.greensnow.co/greensnow.txt",
+                "name": "GreenSnow",
             },
             "rjmblocklist_fresh": {
                 "list_type": "ip",
-                "name": "https://rjmblocklist.com/",
                 "url": "https://rjmblocklist.com/sizzling/freships.txt",
                 "type": "unformatted",
+                "name": "RJM Blocklist",
             },
             "rjmblocklist_worst": {
                 "list_type": "ip",
-                "name": "https://rjmblocklist.com/",
                 "url": "https://rjmblocklist.com/sizzling/worst.txt",
                 "type": "unformatted",
+                "name": "RJM Blocklist",
             },
             "openfish": {
                 "list_type": "url",
-                "name": "openfish",
                 "url": "https://openphish.com/feed.txt",
                 "type": "unformatted",
+                "name": "OpenPhish",
             },
             "phishunt.io": {
                 "list_type": "url",
-                "name": "openfish",
                 "url": "https://phishunt.io/feed.txt",
                 "type": "unformatted",
+                "name": "phishunt.io",
             },
 
             
