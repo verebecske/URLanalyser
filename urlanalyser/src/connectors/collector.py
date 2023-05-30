@@ -25,7 +25,7 @@ class Collector(Ancestor):
             or self.blocklistdb.get_from_database("url", url) != []
         )
 
-    def send_request_and_save_result(self, url, filename, list_type):
+    def send_request_and_save_result(self, url, filename, list_type, display_name):
         response = requests.get(url=url)
         with open(f"static_database/{filename}", "w") as fd:
             fd.write(response.text)
@@ -38,9 +38,9 @@ class Collector(Ancestor):
                     match = re.search((r"((\d+).)*\d+"), line)
                     if match:
                         ip = ipaddress.ip_address(match.group(0))
-                        self.blocklistdb.add_to_database("ip", ip, filename)
+                        self.blocklistdb.add_to_database("ip", ip, display_name)
                 if list_type == "url":
-                    self.blocklistdb.add_to_database("url", line, filename)
+                    self.blocklistdb.add_to_database("url", line, display_name)
             except ValueError as error:
                 self.logger.warning(f"line: {line} error {error}")
 
@@ -164,5 +164,5 @@ class Collector(Ancestor):
         }
         for key, value in source.items():
             self.send_request_and_save_result(
-                value["url"], f"{value['list_type']}/{value['name']}.txt", value["list_type"]
+                value["url"], f"{value['list_type']}/{key}.txt", value["list_type"], value["name"]
             )
