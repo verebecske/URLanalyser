@@ -33,6 +33,7 @@ class URLAnalyser(Ancestor):
         self.collector = collector
         self.temp_folder = "./src/flask/static/"
         self.collection_database = []
+        self.config = config
 
     def is_malware(self, url: str) -> bool:
         return self.urlhuas_api.in_urlhaus_database(url)
@@ -71,6 +72,8 @@ class URLAnalyser(Ancestor):
         return self.sample_analyser.get_redirection(url, all=_all)
 
     def get_location(self, url):
+        if config["use_ip2location"]:
+            return self.ip2location.get_location(url)
         return self.ipwho_api.get_location(url)
 
     def get_domain_age(self, url):

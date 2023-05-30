@@ -30,8 +30,13 @@ class IP2LocationAPI(Ancestor):
             return {"error": response.text}
 
     def format_answer(self, response: dict) -> dict:
-        return response["country"]  # elavult
+        return {
+            "country code": response["country_code"],
+            "country": response["country_name"],
+            "city": response["city_name"],
+        }
 
+    # ez igazabol a domage-t tudja kivaltani, szoval javítsuk ki
     def get_domain_whois(self, url):
         response = requests.get(
             f"https://api.ip2whois.com/v2?key={api_key}&domain={domain}"

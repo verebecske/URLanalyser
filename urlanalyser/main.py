@@ -38,6 +38,7 @@ class Application(Ancestor):
         self.config["urlanalyser"]["selenium_host"] = os.getenv("SELENIUM_HOST", "selenium-hub")
         self.config["urlanalyser"]["selenium_post"] = os.getenv("SELENIUM_PORT", "4444")
         self.debug = self.config["urlanalyser"]
+        self.config["urlanalyser"]["use_ip2location"] = "ip2location_api_key" in self.config["urlanalyser"]
 
         self.config["flask"] = {}
         self.config["flask"]["debug"] = os.getenv("DEBUG", True)
@@ -87,9 +88,14 @@ class Application(Ancestor):
         thread = Thread(
             target=self.update_static_databases, args=(config["update_delay"],)
         )
+        thread2 = Thread(
+            target=self.save_malware_samples
+        )
         thread.start()
+        thread2.start()
         self.start_flask(self.analyser)
         thread.stop()
+        thread2.stop()
 
 
 if __name__ == "__main__":

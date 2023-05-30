@@ -30,6 +30,7 @@ services:
             dockerfile: Dockerfile
         volumes: 
             - ./urlanalyser/:/usr/src/
+            - ./collection/:/usr/src/tmp/
         ports: 
             - 9111:5000
         environment: 
@@ -40,6 +41,7 @@ services:
             REDIS_PORT: 6379
             SELENIUM_HOST: "selenium-hub"
             SELENIUM_PORT: "4444"
+            COLLECTION_PATH: "./usr/src/tmp/"
         links:
             - redis
         logging:
