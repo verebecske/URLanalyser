@@ -126,17 +126,17 @@ class DiscordClient(commands.Bot, Ancestor):
                 replay = f"**{message.author}** sent me:\n\t{message.content}"
                 await self._send_answer(replay, message.channel)
             if message.channel.type == discord.ChannelType.private:
-                await self._read_direct_message(
+                return await self._read_direct_message(
                     message.content, message.author, message.channel
                 )
             else:
                 try:
-                    await self._read_message(
+                    return await self._read_message_on_server(
                         message.content, message.author, message.channel
                     )
                 except (
                     MaliciousContentError
-                ) as error:  # itt valamit lehet kezdeni kellene ezzel koncepcio szinten is
+                ) as error:
                     await self._delete_message(message)
                     await self._send_answer(error, message.channel)
                     return
@@ -144,11 +144,11 @@ class DiscordClient(commands.Bot, Ancestor):
             self.logger.error(f"Client error: {error}")
             await self._send_answer("Client error happened", message.channel)
 
-    async def _read_message(self, content, author, channel) -> str:
+    async def _read_message_on_server(self, content, author, channel) -> str:
         url_list = self._filter_urls(content)
-        if self._is_malicious_list(url_list):
-            raise MaliciousContentError
-        return replay
+        if await self._is_malicious_list(url_list):
+            raise MaliciousContentError()
+        
 
     async def _delete_message(self, message):
         await message.delete()
@@ -165,10 +165,10 @@ class DiscordClient(commands.Bot, Ancestor):
         self.logger.info(f"URLS: {urls}")
         return urls
 
-    def _is_malicious_list(self, url_list: list) -> bool:
+    async def _is_malicious_list(self, url_list: list) -> bool:
         is_malicious = False
         for url in url_list:
-            is_malicious = is_malicious or self._check_url(url)
+            is_malicious = is_malicious or await self._check_url(url)
         self.logger.info(f"Results: {is_malicious}")
         return is_malicious
 
