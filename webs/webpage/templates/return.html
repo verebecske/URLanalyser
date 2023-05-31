@@ -27,7 +27,7 @@
     <a href="/downloadzip"><button>Download</button></a>
     {% endif %}
     {% if filename != "" %}
-    <img src="{{ url_for('static', filename='screenshot.png') }}" alt="screenshot" class="midImg">
+    <img src="{{ url_for('static', filename='screenshot.png') }}" alt="screenshot" class="midImg" style="width:60%">
     {% endif %}
     <a href="{{ url_for('index') }}"><button>Home</button></a>
   </div>

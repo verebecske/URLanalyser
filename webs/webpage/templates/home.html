@@ -3,7 +3,7 @@
 {% block content %}
 <form method="post" class="decor">
   <div class="form-inner">
-    <h1>Check url</h1>
+    <h1>URLAnalyser - Check URL</h1>
     {% if error != "" %}
     <div class="error">{{error}}</div>
     {% endif %}
@@ -48,13 +48,13 @@
         <td>
           <div>
             <input type="checkbox" name="urlhaus" id="urlhaus">
-            <label for="urlhaus">Send to URLHaus</label>
+            <label for="urlhaus">Send to URLhaus</label>
           </div>
         </td>
         <td>
           <div>
             <input type="checkbox" name="virustotal" id="virustotal">
-            <label for="virustotal">Send to virustotal</label>
+            <label for="virustotal">Send to VirusTotal</label>
           </div>
         </td>
       </tr>
@@ -62,7 +62,7 @@
         <td>
           <div>
             <input type="checkbox" name="screenshot" id="screenshot">
-            <label for="screenshot">Send screenshot</label>
+            <label for="screenshot">Get screenshot</label>
           </div>
         </td>
         <td>

@@ -56,7 +56,9 @@ class FlaskWebPage:
         result = self.urlanalyser.ask_urlanalyserapi(settings)
         filename = ""
         download = ""
-        is_malicious = self.urlanalyser.check_url(settings["url"])
+        is_malicious = "false"
+        if self.urlanalyser.check_url(settings["url"]):
+            is_malicious = "true"
         if settings["screenshot"]:
             filename = self.urlanalyser.get_screenshot(settings["url"])
         if settings["download"]:
@@ -94,12 +96,8 @@ class URLAnalyserAPI:
         return {"result": f"Server error happened: {response.text}"}
 
     def check_url(self, url: str) -> bool:
-        try:
             result = self.send_get_request("check", url)
-            return result.json()["result"]["is_malicious"]
-        except Exception as error:
-            pass
-        return False
+            return result["is_malicious"]
 
     def domain_age_handler(self, url):
         return self.send_get_request("get_domain_age", url)
@@ -159,8 +157,8 @@ class URLAnalyserAPI:
 
 if __name__ == "__main__":
     config = {
-        "host": os.getenv("HOST", "0.0.0.0"),
-        "port": os.getenv("PORT", 5000),
+        "host": os.getenv("FLASK_HOST", "0.0.0.0"),
+        "port": os.getenv("FLASK_PORT", 5000),
         "analyser_host": os.getenv("URLANALYSER_HOST"),
         "analyser_port": os.getenv("URLANALYSER_PORT"),
         "debug": os.getenv("DEBUG")
