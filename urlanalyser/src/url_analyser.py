@@ -37,6 +37,8 @@ class URLAnalyser(Ancestor):
         self.temp_folder = "./src/flask/static/"
         self.collection_database = []
         self.config = config
+        if config["debug"]:
+            self.logger.setLevel(DEBUG)
 
     def is_malware(self, url: str) -> bool:
         return self.urlhuas_api.in_urlhaus_database(url)

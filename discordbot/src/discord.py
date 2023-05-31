@@ -24,6 +24,8 @@ class DBot(Ancestor):
     def __init__(self, config: dict) -> None:
         super().__init__()
         self.mytoken = config["token"]
+        if config["debug"]:
+            self.logger.setLevel(DEBUG)
         self.set_defaults(config)
 
     def set_defaults(self, config: dict) -> None:
