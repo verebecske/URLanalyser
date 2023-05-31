@@ -17,7 +17,7 @@ class FlaskWebPage:
     def run(self) -> None:
         host = self.config["host"]
         port = self.config["port"]
-        self.app.run(debug=False, host=host, port=port)
+        self.app.run(debug=config["debug"], host=host, port=port)
 
     def _add_all_endpoints(self):
         self.app.add_url_rule("/", "index", self.index, methods=["GET", "POST"])
@@ -58,11 +58,12 @@ class FlaskWebPage:
         )
 
 
-class URLAnalyserInterface:
+class URLAnalyserAPI:
     def __init__(self, config: dict):
-        self.config = config
+        if config["analyser_host"] is None:
+            raise Exception("Missing URLAnalasyer host")
         self.urlanalyser_url = (
-            f'http://{self.config["analyser_host"]}:{self.config["analyser_port"]}'
+            f'http://{config["analyser_host"]}:{config["analyser_port"]}'
         )
 
     def ask_urlanalyserapi(self, settings: dict) -> dict:
@@ -136,11 +137,12 @@ class URLAnalyserInterface:
 
 if __name__ == "__main__":
     config = {
-        "host": "0.0.0.0",
-        "port": os.getenv("PORT"),
-        "analyser_host": "urlanalyser-main",
+        "host": os.getenv("HOST", "0.0.0.0"),
+        "port": os.getenv("PORT", 5000),
+        "analyser_host": os.getenv("URLANALYSER_HOST"),
         "analyser_port": os.getenv("URLANALYSER_PORT"),
+        "debug": os.getenv("DEBUG")
     }
-    urlanalyser = URLAnalyserInterface(config)
+    urlanalyser = URLAnalyserAPI(config)
     flaskapp = FlaskWebPage(config, urlanalyser)
     flaskapp.run()

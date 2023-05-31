@@ -9,9 +9,11 @@ services:
        ports: 
            - 9109:5000
        environment: 
+           DEBUG: 1 
+           HOST: "0.0.0.0"
            PORT: 5000
+           URLANALYSER_HOST: "urlanalyser-main"
            URLANALYSER_PORT: 5000
-           FLASK_DEBUG: 1
     livesample:
        build: 
            context: ./webs/livesample/
@@ -98,6 +100,9 @@ services:
         - SE_EVENT_BUS_HOST=selenium-hub
         - SE_EVENT_BUS_PUBLISH_PORT=4442
         - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      deploy:
+        mode: replicated
+        replicas: 2
     selenium-hub:
       image: selenium/hub
       container_name: selenium-hub
@@ -105,4 +110,3 @@ services:
         - "4442:4442"
         - "4443:4443"   
         - "4444:4444"
-
