@@ -1,6 +1,7 @@
 import re
 import uuid
 import hashlib
+from logging import DEBUG
 from src.connectors.ipwho_api import IPWhoAPI
 from src.connectors.urlhaus_api import URLHausAPI
 from src.connectors.virustotal_api import VirusTotalAPI
@@ -37,7 +38,7 @@ class URLAnalyser(Ancestor):
         self.temp_folder = "./src/flask/static/"
         self.collection_database = []
         self.config = config
-        if config["debug"]:
+        if config["debug"] == "true":
             self.logger.setLevel(DEBUG)
 
     def is_malware(self, url: str) -> bool:

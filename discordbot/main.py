@@ -14,7 +14,7 @@ def get_config():
     config.read("secrets/config.ini")
     config["discord"]["host"] = getenv("URLANALYSER_HOST")
     config["discord"]["port"] = getenv("URLANALYSER_PORT")
-    config["discord"]["debug"] = getenv("DEBUG", True)
+    config["discord"]["debug"] = getenv("DEBUG", "true")
     return config
 
 

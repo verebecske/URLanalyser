@@ -31,12 +31,12 @@ class Application(Ancestor):
         self.config = ConfigParser()
         self.config.read("secrets/config.ini")
 
-        self.config["urlanalyser"]["debug"] = os.getenv("DEBUG", True)
+        self.config["urlanalyser"]["debug"] = os.getenv("DEBUG", "true")
         self.config["urlanalyser"]["update_delay"] = os.getenv("UPDATE_DELAY", "300")
         self.config["urlanalyser"]["collection_path"] = os.getenv(
             "COLLECTION_PATH", "./collection/"
         )
-        self.config["urlanalyser"]["redis_host"] = os.getenv("REDIS_HOST", None)
+        self.config["urlanalyser"]["redis_host"] = os.getenv("REDIS_HOST", "unknown")
         self.config["urlanalyser"]["redis_port"] = os.getenv("REDIS_PORT", "6379")
         self.config["urlanalyser"]["selenium_host"] = os.getenv(
             "SELENIUM_HOST", "selenium-hub"
@@ -47,7 +47,7 @@ class Application(Ancestor):
             self.config["urlanalyser"]["use_ip2location"] = "True"
 
         self.config["flask"] = {}
-        self.config["flask"]["debug"] = os.getenv("DEBUG", True)
+        self.config["flask"]["debug"] = os.getenv("DEBUG", "true")
         self.config["flask"]["host"] = os.getenv("FLASK_HORT", "0.0.0.0")
         self.config["flask"]["port"] = os.getenv("FLASK_PORT", "5000")
 

@@ -29,7 +29,7 @@ class TBot(Ancestor):
         super().__init__()
         self.mytoken = config["token"]
         self.urlanalyser_url = f"http://{config['host']}:{config['port']}"
-        if config["debug"]:
+        if config["debug"] == "true":
             self.logger.setLevel(DEBUG)
 
     def start(self):

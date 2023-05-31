@@ -9,7 +9,7 @@ class BlockListDatabaseFactory(Ancestor):
         self.config = config
 
     def get_blocklistdb(self):
-        if self.config["redis_host"] != None:
+        if self.config["redis_host"] != "unknown":
             return RedisBlockListDatabase(self.config)
         return DefaultBlockListDatabase()
 

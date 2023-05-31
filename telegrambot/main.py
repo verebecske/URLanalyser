@@ -13,7 +13,7 @@ def get_config():
     config.read("secrets/config.ini")
     config["telegram"]["host"] = getenv("URLANALYSER_HOST")
     config["telegram"]["port"] = getenv("URLANALYSER_PORT")
-    config["telegram"]["debug"] = getenv("DEBUG", True)
+    config["telegram"]["debug"] = getenv("DEBUG", "true")
     return config
 
 

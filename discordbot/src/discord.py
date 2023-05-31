@@ -2,6 +2,7 @@ from discord.ext import tasks, commands
 import discord
 import time
 from src.ancestor import Ancestor
+from logging import DEBUG
 import re
 import requests
 import base64
@@ -24,7 +25,7 @@ class DBot(Ancestor):
     def __init__(self, config: dict) -> None:
         super().__init__()
         self.mytoken = config["token"]
-        if config["debug"]:
+        if config["debug"] == "true":
             self.logger.setLevel(DEBUG)
         self.set_defaults(config)
 

@@ -36,7 +36,7 @@ services:
         ports: 
             - 9111:5000
         environment: 
-            DEBUG: True
+            DEBUG: False
             FLASK_HOST: "0.0.0.0"
             FLASK_PORT: 5000
             REDIS_HOST: "redis"
@@ -63,7 +63,7 @@ services:
         environment: 
            URLANALYSER_HOST: "urlanalyser-main"
            URLANALYSER_PORT: 5000
-           DEBUG: 1
+           DEBUG: False
     telegram-bot:
         build: 
             context: ./telegrambot/
@@ -77,7 +77,7 @@ services:
         environment: 
            URLANALYSER_HOST: "urlanalyser-main"
            URLANALYSER_PORT: 5000
-           DEBUG: 1
+           DEBUG: False
     redis:
         image: redis
         logging:
