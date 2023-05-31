@@ -4,7 +4,7 @@
 <div class="return">
   <div class="form-inner">
     <h1>Welcome!</h1>
-    {% if filename != "" %}
+    {% if is_malicious == "true" %}
     <div class="malicious">
       URL: {{url}} !!! - It is look dangerous, please avoid this page
     </div>
@@ -23,6 +23,9 @@
         {% endfor %}
       </tbody>
     </table>
+    {% if download != "" %}
+    <a href="/downloadzip"><button>Download</button></a>
+    {% endif %}
     {% if filename != "" %}
     <img src="{{ url_for('static', filename='screenshot.png') }}" alt="screenshot" class="midImg">
     {% endif %}
@@ -30,3 +33,4 @@
   </div>
 </div>
 {% endblock content %}
+

@@ -1,7 +1,7 @@
 import requests
 import base64
 import os
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, send_from_directory
 
 
 class FlaskWebPage:
@@ -21,6 +21,7 @@ class FlaskWebPage:
 
     def _add_all_endpoints(self):
         self.app.add_url_rule("/", "index", self.index, methods=["GET", "POST"])
+        self.app.add_url_rule("/downloadzip", "downloadzip", self.download_as_zip,  methods=["GET"])
 
     def index(self):
         if request.method == "POST":
@@ -41,8 +42,12 @@ class FlaskWebPage:
             "red_all": request.form.get("red_all", False),
             "domain_age": request.form.get("domain_age", False),
             "domain_reputation": request.form.get("domain_reputation", False),
+            "download": request.form.get("download", False)
         }
         return settings
+
+    def download_as_zip(self):
+        return send_from_directory("./static/", "page.zip", as_attachment=True)
 
     def post_index(self):
         settings = self.get_settings_from_form(request)
@@ -50,11 +55,15 @@ class FlaskWebPage:
             return render_template("home.html", error="Missing URL")
         result = self.urlanalyser.ask_urlanalyserapi(settings)
         filename = ""
+        download = ""
         is_malicious = self.urlanalyser.check_url(settings["url"])
         if settings["screenshot"]:
-            filename = self.get_screenshot(settings["url"])
+            filename = self.urlanalyser.get_screenshot(settings["url"])
+        if settings["download"]:
+            download = self.urlanalyser.download_as_zip(settings["url"])
         return render_template(
-            "return.html", url=settings["url"], result=result, filename=filename
+            "return.html", url=settings["url"], result=result, filename=filename, 
+            download=download, is_malicious=is_malicious
         )
 
 
@@ -129,11 +138,24 @@ class URLAnalyserAPI:
     def get_screenshot(self, url: str) -> str:
         url = self._encode_url(url)
         response = requests.get(f"{self.urlanalyser_url}/get_screenshot?url={url}")
-        path = "./static/screenshot.png"
-        with open(path, "wb") as image_file:
-            image_file.write(response.content)
-        return "screenshot.png"
+        if response.status_code == 200:
+            path = "./static/screenshot.png"
+            with open(path, "wb") as image_file:
+                image_file.write(response.content)
+            return "screenshot.png"
+        else:
+            raise ServerError(f"Something went wrong with: {url}")
 
+    def download_as_zip(self, url: str):
+        url = self._encode_url(url)
+        response = requests.get(f"{self.urlanalyser_url}/download_as_zip?url={url}")
+        if response.status_code == 200:
+            path = "./static/page.zip"
+            with open(path, "wb") as image_file:
+                image_file.write(response.content)
+            return "page.zip"
+        else:
+            raise ServerError(f"Something went wrong with: {url}")
 
 if __name__ == "__main__":
     config = {
