@@ -33,10 +33,14 @@ class Application(Ancestor):
 
         self.config["urlanalyser"]["debug"] = os.getenv("DEBUG", True)
         self.config["urlanalyser"]["update_delay"] = os.getenv("UPDATE_DELAY", "300")
-        self.config["urlanalyser"]["collection_path"] = os.getenv("COLLECTION_PATH", "./collection/")
+        self.config["urlanalyser"]["collection_path"] = os.getenv(
+            "COLLECTION_PATH", "./collection/"
+        )
         self.config["urlanalyser"]["redis_host"] = os.getenv("REDIS_HOST", None)
         self.config["urlanalyser"]["redis_port"] = os.getenv("REDIS_PORT", "6379")
-        self.config["urlanalyser"]["selenium_host"] = os.getenv("SELENIUM_HOST", "selenium-hub")
+        self.config["urlanalyser"]["selenium_host"] = os.getenv(
+            "SELENIUM_HOST", "selenium-hub"
+        )
         self.config["urlanalyser"]["selenium_post"] = os.getenv("SELENIUM_PORT", "4444")
         self.debug = self.config["urlanalyser"]
         if "ip2location_api_key" in self.config["urlanalyser"]:
@@ -46,7 +50,6 @@ class Application(Ancestor):
         self.config["flask"]["debug"] = os.getenv("DEBUG", True)
         self.config["flask"]["host"] = os.getenv("FLASK_HORT", "0.0.0.0")
         self.config["flask"]["port"] = os.getenv("FLASK_PORT", "5000")
-
 
     def start_flask(self, analyser) -> None:
         flaskwrapper = FlaskWrapper(config=self.config["flask"], analyser=analyser)
@@ -92,9 +95,7 @@ class Application(Ancestor):
         thread = Thread(
             target=self.update_static_databases, args=(config["update_delay"],)
         )
-        thread2 = Thread(
-            target=self.save_malware_samples
-        )
+        thread2 = Thread(target=self.save_malware_samples)
         thread.start()
         thread2.start()
         self.start_flask(self.analyser)

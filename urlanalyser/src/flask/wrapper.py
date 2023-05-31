@@ -59,8 +59,11 @@ class FlaskWrapper(Ancestor):
             "/download_as_zip", "download_as_zip", self.download_as_zip, methods=["GET"]
         )
         self.app.add_url_rule(
-            "/download_as_sample", "download_as_sample", self.download_as_sample, methods=["GET"]
-        ) # TODO: remove - it is just for test!!!
+            "/download_as_sample",
+            "download_as_sample",
+            self.download_as_sample,
+            methods=["GET"],
+        )  # TODO: remove - it is just for test!!!
 
     def _add_errors(self) -> None:
         self.app.register_error_handler(400, self._handle_bad_request)

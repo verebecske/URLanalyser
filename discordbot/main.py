@@ -3,6 +3,7 @@ from configparser import ConfigParser
 from src.discord import DBot
 from os import getenv
 
+
 def start_discord(config):
     discord = DBot(config["discord"])
     discord.start()

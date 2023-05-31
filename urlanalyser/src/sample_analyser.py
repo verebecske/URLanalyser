@@ -43,7 +43,7 @@ class SampleAnalyser(Ancestor):
                 "redirect": h.is_redirect,
             }
             if all:
-                data["cookies"] = str(h.cookies.items()) 
+                data["cookies"] = str(h.cookies.items())
                 data["headers"] = str(h.headers)
             path_list.append(data)
         path_list.append(or_data)
@@ -93,8 +93,21 @@ class SampleAnalyser(Ancestor):
         page_name = (dots[-1]) if dots != [] else "source"
         encoded_source = source.encode()
         metadata = {
-            "links": list(filter(lambda a: a != "", [a.get_attribute('href') for a in driver.find_elements(By.TAG_NAME, "a")])),
-            "script": list(filter(lambda a: a != "", [s.text for s in driver.find_elements(By.TAG_NAME, "script")])),
+            "links": list(
+                filter(
+                    lambda a: a != "",
+                    [
+                        a.get_attribute("href")
+                        for a in driver.find_elements(By.TAG_NAME, "a")
+                    ],
+                )
+            ),
+            "script": list(
+                filter(
+                    lambda a: a != "",
+                    [s.text for s in driver.find_elements(By.TAG_NAME, "script")],
+                )
+            ),
             "extension": extension,
             "date": time.time(),
             "title": driver.title,
@@ -103,7 +116,7 @@ class SampleAnalyser(Ancestor):
                 "md5": hashlib.md5(encoded_source).hexdigest(),
                 "sha1": hashlib.sha1(encoded_source).hexdigest(),
                 "sha256": hashlib.sha256(encoded_source).hexdigest(),
-            }
+            },
         }
         jmeta = json.dumps(metadata, indent=4)
         with zipfile.ZipFile(path, mode="w") as archive:

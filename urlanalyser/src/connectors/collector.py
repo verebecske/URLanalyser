@@ -4,8 +4,10 @@ import ipaddress
 from collections import defaultdict
 import re
 
-class LocalResponse():
+
+class LocalResponse:
     text: str
+
 
 class Collector(Ancestor):
     def __init__(self, blocklistdb):
@@ -68,13 +70,13 @@ class Collector(Ancestor):
                 "list_type": "ip",
                 "type": "unformatted",
                 "url": "http://sigs.interserver.net/iprbl.txt",
-                "name": "InterServer"
+                "name": "InterServer",
             },
             "blisxfr": {
                 "list_type": "ip",
                 "type": "unformatted",
                 "url": "https://bl.isx.fr/raw",
-                "name": "ISX.fr"
+                "name": "ISX.fr",
             },
             "blacklists": {
                 "list_type": "ip",
@@ -86,7 +88,7 @@ class Collector(Ancestor):
                 "list_type": "ip",
                 "type": "unformatted",
                 "url": "https://www.threatsourcing.com/ipall.txt",
-                "name": "Theat Sourcing"
+                "name": "Theat Sourcing",
             },
             "feodo": {
                 "list_type": "ip",
@@ -130,8 +132,6 @@ class Collector(Ancestor):
                 "type": "unformatted",
                 "name": "phishunt.io",
             },
-
-            
             # "tweetfeed": { Mukszik meg jo, de csv-t ad vissza nem raw ip cimeket :(
             #     "list_type": "both",
             #     "type": "csv",
@@ -160,9 +160,12 @@ class Collector(Ancestor):
             #     "list_type": "ip",
             #     "url": "https://rjmblocklist.com/",
             # },
-            # "urlvir": {"list_type": "ip", "url": "https://www.urlvir.com/"},        
+            # "urlvir": {"list_type": "ip", "url": "https://www.urlvir.com/"},
         }
         for key, value in source.items():
             self.send_request_and_save_result(
-                value["url"], f"{value['list_type']}/{key}.txt", value["list_type"], value["name"]
+                value["url"],
+                f"{value['list_type']}/{key}.txt",
+                value["list_type"],
+                value["name"],
             )

@@ -2,6 +2,7 @@ from configparser import ConfigParser
 from src.telegram import TBot
 from os import getenv
 
+
 def start_telegram(config):
     telegram = TBot(config["telegram"])
     telegram.start()

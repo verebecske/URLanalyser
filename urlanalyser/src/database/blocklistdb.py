@@ -24,6 +24,7 @@ class BlockListDatabase(Ancestor):
     def reset_database(self) -> None:
         pass
 
+
 class DefaultBlockListDatabase(BlockListDatabase):
     def __init__(self):
         super().__init__()
@@ -50,8 +51,8 @@ class DefaultBlockListDatabase(BlockListDatabase):
         self.in_memory_bad_ips = defaultdict(list)
         self.in_memory_bad_urls = defaultdict(list)
 
-class RedisBlockListDatabase(BlockListDatabase):
 
+class RedisBlockListDatabase(BlockListDatabase):
     def __init__(self, config: dict):
         super().__init__()
         self.redis = Redis(host=config["redis_host"], port=config["redis_port"])

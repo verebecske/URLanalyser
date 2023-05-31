@@ -134,9 +134,7 @@ class DiscordClient(commands.Bot, Ancestor):
                     return await self._read_message_on_server(
                         message.content, message.author, message.channel
                     )
-                except (
-                    MaliciousContentError
-                ) as error:
+                except MaliciousContentError as error:
                     await self._delete_message(message)
                     await self._send_answer(error, message.channel)
                     return
@@ -148,7 +146,6 @@ class DiscordClient(commands.Bot, Ancestor):
         url_list = self._filter_urls(content)
         if await self._is_malicious_list(url_list):
             raise MaliciousContentError()
-        
 
     async def _delete_message(self, message):
         await message.delete()
