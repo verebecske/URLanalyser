@@ -35,9 +35,3 @@ class APIVoidAPI(Ancestor):
         except:
             pass
         return True
-
-    def format_answer(self, response: dict) -> dict:
-        return response["country"]
-
-    def get_url_reputation(self, url):
-        endpoint = f"https://endpoint.apivoid.com/urlrep/v1/pay-as-you-go/?key={self.api_key}&url={url}"

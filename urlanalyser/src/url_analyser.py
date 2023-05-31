@@ -1,14 +1,15 @@
 import re
 import uuid
+import hashlib
 from src.connectors.ipwho_api import IPWhoAPI
 from src.connectors.urlhaus_api import URLHausAPI
 from src.connectors.virustotal_api import VirusTotalAPI
 from src.connectors.apivoid_api import APIVoidAPI
-from src.connectors.redis_database import RedisDatabase
+from src.connectors.ip2location import IP2LocationAPI
 from src.connectors.domage_api import DomageAPI
 from src.connectors.collector import Collector
 from src.ancestor import Ancestor
-from src.malaut import Malaut
+from src.sample_analyser import SampleAnalyser
 
 
 class URLAnalyser(Ancestor):
@@ -19,10 +20,10 @@ class URLAnalyser(Ancestor):
         urlhaus_api: URLHausAPI,
         virustotal_api: VirusTotalAPI,
         apivoid_api: APIVoidAPI,
+        ip2location: IP2LocationAPI,
         domage_api: DomageAPI,
-        malaut: Malaut,
+        sample_analyser: SampleAnalyser,
         collector: Collector,
-        redis: RedisDatabase,
     ):
         super().__init__()
         self.ipwho_api = ipwho_api
@@ -30,9 +31,12 @@ class URLAnalyser(Ancestor):
         self.virustotal_api = virustotal_api
         self.domage_api = domage_api
         self.apivoid_api = apivoid_api
-        self.malaut = malaut
+        self.ip2location = ip2location
+        self.sample_analyser = sample_analyser
         self.collector = collector
-        self.redis = redis
+        self.temp_folder = "./src/flask/static/"
+        self.collection_database = []
+        self.config = config
 
     def is_malware(self, url: str) -> bool:
         return self.urlhuas_api.in_urlhaus_database(url)
@@ -68,9 +72,11 @@ class URLAnalyser(Ancestor):
     def get_redirection(self, url, verbosity: str = ""):
         _all = verbosity.lower() in ["true", "y", "yes"]
         url = self.create_valid_url(url)
-        return self.malaut.get_redirection(url, all=_all)
+        return self.sample_analyser.get_redirection(url, all=_all)
 
     def get_location(self, url):
+        if "use_ip2location" in self.config:
+            return self.ip2location.get_location(url)
         return self.ipwho_api.get_location(url)
 
     def get_domain_age(self, url):
@@ -79,17 +85,31 @@ class URLAnalyser(Ancestor):
     def get_domain_reputation(self, url):
         ip = self.ipwho_api.get_ip(url)
         res = self.collector.check_ip_reputation(ip)
+        res += self.collector.check_url_reputation(url)
         if res == []:
             return {"Block list in": "none of known list"}
         else:
-            strlist = ",".join(res)
+            strlist = ", ".join(res)
             return {"Block list in": strlist}
 
     def create_zip(self, url):
         filename = str(uuid.uuid4())[:8] + "_page.zip"
-        path = "./src/flask/static/" + filename
+        path = self.temp_folder + filename
         url = self.create_valid_url(url)
-        self.malaut.create_zip_with_selenium(url, path)
+        self.sample_analyser.create_zip_with_selenium(url, path)
+        return filename
+
+    def add_to_malware_collection(self, url):
+        self.collection_database.append(url)
+
+    # TODO: nem a flask hiv erre ra, hanem belulrol hivodik meg ha karos dolgot talal es olyan meg nincs
+    # TODO: kivulrol hivhato, de nem adja vissza a letoltott file-t
+    # TODO: egy endpoint megmondja milyen gyujtemeny van - csak a nevuket
+    def collect_malware_sample(self, url: str, path: str):
+        filename = hashlib.md5(url.encode()).hexdigest() + "_sample.zip"
+        path = path + filename
+        url = self.create_valid_url(url)
+        self.sample_analyser.collect_malware_sample(url, path)
         return filename
 
     def create_valid_url(self, url: str) -> str:
@@ -101,21 +121,21 @@ class URLAnalyser(Ancestor):
 
     def create_screenshot(self, url: str) -> str:
         filename = str(uuid.uuid4())[:8] + "_screenshot.png"
-        path = "./src/flask/static/" + filename
+        path = self.temp_folder + filename
         url = self.create_valid_url(url)
-        self.malaut.create_screenshot(url, path)
+        self.sample_analyser.create_screenshot(url, path)
         return filename
 
     def check(self, url: str) -> str:
         result = {}
         result["is_malicious"] = self.majority_gate(url)
+        if result["is_malicious"]:
+            self.add_to_malware_collection(url)
         return result
 
     def majority_gate(self, url: str):
         UH = self.urlhaus_api.get_is_malicous_result(url)
         VT = self.virustotal_api.get_is_malicous_result(url)
-        IV = self.apivoid_api.get_is_malicous_result(url)
+        ip = self.ipwho_api.get_ip(url)
+        IV = self.collector.get_is_malicous_result(ip, url)
         return (UH and VT) or (IV and VT) or (IV and UH)
-
-    def create_data_to_redis(self, url: str) -> dict:
-        pass

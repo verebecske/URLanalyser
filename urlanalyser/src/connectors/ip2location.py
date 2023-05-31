@@ -21,6 +21,7 @@ class IP2LocationAPI(Ancestor):
 
     def get_location(self, url: str) -> dict:
         ip_addr = self.get_ip(url)
+        api_key = self.config["ip2location_api_key"]
         response = requests.get(
             f"https://api.ip2location.io/?key={api_key}&ip={ip_addr}"
         )
@@ -30,9 +31,15 @@ class IP2LocationAPI(Ancestor):
             return {"error": response.text}
 
     def format_answer(self, response: dict) -> dict:
-        return response["country"]  # elavult
+        return {
+            "country code": response["country_code"],
+            "country": response["country_name"],
+            "city": response["city_name"],
+        }
 
+    # ez igazabol a domage-t tudja kivaltani, szoval javítsuk ki
     def get_domain_whois(self, url):
+        api_key = self.config["ip2location_api_key"]
         response = requests.get(
             f"https://api.ip2whois.com/v2?key={api_key}&domain={domain}"
         )

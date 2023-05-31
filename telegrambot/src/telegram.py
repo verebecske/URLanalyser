@@ -20,12 +20,13 @@ class MaliciousContentError(Exception):
 
 
 class TBot(Ancestor):
-    debug = True
+    debug: bool = True
     mytoken: str
     urlanalyser_url: str
 
     def __init__(self, config: dict) -> None:
         super().__init__()
+        self.debug = config["debug"]
         self.mytoken = config["token"]
         self.urlanalyser_url = f"http://{config['host']}:{config['port']}"
 
@@ -75,12 +76,21 @@ class TBot(Ancestor):
         help_handler = CommandHandler("help", self.help_handler)
         application.add_handler(help_handler)
 
+        unknown_handler = MessageHandler((filters.COMMAND), self.unknown_handler)
+        application.add_handler(unknown_handler)
+
         application.run_polling()
 
     async def start_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(
             chat_id=update.effective_chat.id,
             text="Send me an URL, and use /help if you need some help",
+        )
+
+    async def unknown_handler(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text="Unknown command",
         )
 
     async def echo(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -192,8 +202,9 @@ class TBot(Ancestor):
             text="Download a webpage can be slow - thank for your patience",
         )
         for url in urls:
-            url = self._encode_url(url)
-            response = requests.get(f"{self.urlanalyser_url}/download_as_zip?url={url}")
+            response = requests.get(
+                f"{self.urlanalyser_url}/download_as_zip?url={self._encode_url(url)}"
+            )
             if response.status_code == 200:
                 await context.bot.send_document(
                     chat_id=update.effective_chat.id,
@@ -310,7 +321,7 @@ class TBot(Ancestor):
         try:
             response = requests.get(f"{self.urlanalyser_url}")
             if response.status_code == 200:
-                answer = response.json()["message"]
+                answer = response.json()["result"]
         except Exception as error:
             answer = "Something went wrong"
             self.logger.error(f"Error happened: {error}")
@@ -330,8 +341,9 @@ class TBot(Ancestor):
             text="Taking screenshot can be slow - thank for your patience",
         )
         for url in urls:
-            url = self._encode_url(url)
-            response = requests.get(f"{self.urlanalyser_url}/get_screenshot?url={url}")
+            response = requests.get(
+                f"{self.urlanalyser_url}/get_screenshot?url={self._encode_url(url)}"
+            )
             if response.status_code == 200:
                 await context.bot.send_photo(
                     chat_id=update.effective_chat.id, photo=response.content
@@ -353,7 +365,7 @@ class TBot(Ancestor):
             + "/virustotal <url\> \- send url to virustotal\n"
             + "/urlhaus <url\> \- send url to urlhaus\n"
             + "/location <url\> \- the location of the domain IP address with geoip search\n"
-            + "/redirection <url\> \[\-v] \- get url redirections pass \-v for verbose mode\n"
+            + "/redirection <url\> \[\-v\] \- get url redirections pass \-v for verbose mode\n"
             + "/domain\_age <url\> \- return the domain age\n"
             + "/domain\_reputation <url\> \- calculate the domain reputation from IP block lists\n"
             + "/download <url\> \- download the page source as zip\n"
@@ -379,7 +391,7 @@ class TBot(Ancestor):
         return base64.urlsafe_b64decode(url.encode()).decode()
 
     def _change_characters(self, text: str) -> str:
-        for old in ["_", "*", "`", "["]:
+        for old in ["_", "*", "`", "[", "]"]:
             text.replace(old, "\\" + old)
         return text
 

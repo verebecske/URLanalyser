@@ -30,7 +30,7 @@ class DBot(Ancestor):
         if "urlanlayser_host" in config:
             self.urlanlayser_host = config["urlanlayser_host"]
         else:
-            self.urlanlayser_host = "urlanalyser-urlanalyser-1"
+            self.urlanlayser_host = "urlanalyser-main"
         if "urlanalyser_port" in config:
             self.urlanlayser_port = config["urlanalyser_port"]
         else:
@@ -126,17 +126,15 @@ class DiscordClient(commands.Bot, Ancestor):
                 replay = f"**{message.author}** sent me:\n\t{message.content}"
                 await self._send_answer(replay, message.channel)
             if message.channel.type == discord.ChannelType.private:
-                await self._read_direct_message(
+                return await self._read_direct_message(
                     message.content, message.author, message.channel
                 )
             else:
                 try:
-                    await self._read_message(
+                    return await self._read_message_on_server(
                         message.content, message.author, message.channel
                     )
-                except (
-                    MaliciousContentError
-                ) as error:  # itt valamit lehet kezdeni kellene ezzel koncepcio szinten is
+                except MaliciousContentError as error:
                     await self._delete_message(message)
                     await self._send_answer(error, message.channel)
                     return
@@ -144,11 +142,10 @@ class DiscordClient(commands.Bot, Ancestor):
             self.logger.error(f"Client error: {error}")
             await self._send_answer("Client error happened", message.channel)
 
-    async def _read_message(self, content, author, channel) -> str:
+    async def _read_message_on_server(self, content, author, channel) -> str:
         url_list = self._filter_urls(content)
-        if self._is_malicious_list(url_list):
-            raise MaliciousContentError
-        return replay
+        if await self._is_malicious_list(url_list):
+            raise MaliciousContentError()
 
     async def _delete_message(self, message):
         await message.delete()
@@ -165,10 +162,10 @@ class DiscordClient(commands.Bot, Ancestor):
         self.logger.info(f"URLS: {urls}")
         return urls
 
-    def _is_malicious_list(self, url_list: list) -> bool:
+    async def _is_malicious_list(self, url_list: list) -> bool:
         is_malicious = False
         for url in url_list:
-            is_malicious = is_malicious or self._check_url(url)
+            is_malicious = is_malicious or await self._check_url(url)
         self.logger.info(f"Results: {is_malicious}")
         return is_malicious
 
@@ -227,7 +224,10 @@ class DiscordClient(commands.Bot, Ancestor):
             if content.startswith("!index"):
                 return await self._index_handler(channel)
             if urls == []:
-                return await self._send_answer("Missing URL", channel)
+                if content.startswith("!"):
+                    return await self._send_answer("Missing URL", channel)
+                else:
+                    return await self.send_message(channel, content)
             else:
                 return await self._choose_handler(urls, content, channel)
         except ServerError as error:
@@ -253,6 +253,9 @@ class DiscordClient(commands.Bot, Ancestor):
             return await self._virustotal_handler(urls, channel)
         if content.startswith("!urlhaus"):
             return await self._urlhaus_handler(urls, channel)
+        if content.startswith("!"):
+            return await self._unknown_handler(content, channel)
+        return await self._check_url_handler(urls, channel)
 
     # Handlers
 
@@ -298,10 +301,15 @@ class DiscordClient(commands.Bot, Ancestor):
         try:
             response = requests.get(f"{self.urlanalyser_url}")
             if response.status_code == 200:
-                answer = response.json()["message"]
+                answer = response.json()["result"]
         except Exception as error:
             answer = "Something went wrong"
             self.logger.error(f"Error happened: {error}")
+        await self._send_answer(answer, channel)
+
+    async def _unknown_handler(self, content, channel):
+        cmd = content.split(" ")[0]
+        answer = f"Unknown command: {cmd}"
         await self._send_answer(answer, channel)
 
     async def _screenshot_handler(self, urls, channel):

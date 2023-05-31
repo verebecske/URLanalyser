@@ -1,5 +1,5 @@
-from src.malaut import Malaut as MA
+from src.sample_analyser import SampleAnalyser as MA
 
 
-class Malaut(MA):
+class SampleAnalyser(MA):
     pass

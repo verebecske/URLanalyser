@@ -4,7 +4,7 @@ import functools
 
 def get_logger():
     logging.basicConfig(
-        format="-> %(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        format="-> %(asctime)s - %(filename)s - %(levelname)s - %(lineno)d - %(message)s",
         level=logging.INFO,
     )
     logger = logging.getLogger(__name__)

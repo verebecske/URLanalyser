@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request, send_from_directory
 import base64
 from src.url_analyser import URLAnalyser
-from src.malaut import Malaut
+from src.sample_analyser import SampleAnalyser
 from src.ancestor import Ancestor
 from werkzeug.exceptions import HTTPException, BadRequest, InternalServerError
 from enum import Enum
@@ -13,7 +13,7 @@ class BadRequestType(Enum):
     INVALID_CONTENT_TYPE = "Invalid Content-Type"
 
 
-class FlaskAppWrapper(Ancestor):
+class FlaskWrapper(Ancestor):
     analyser: URLAnalyser
     debug: bool
     config: dict
@@ -30,7 +30,7 @@ class FlaskAppWrapper(Ancestor):
     def run(self) -> None:
         host = self.config["host"]
         port = self.config["port"]
-        self.app.run(debug=False, host=host, port=port)
+        self.app.run(debug=self.debug, host=host, port=port)
 
     def _add_all_endpoints(self):
         self.app.add_url_rule("/", "index", self.index)
@@ -58,6 +58,12 @@ class FlaskAppWrapper(Ancestor):
         self.app.add_url_rule(
             "/download_as_zip", "download_as_zip", self.download_as_zip, methods=["GET"]
         )
+        self.app.add_url_rule(
+            "/download_as_sample",
+            "download_as_sample",
+            self.download_as_sample,
+            methods=["GET"],
+        )  # TODO: remove - it is just for test!!!
 
     def _add_errors(self) -> None:
         self.app.register_error_handler(400, self._handle_bad_request)
@@ -212,6 +218,19 @@ class FlaskAppWrapper(Ancestor):
             url = self._get_url_from_get_request()
             path = self.analyser.create_zip(url)
             self.logger.info(f"created zip in: {path}")
+            return send_from_directory("/src/flask/static/", path, as_attachment=True)
+        except BadRequest as error:
+            raise
+        except Exception as error:
+            self.logger.error(f"Error occured while download file: {error}")
+            raise InternalServerError()
+
+    def download_as_sample(self):
+        try:
+            self.logger.info(f"Get request: {request}")
+            url = self._get_url_from_get_request()
+            path = self.analyser.collect_malware_sample(url, "./src/flask/static/")
+            self.logger.info(f"created sample in: {path}")
             return send_from_directory("/src/flask/static/", path, as_attachment=True)
         except BadRequest as error:
             raise

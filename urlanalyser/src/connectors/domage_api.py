@@ -18,7 +18,7 @@ class DomageAPI(Ancestor):
     def get_domain_age(self, url: str) -> dict:
         domain = self.get_domain(url)
         response = requests.get(
-            f"https://ipty.de/domage/api.php?domain={domain}&mode=full"
+            f"https://ipty.de/domage/api.php?domain={domain}&mode=full", verify=False
         )
         if response.status_code == 200:
             return self.format_answer(response.json())
