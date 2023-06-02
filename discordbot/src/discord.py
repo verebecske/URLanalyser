@@ -24,24 +24,9 @@ class DBot(Ancestor):
 
     def __init__(self, config: dict) -> None:
         super().__init__()
-        self.mytoken = config["token"]
+        self.config = config
         if config["debug"] == "true":
             self.logger.setLevel(DEBUG)
-        self.set_defaults(config)
-
-    def set_defaults(self, config: dict) -> None:
-        if "urlanlayser_host" in config:
-            self.urlanlayser_host = config["urlanlayser_host"]
-        else:
-            self.urlanlayser_host = "urlanalyser-main"
-        if "urlanalyser_port" in config:
-            self.urlanlayser_port = config["urlanalyser_port"]
-        else:
-            self.urlanlayser_port = 5000
-        if "log_channel" in config:
-            self.log_channel = config["log_channel"]
-        if "server" in config:
-            self.server = config["server"]
 
     def set_intents(self) -> None:
         self.logger.info("Set discord client")
@@ -60,14 +45,8 @@ class DBot(Ancestor):
             command_prefix="",
             intents=self.intents,
         )
-        config = {
-            "host": self.urlanlayser_host,
-            "port": self.urlanlayser_port,
-            "log_channel": "log-ingenbot",
-            "server": "IngenServer",
-        }
-        bot.set_urlanalyser(config)
-        bot.run(self.mytoken)
+        bot.set_urlanalyser(self.config)
+        bot.run(self.config["token"])
 
 
 class DiscordClient(commands.Bot, Ancestor):
@@ -80,16 +59,19 @@ class DiscordClient(commands.Bot, Ancestor):
 
     def set_urlanalyser(self, config: dict) -> None:
         self.config = config
-        self.urlanalyser_url = f"http://{config['host']}:{config['port']}"
+        self.urlanalyser_url = f"http://{config['urlanalyser_host']}:{config['urlanalyser_port']}"
 
     def _set_log_channel(self) -> None:
-        for channel in self.get_all_channels():
-            if (
-                channel.guild == self.config["server"]
-                and channel.name == self.config["log_channel"]
-            ):
-                break
-        self.log_channel = channel
+        try:
+            for channel in self.get_all_channels():
+                if (
+                    channel.guild == self.config["server"]
+                    and channel.name == self.config["log_channel"]
+                ):
+                    break
+            self.log_channel = channel
+        except Exception as error:
+            self.logger.error(f"Error happened while setting log channel: {error}")
 
     # Discord default
 

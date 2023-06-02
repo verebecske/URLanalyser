@@ -12,8 +12,8 @@ def start_discord(config):
 def get_config():
     config = ConfigParser()
     config.read("secrets/config.ini")
-    config["discord"]["host"] = getenv("URLANALYSER_HOST")
-    config["discord"]["port"] = getenv("URLANALYSER_PORT")
+    config["discord"]["urlanalyser_host"] = getenv("URLANALYSER_HOST", "urlanalyser")
+    config["discord"]["urlanalyser_port"] = getenv("URLANALYSER_PORT", 5000)
     config["discord"]["debug"] = getenv("DEBUG", "true")
     return config
 
