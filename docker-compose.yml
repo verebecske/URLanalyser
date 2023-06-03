@@ -41,13 +41,14 @@ services:
             SELENIUM_HOST: "selenium-hub"
             SELENIUM_PORT: "4444"
             COLLECTION_PATH: "./usr/src/tmp/"
+            UPDATE_DELAY: 3600
         logging:
             driver: "json-file"
             options:
                 tag: "urlanalyser"
         deploy:
             mode: replicated
-            replicas: 2
+            replicas: 1
     discord-bot:
         build: 
             context: ./discordbot/
@@ -100,7 +101,7 @@ services:
         - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
       deploy:
         mode: replicated
-        replicas: 2
+        replicas: 1
     selenium-hub:
       image: selenium/hub
       container_name: selenium-hub

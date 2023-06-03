@@ -32,7 +32,7 @@ class Application(Ancestor):
         self.config.read("secrets/config.ini")
 
         self.config["urlanalyser"]["debug"] = os.getenv("DEBUG", "true")
-        self.config["urlanalyser"]["update_delay"] = os.getenv("UPDATE_DELAY", "300")
+        self.config["urlanalyser"]["update_delay"] = os.getenv("UPDATE_DELAY", "3600")
         self.config["urlanalyser"]["collection_path"] = os.getenv(
             "COLLECTION_PATH", "./collection/"
         )
@@ -58,7 +58,7 @@ class Application(Ancestor):
     def update_static_databases(self, delay) -> None:
         while True:
             self.urlhaus_api.update_urlhaus_database()
-            self.collector.collect_many()
+            self.collector.update_block_lists()
             time.sleep(int(delay))
 
     def save_malware_samples(self) -> None:

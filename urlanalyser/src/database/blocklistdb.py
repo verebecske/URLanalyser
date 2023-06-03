@@ -69,4 +69,5 @@ class RedisBlockListDatabase(BlockListDatabase):
         return list(set(name.decode() for name in res))
 
     def reset_database(self):
-        self.redis.flushall()
+        # self.redis.flushall()
+        pass

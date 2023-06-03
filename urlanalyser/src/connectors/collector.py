@@ -8,46 +8,7 @@ import re
 class LocalResponse:
     text: str
 
-
-class Collector(Ancestor):
-    def __init__(self, blocklistdb):
-        super().__init__()
-        self.blocklistdb = blocklistdb
-
-    def check_ip_reputation(self, ip: str) -> list:
-        ip_addr = ipaddress.ip_address(ip)
-        return self.blocklistdb.get_from_database("ip", ip)
-
-    def check_url_reputation(self, url: str) -> list:
-        return self.blocklistdb.get_from_database("url", url)
-
-    def get_is_malicous_result(self, ip, url) -> bool:
-        return (
-            self.blocklistdb.get_from_database("ip", ip) != []
-            or self.blocklistdb.get_from_database("url", url) != []
-        )
-
-    def send_request_and_save_result(self, url, filename, list_type, display_name):
-        response = requests.get(url=url)
-        with open(f"static_database/{filename}", "w") as fd:
-            fd.write(response.text)
-        for line in response.text.split("\n"):
-            if line.startswith("#"):
-                continue
-            line = line.strip(" \r\n\t")
-            try:
-                if list_type == "ip":
-                    match = re.search((r"((\d+).)*\d+"), line)
-                    if match:
-                        ip = ipaddress.ip_address(match.group(0))
-                        self.blocklistdb.add_to_database("ip", ip, display_name)
-                if list_type == "url":
-                    self.blocklistdb.add_to_database("url", line, display_name)
-            except ValueError as error:
-                self.logger.warning(f"line: {line} error {error}")
-
-    def collect_many(self):
-        source = {
+BLOCKLISTS = {
             "mirai": {
                 "list_type": "ip",
                 "type": "unformatted",
@@ -162,8 +123,48 @@ class Collector(Ancestor):
             # },
             # "urlvir": {"list_type": "ip", "url": "https://www.urlvir.com/"},
         }
-        for key, value in source.items():
-            self.send_request_and_save_result(
+
+class Collector(Ancestor):
+    def __init__(self, blocklistdb):
+        super().__init__()
+        self.blocklistdb = blocklistdb
+
+    def check_ip_reputation(self, ip: str) -> list:
+        ip_addr = ipaddress.ip_address(ip)
+        return self.blocklistdb.get_from_database("ip", ip)
+
+    def check_url_reputation(self, url: str) -> list:
+        return self.blocklistdb.get_from_database("url", url)
+
+    def get_is_malicous_result(self, ip, url) -> bool:
+        return (
+            self.blocklistdb.get_from_database("ip", ip) != []
+            or self.blocklistdb.get_from_database("url", url) != []
+        )
+
+    def add_list_to_database(self, url, filename, list_type, display_name):
+        response = requests.get(url=url)
+        with open(f"static_database/{filename}", "w") as fd:
+            fd.write(response.text)
+        for line in response.text.split("\n"):
+            if line.startswith("#"):
+                continue
+            line = line.strip(" \r\n\t")
+            try:
+                if list_type == "ip":
+                    match = re.search((r"((\d+).)*\d+"), line)
+                    if match:
+                        ip = ipaddress.ip_address(match.group(0))
+                        self.blocklistdb.add_to_database("ip", ip, display_name)
+                if list_type == "url":
+                    self.blocklistdb.add_to_database("url", line, display_name)
+            except ValueError as error:
+                self.logger.warning(f"line: {line} error {error}")
+
+    def update_block_lists(self):
+        self.blocklistdb.reset_database()
+        for key, value in BLOCKLISTS.items():
+            self.add_list_to_database(
                 value["url"],
                 f"{value['list_type']}/{key}.txt",
                 value["list_type"],
