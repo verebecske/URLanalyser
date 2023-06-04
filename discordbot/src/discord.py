@@ -72,6 +72,7 @@ class DiscordClient(commands.Bot, Ancestor):
             self.log_channel = channel
         except Exception as error:
             self.logger.error(f"Error happened while setting log channel: {error}")
+            self.log_channel = None
 
     # Discord default
 
@@ -85,7 +86,8 @@ class DiscordClient(commands.Bot, Ancestor):
     async def on_message_delete(self, message):
         msg = f"{message.author} has deleted the message: {message.content}"
         try:
-            await self.log_channel.send(msg)
+            if self.log_channel is not None:
+                await self.log_channel.send(msg)
         except Exception as error:
             self.logger.warning(f"Maybe is log channel didn't set error={error}")
 
