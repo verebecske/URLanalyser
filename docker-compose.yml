@@ -49,6 +49,8 @@ services:
         deploy:
             mode: replicated
             replicas: 1
+        ports: 
+           - 9111:5000
     discord-bot:
         build: 
             context: ./discordbot/
