@@ -1,10 +1,10 @@
 import re
 import uuid
 import hashlib
+from logging import DEBUG
 from src.connectors.ipwho_api import IPWhoAPI
 from src.connectors.urlhaus_api import URLHausAPI
 from src.connectors.virustotal_api import VirusTotalAPI
-from src.connectors.apivoid_api import APIVoidAPI
 from src.connectors.ip2location import IP2LocationAPI
 from src.connectors.domage_api import DomageAPI
 from src.connectors.collector import Collector
@@ -19,7 +19,6 @@ class URLAnalyser(Ancestor):
         ipwho_api: IPWhoAPI,
         urlhaus_api: URLHausAPI,
         virustotal_api: VirusTotalAPI,
-        apivoid_api: APIVoidAPI,
         ip2location: IP2LocationAPI,
         domage_api: DomageAPI,
         sample_analyser: SampleAnalyser,
@@ -30,13 +29,14 @@ class URLAnalyser(Ancestor):
         self.urlhaus_api = urlhaus_api
         self.virustotal_api = virustotal_api
         self.domage_api = domage_api
-        self.apivoid_api = apivoid_api
         self.ip2location = ip2location
         self.sample_analyser = sample_analyser
         self.collector = collector
         self.temp_folder = "./src/flask/static/"
         self.collection_database = []
         self.config = config
+        if config["debug"] == "true":
+            self.logger.setLevel(DEBUG)
 
     def is_malware(self, url: str) -> bool:
         return self.urlhuas_api.in_urlhaus_database(url)

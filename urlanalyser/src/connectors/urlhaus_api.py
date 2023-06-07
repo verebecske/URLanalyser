@@ -1,6 +1,5 @@
 from src.ancestor import Ancestor
 import requests
-import re
 
 
 class URLHausAPI(Ancestor):

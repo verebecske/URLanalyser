@@ -10,7 +10,6 @@ from src.flask.wrapper import FlaskWrapper
 from src.connectors.ipwho_api import IPWhoAPI
 from src.connectors.urlhaus_api import URLHausAPI
 from src.connectors.virustotal_api import VirusTotalAPI
-from src.connectors.apivoid_api import APIVoidAPI
 from src.connectors.ip2location import IP2LocationAPI
 from src.connectors.domage_api import DomageAPI
 from src.connectors.collector import Collector
@@ -31,12 +30,12 @@ class Application(Ancestor):
         self.config = ConfigParser()
         self.config.read("secrets/config.ini")
 
-        self.config["urlanalyser"]["debug"] = os.getenv("DEBUG", True)
-        self.config["urlanalyser"]["update_delay"] = os.getenv("UPDATE_DELAY", "300")
+        self.config["urlanalyser"]["debug"] = os.getenv("DEBUG", "true")
+        self.config["urlanalyser"]["update_delay"] = os.getenv("UPDATE_DELAY", "3600")
         self.config["urlanalyser"]["collection_path"] = os.getenv(
             "COLLECTION_PATH", "./collection/"
         )
-        self.config["urlanalyser"]["redis_host"] = os.getenv("REDIS_HOST", None)
+        self.config["urlanalyser"]["redis_host"] = os.getenv("REDIS_HOST", "unknown")
         self.config["urlanalyser"]["redis_port"] = os.getenv("REDIS_PORT", "6379")
         self.config["urlanalyser"]["selenium_host"] = os.getenv(
             "SELENIUM_HOST", "selenium-hub"
@@ -47,7 +46,7 @@ class Application(Ancestor):
             self.config["urlanalyser"]["use_ip2location"] = "True"
 
         self.config["flask"] = {}
-        self.config["flask"]["debug"] = os.getenv("DEBUG", True)
+        self.config["flask"]["debug"] = os.getenv("DEBUG", "true")
         self.config["flask"]["host"] = os.getenv("FLASK_HORT", "0.0.0.0")
         self.config["flask"]["port"] = os.getenv("FLASK_PORT", "5000")
 
@@ -58,7 +57,7 @@ class Application(Ancestor):
     def update_static_databases(self, delay) -> None:
         while True:
             self.urlhaus_api.update_urlhaus_database()
-            self.collector.collect_many()
+            self.collector.update_block_lists()
             time.sleep(int(delay))
 
     def save_malware_samples(self) -> None:
@@ -73,7 +72,6 @@ class Application(Ancestor):
         config = self.config["urlanalyser"]
         self.urlhaus_api = URLHausAPI(config)
         virustotal_api = VirusTotalAPI(config)
-        apivoid_api = APIVoidAPI(config)
         ip2location = IP2LocationAPI(config)
         ipwho_api = IPWhoAPI(config)
         sample_analyser = SampleAnalyser(config=config)
@@ -86,7 +84,6 @@ class Application(Ancestor):
             ipwho_api=ipwho_api,
             urlhaus_api=self.urlhaus_api,
             virustotal_api=virustotal_api,
-            apivoid_api=apivoid_api,
             ip2location=ip2location,
             domage_api=domage_api,
             collector=self.collector,

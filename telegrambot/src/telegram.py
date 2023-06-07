@@ -12,6 +12,7 @@ from telegram.ext import (
 import re
 import requests
 import base64
+from logging import DEBUG
 
 
 class MaliciousContentError(Exception):
@@ -26,9 +27,10 @@ class TBot(Ancestor):
 
     def __init__(self, config: dict) -> None:
         super().__init__()
-        self.debug = config["debug"]
         self.mytoken = config["token"]
         self.urlanalyser_url = f"http://{config['host']}:{config['port']}"
+        if config["debug"] == "true":
+            self.logger.setLevel(DEBUG)
 
     def start(self):
         application = ApplicationBuilder().token(self.mytoken).build()

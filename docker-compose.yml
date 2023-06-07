@@ -9,9 +9,11 @@ services:
        ports: 
            - 9109:5000
        environment: 
-           PORT: 5000
+           DEBUG: 1 
+           FLASK_HOST: "0.0.0.0"
+           FLASK_PORT: 5000
+           URLANALYSER_HOST: "urlanalyser"
            URLANALYSER_PORT: 5000
-           FLASK_DEBUG: 1
     livesample:
        build: 
            context: ./webs/livesample/
@@ -24,17 +26,14 @@ services:
            PORT: 5000
            FLASK_DEBUG: 1
     urlanalyser:
-        container_name: urlanalyser-main
         build:
             context: ./urlanalyser/
             dockerfile: Dockerfile
         volumes: 
             - ./urlanalyser/:/usr/src/
             - ./collection/:/usr/src/tmp/
-        ports: 
-            - 9111:5000
         environment: 
-            DEBUG: True
+            DEBUG: False
             FLASK_HOST: "0.0.0.0"
             FLASK_PORT: 5000
             REDIS_HOST: "redis"
@@ -42,12 +41,16 @@ services:
             SELENIUM_HOST: "selenium-hub"
             SELENIUM_PORT: "4444"
             COLLECTION_PATH: "./usr/src/tmp/"
-        links:
-            - redis
+            UPDATE_DELAY: 3600
         logging:
             driver: "json-file"
             options:
                 tag: "urlanalyser"
+        deploy:
+            mode: replicated
+            replicas: 1
+        ports: 
+           - 9111:5000
     discord-bot:
         build: 
             context: ./discordbot/
@@ -59,9 +62,9 @@ services:
         volumes: 
             - ./discordbot/:/usr/src/
         environment: 
-           URLANALYSER_HOST: "urlanalyser-main"
+           URLANALYSER_HOST: "urlanalyser"
            URLANALYSER_PORT: 5000
-           DEBUG: 1
+           DEBUG: False
     telegram-bot:
         build: 
             context: ./telegrambot/
@@ -73,22 +76,20 @@ services:
         volumes: 
             - ./telegrambot/:/usr/src/
         environment: 
-           URLANALYSER_HOST: "urlanalyser-main"
+           URLANALYSER_HOST: "urlanalyser"
            URLANALYSER_PORT: 5000
-           DEBUG: 1
+           DEBUG: False
     redis:
         image: redis
         logging:
             driver: "json-file"
-    # chrome:
-    #   image: selenium/node-chrome
-    #   shm_size: 2gb
-    #   depends_on:
-    #     - selenium-hub
-    #   environment:
-    #     - SE_EVENT_BUS_HOST=selenium-hub
-    #     - SE_EVENT_BUS_PUBLISH_PORT=4442
-    #     - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+    selenium-hub:
+      image: selenium/hub
+      container_name: selenium-hub
+      ports:                
+        - "4442:4442"
+        - "4443:4443"   
+        - "4444:4444"
     firefox:
       image: selenium/node-firefox
       shm_size: 2gb
@@ -98,11 +99,15 @@ services:
         - SE_EVENT_BUS_HOST=selenium-hub
         - SE_EVENT_BUS_PUBLISH_PORT=4442
         - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
-    selenium-hub:
-      image: selenium/hub
-      container_name: selenium-hub
-      ports:                
-        - "4442:4442"
-        - "4443:4443"   
-        - "4444:4444"
-
+      deploy:
+        mode: replicated
+        replicas: 2
+    # chrome:
+    #   image: selenium/node-chrome
+    #   shm_size: 2gb
+    #   depends_on:
+    #     - selenium-hub
+    #   environment:
+    #     - SE_EVENT_BUS_HOST=selenium-hub
+    #     - SE_EVENT_BUS_PUBLISH_PORT=4442
+    #     - SE_EVENT_BUS_SUBSCRIBE_PORT=4443

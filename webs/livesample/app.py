@@ -1,7 +1,6 @@
 import requests
 import os
 from flask import Flask, request, redirect
-import json
 import random
 
 app = Flask(__name__)
