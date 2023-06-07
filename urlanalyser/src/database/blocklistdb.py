@@ -1,6 +1,5 @@
 from src.ancestor import Ancestor
 from redis import Redis
-from time import time
 
 
 class BlockListDatabaseFactory(Ancestor):

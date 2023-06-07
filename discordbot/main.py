@@ -1,12 +1,6 @@
-import logging
 from configparser import ConfigParser
 from src.discord import DBot
 from os import getenv
-
-
-def start_discord(config):
-    discord = DBot(config["discord"])
-    discord.start()
 
 
 def get_config():
@@ -20,7 +14,8 @@ def get_config():
 
 def start():
     config = get_config()
-    start_discord(config)
+    discord = DBot(config["discord"])
+    discord.start()
 
 
 if __name__ == "__main__":

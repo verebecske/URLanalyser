@@ -21,7 +21,9 @@ class FlaskWebPage:
 
     def _add_all_endpoints(self):
         self.app.add_url_rule("/", "index", self.index, methods=["GET", "POST"])
-        self.app.add_url_rule("/downloadzip", "downloadzip", self.download_as_zip,  methods=["GET"])
+        self.app.add_url_rule(
+            "/downloadzip", "downloadzip", self.download_as_zip, methods=["GET"]
+        )
 
     def index(self):
         if request.method == "POST":
@@ -42,7 +44,7 @@ class FlaskWebPage:
             "red_all": request.form.get("red_all", False),
             "domain_age": request.form.get("domain_age", False),
             "domain_reputation": request.form.get("domain_reputation", False),
-            "download": request.form.get("download", False)
+            "download": request.form.get("download", False),
         }
         return settings
 
@@ -64,8 +66,12 @@ class FlaskWebPage:
         if settings["download"]:
             download = self.urlanalyser.download_as_zip(settings["url"])
         return render_template(
-            "return.html", url=settings["url"], result=result, filename=filename, 
-            download=download, is_malicious=is_malicious
+            "return.html",
+            url=settings["url"],
+            result=result,
+            filename=filename,
+            download=download,
+            is_malicious=is_malicious,
         )
 
 
@@ -96,8 +102,8 @@ class URLAnalyserAPI:
         return {"result": f"Server error happened: {response.text}"}
 
     def check_url(self, url: str) -> bool:
-            result = self.send_get_request("check", url)
-            return result["is_malicious"]
+        result = self.send_get_request("check", url)
+        return result["is_malicious"]
 
     def domain_age_handler(self, url):
         return self.send_get_request("get_domain_age", url)
@@ -155,13 +161,14 @@ class URLAnalyserAPI:
         else:
             raise ServerError(f"Something went wrong with: {url}")
 
+
 if __name__ == "__main__":
     config = {
         "host": os.getenv("FLASK_HOST", "0.0.0.0"),
         "port": os.getenv("FLASK_PORT", 5000),
         "analyser_host": os.getenv("URLANALYSER_HOST"),
         "analyser_port": os.getenv("URLANALYSER_PORT"),
-        "debug": os.getenv("DEBUG")
+        "debug": os.getenv("DEBUG"),
     }
     urlanalyser = URLAnalyserAPI(config)
     flaskapp = FlaskWebPage(config, urlanalyser)

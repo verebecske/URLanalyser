@@ -1,6 +1,5 @@
 from src.ancestor import Ancestor
 import re
-import socket
 import requests
 
 

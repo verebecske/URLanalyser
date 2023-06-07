@@ -1,6 +1,5 @@
 from discord.ext import tasks, commands
 import discord
-import time
 from src.ancestor import Ancestor
 from logging import DEBUG
 import re
@@ -59,7 +58,9 @@ class DiscordClient(commands.Bot, Ancestor):
 
     def set_urlanalyser(self, config: dict) -> None:
         self.config = config
-        self.urlanalyser_url = f"http://{config['urlanalyser_host']}:{config['urlanalyser_port']}"
+        self.urlanalyser_url = (
+            f"http://{config['urlanalyser_host']}:{config['urlanalyser_port']}"
+        )
 
     def _set_log_channel(self) -> None:
         try:
