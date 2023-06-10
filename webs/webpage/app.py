@@ -3,6 +3,8 @@ import base64
 import os
 from flask import Flask, request, render_template, send_from_directory
 
+class ServerError(Exception):
+    pass
 
 class FlaskWebPage:
     debug: bool
@@ -55,7 +57,10 @@ class FlaskWebPage:
         settings = self.get_settings_from_form(request)
         if settings["url"] == "":
             return render_template("home.html", error="Missing URL")
-        result = self.urlanalyser.ask_urlanalyserapi(settings)
+        try:
+            result = self.urlanalyser.ask_urlanalyserapi(settings)
+        except ServerError as error:
+            return render_template("home.html", error=error)
         filename = ""
         download = ""
         is_malicious = "false"
@@ -131,7 +136,7 @@ class URLAnalyserAPI:
         if response.status_code == 200:
             return response.json()["result"]
         else:
-            return {"result": f"Server error happened: {response.text}"}
+            raise ServerError(response.text)
 
     def _encode_url(self, url: str):
         return base64.urlsafe_b64encode(url.encode()).decode()

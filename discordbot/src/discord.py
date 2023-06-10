@@ -199,8 +199,8 @@ class DiscordClient(commands.Bot, Ancestor):
             if response.status_code == 200:
                 return response
             else:
-                self.logger.error(f"Server error happened: {response}")
-                return {"result": "Server error happened"}
+                self.logger.error(f"Server error happened: {response.text}")
+                raise ServerError(response.text)
         except Exception as error:
             self.logger.error(f"Error happened: {error}")
             raise
@@ -221,7 +221,7 @@ class DiscordClient(commands.Bot, Ancestor):
                 return await self._choose_handler(urls, content, channel)
         except ServerError as error:
             self.logger.error(f"Error happened: {error}")
-            return await self._send_answer("Server error happened", channel)
+            return await self._send_answer(f"Server error happened: {error}", channel)
 
     async def _choose_handler(self, urls: list, content: str, channel) -> str:
         if content.startswith("!domain_age"):

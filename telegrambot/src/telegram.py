@@ -135,7 +135,7 @@ class TBot(Ancestor):
             if response.status_code == 200:
                 answer = self._format_answer(response.json()["result"])
             else:
-                answer = f"Something went wrong with: {url} - status code: {response.status_code}"
+                answer = f"Something went wrong with {url}: {response.text}"
             await context.bot.send_message(
                 chat_id=update.effective_chat.id,
                 text=answer,
