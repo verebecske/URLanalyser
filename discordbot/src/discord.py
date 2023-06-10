@@ -124,7 +124,10 @@ class DiscordClient(commands.Bot, Ancestor):
                     )
                 except MaliciousContentError as error:
                     await self._delete_message(message)
-                    await self._send_answer("Message was deleted because it contains a malicious URL", message.channel)
+                    await self._send_answer(
+                        "Message was deleted because it contains a malicious URL",
+                        message.channel,
+                    )
                     return
         except Exception as error:
             self.logger.error(f"Client error: {error}")
@@ -156,7 +159,6 @@ class DiscordClient(commands.Bot, Ancestor):
         urls = [t[0] for t in re.findall(pattern, message)]
         self.logger.info(f"URLS: {urls}")
         return urls
-
 
     async def _check_url(self, url: str) -> bool:
         try:

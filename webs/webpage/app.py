@@ -3,8 +3,10 @@ import base64
 import os
 from flask import Flask, request, render_template, send_from_directory
 
+
 class ServerError(Exception):
     pass
+
 
 class FlaskWebPage:
     debug: bool
