@@ -85,7 +85,7 @@ class DiscordClient(commands.Bot, Ancestor):
             self.logger.error(f"Error occurred during message sending error={error}")
 
     async def on_message_delete(self, message):
-        msg = f"{message.author} has deleted the message: {message.content}"
+        msg = f"The message of {message.author} was deleted: {message.content}"
         try:
             if self.log_channel is not None:
                 await self.log_channel.send(msg)
@@ -124,7 +124,10 @@ class DiscordClient(commands.Bot, Ancestor):
                     )
                 except MaliciousContentError as error:
                     await self._delete_message(message)
-                    await self._send_answer(error, message.channel)
+                    await self._send_answer(
+                        "Message was deleted because it contains a malicious URL",
+                        message.channel,
+                    )
                     return
         except Exception as error:
             self.logger.error(f"Client error: {error}")
@@ -133,7 +136,14 @@ class DiscordClient(commands.Bot, Ancestor):
     async def _read_message_on_server(self, content, author, channel) -> str:
         url_list = self._filter_urls(content)
         if await self._is_malicious_list(url_list):
-            raise MaliciousContentError()
+            raise MaliciousContentError("Find malicious content")
+
+    async def _is_malicious_list(self, url_list: list) -> bool:
+        is_malicious = False
+        for url in url_list:
+            is_malicious = is_malicious or await self._check_url(url)
+        self.logger.info(f"Results: {is_malicious}")
+        return is_malicious
 
     async def _delete_message(self, message):
         await message.delete()
@@ -149,13 +159,6 @@ class DiscordClient(commands.Bot, Ancestor):
         urls = [t[0] for t in re.findall(pattern, message)]
         self.logger.info(f"URLS: {urls}")
         return urls
-
-    async def _is_malicious_list(self, url_list: list) -> bool:
-        is_malicious = False
-        for url in url_list:
-            is_malicious = is_malicious or await self._check_url(url)
-        self.logger.info(f"Results: {is_malicious}")
-        return is_malicious
 
     async def _check_url(self, url: str) -> bool:
         try:
@@ -198,8 +201,8 @@ class DiscordClient(commands.Bot, Ancestor):
             if response.status_code == 200:
                 return response
             else:
-                self.logger.error(f"Server error happened: {response}")
-                return {"result": "Server error happened"}
+                self.logger.error(f"Server error happened: {response.text}")
+                raise ServerError(response.text)
         except Exception as error:
             self.logger.error(f"Error happened: {error}")
             raise
@@ -220,7 +223,7 @@ class DiscordClient(commands.Bot, Ancestor):
                 return await self._choose_handler(urls, content, channel)
         except ServerError as error:
             self.logger.error(f"Error happened: {error}")
-            return await self._send_answer("Server error happened", channel)
+            return await self._send_answer(f"Server error happened: {error}", channel)
 
     async def _choose_handler(self, urls: list, content: str, channel) -> str:
         if content.startswith("!domain_age"):

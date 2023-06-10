@@ -5,7 +5,7 @@ services:
            context: ./webs/webpage/
            dockerfile: Dockerfile
        volumes: 
-           - ./webpage/:/usr/src/
+           - ./webs/webpage/:/usr/src/
        ports: 
            - 9109:5000
        environment: 
@@ -19,7 +19,7 @@ services:
            context: ./webs/livesample/
            dockerfile: Dockerfile
        volumes: 
-           - ./livesample/:/usr/src/app/
+           - ./webs/livesample/:/usr/src/app/
        ports: 
            - 9110:5000
        environment: 
